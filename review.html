@@ -108,6 +108,16 @@ button{background:var(--accent);color:var(--accent-ink);border:0;border-radius:9
 button:disabled{opacity:.4;cursor:not-allowed}
 #status{font-size:14px;white-space:pre-wrap;word-break:break-word}
 .muted{color:var(--muted)}
+.held-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.held-card{background:var(--bad-bg);border-radius:16px;padding:14px 16px;min-width:0}
+.held-card .name{font-weight:700;color:var(--ink)}
+.held-card .tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--bad);margin-top:2px}
+.held-card ul{margin:8px 0 0;padding-left:18px;color:var(--bad);font-size:14px}
+.held-card li{margin:2px 0}
+.cell-groups{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.cell-group{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:13px}
+.cell-group .where{font-weight:600;color:var(--ink);margin-right:4px}
+.cell-group .c{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:0 6px;font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink)}
 .sub{color:var(--muted);font-size:13px;margin:16px 0 8px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
 </style>
 </head>
@@ -123,6 +133,20 @@ button:disabled{opacity:.4;cursor:not-allowed}
 <script>
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const label = t => t.replace(/_/g, ' ');
+// Readable names for codes, for display only. The draft data keeps the original IDs.
+const cellRe = /\b([A-Z])-M(\d+)-C0*(\d+)\b/g, moduleRe = /\b([A-Z])-M(\d+)\b/g;
+const placeName = id => String(id).replace(cellRe, 'Pack $1 · Module $2 · Cell $3').replace(moduleRe, 'Pack $1 · Module $2');
+const ruleNames = {
+ soh_after_replacement: 'high health reading soon after a module replacement',
+ accident_without_inspection: 'accident with no later health check',
+ dates_out_of_order: 'dates out of order',
+ health_rising_without_repair: 'health rose without a repair',
+};
+const sentence = s => s.charAt(0).toUpperCase() + s.slice(1);
+// "accident event B-e3; open warning accident_without_inspection (B-e3); not taken apart" -> readable bullet points
+const reasonItems = reason => String(reason).split(/;\s*(?!an ESS needs)/).filter(p => p && p !== 'not taken apart').map(p => sentence(placeName(p
+ .replace(/^accident event (\S+)/, 'accident recorded (event $1)')
+ .replace(/^open warning (\w+)/, (_, rule) => `open warning: ${ruleNames[rule] || label(rule)}`) .replace(/^quote not found at (\S+) page (\d+) line (\d+)/, 'the quoted text is not in $1 at page $2, line $3'))));
 const pick = document.getElementById('pick'), app = document.getElementById('app'), tabs = document.getElementById('tabs');
 let current, packFilter = 'all';
 
@@ -194,6 +218,8 @@ function render() {
  };
  // Many left-over cells share one reason; show each reason once with its cells.
  const groupedReasons = list => { const g = new Map(); for (const h of list) (g.get(h.reason) || g.set(h.reason, []).get(h.reason)).push(h.id); return [...g]; };
+ // ["B-M3-C05", "B-M3-C08", "C-M2-C01"] -> [["B-M3", ["5", "8"]], ["C-M2", ["1"]]]
+ const cellsByModule = ids => { const g = new Map(); for (const id of ids) { const m = /^(.*)-C0*(\d+)$/.exec(id); const [mod, n] = m ? [m[1], m[2]] : [id, '?']; (g.get(mod) || g.set(mod, []).get(mod)).push(n); } return [...g]; };
 
  const sections = [
   ['overview', 'Overview', null],
@@ -219,7 +245,8 @@ function render() {
   </div>
  </section>
  ${d.warnings.length ? `<section class="sec" id="warnings"><div class="sec-head"><h2>Warnings</h2></div>${d.warnings.map(w => `<div class="note warn">${esc(w.message)} <span class="muted">(${esc(w.events.join(', '))})</span></div>`).join('')}</section>` : ''}
- ${d.rejected.length ? `<section class="sec" id="rejected"><div class="sec-head"><div><h2>Rejected by verification</h2><p>Claims whose quote is not in the document.</p></div></div>${d.rejected.map(x => `<div class="note bad"><b>${esc(x.event_id)}</b>: ${esc(x.reason)}</div>`).join('')}</section>` : ''}
+ ${d.rejected.length ? `<section class="sec" id="rejected"><div class="sec-head"><div><h2>Rejected by verification</h2><p>Claims whose quote is not in the document.</p></div></div><div class="held-grid">${d.rejected.map(x => `<div class="held-card"><div class="name">Claim ${esc(x.event_id)}${/^[A-Z]-/.test(x.event_id || '') ? ` <span class="muted">· Pack ${esc(x.event_id[0])}</span>` : ''}</div><span class="tag">Rejected</span>
+  <ul>${reasonItems(x.reason).map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>`).join('')}</div></section>` : ''}
  <section class="sec" id="histories">
   <div class="sec-head"><div><h2>Donor histories</h2><p>Timeline per pack. Highlighted dots are part of a warning.</p></div>
    <div class="filters">${['all', ...d.packs].map(p => `<button type="button" class="pill ${packFilter === p ? 'on' : ''}" data-pack="${esc(p)}">${p === 'all' ? 'All' : 'Pack ' + esc(p)}</button>`).join('')}</div></div>
@@ -228,8 +255,14 @@ function render() {
  <section class="sec" id="ess"><div class="sec-head"><div><h2>New ESS units and their QR passports</h2><p>What the QR code on each unit shows.</p></div></div>
   <div class="gallery">${ess.map(essCard).join('') || '<p class="muted">No ESS proposed.</p>'}</div></section>
  ${held.length ? `<section class="sec" id="held"><div class="sec-head"><h2>Held back</h2></div>
-  ${heldModules.length ? `<p class="sub">Modules not taken apart</p>${heldModules.map(h => `<div class="note bad"><b>${esc(h.id)}</b>: ${esc(h.reason)}</div>`).join('')}` : ''}
-  ${heldCells.length ? `<p class="sub">Cells not used</p>${groupedReasons(heldCells).map(([reason, ids]) => `<div class="note bad"><b>${esc(ids.join(', '))}</b>: ${esc(reason)}</div>`).join('')}` : ''}
+  ${heldModules.length ? `<p class="sub">Modules not taken apart</p><div class="held-grid">${heldModules.map(h => `<div class="held-card">
+   <div class="name">${esc(placeName(h.id))}</div><span class="tag">Not taken apart</span>
+   <ul>${reasonItems(h.reason).map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>`).join('')}</div>` : ''}
+  ${heldCells.length ? `<p class="sub">Cells not used</p><div class="held-grid">${groupedReasons(heldCells).map(([reason, ids]) => `<div class="held-card">
+   <div class="name">${esc(ids.length)} cell${ids.length === 1 ? '' : 's'}</div><span class="tag">Not used</span>
+   <ul>${reasonItems(reason).map(t => `<li>${esc(t)}</li>`).join('')}</ul>
+   <div class="cell-groups">${cellsByModule(ids).map(([mod, cells]) => `<div class="cell-group"><span class="where">${esc(placeName(mod))}</span>${cells.map(n => `<span class="c">Cell ${esc(n)}</span>`).join('')}</div>`).join('')}</div>
+  </div>`).join('')}</div>` : ''}
  </section>` : ''}
  <section class="sec sign" id="sign"><h2>Sign and publish</h2>
   ${r.paid ? '<p>Signing confirms this draft is the one paid for through Masumi, records your signature, and writes the donor and ESS event logs and passports on Cardano Preprod.</p>'
