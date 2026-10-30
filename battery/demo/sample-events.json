@@ -145,29 +145,7 @@
     "event_id": "B-e3",
     "pack_id": "B",
     "module_ids": [
-      "B-M1"
-    ],
-    "cell_ids": [],
-    "type": "accident",
-    "date": "2023-02-07",
-    "fields": {
-      "damage_area": "front left underbody",
-      "severity": "moderate"
-    },
-    "confidence": "documented",
-    "source": {
-      "doc_id": "packB-insurance-2023",
-      "sha256": "bbf4fbfc45c7ccdb5e69d7e5d09491dd9b9bcf5adaa92d510251c2ec8f85eec3",
-      "page": 1,
-      "line": 11,
-      "quote": "The battery housing is deformed near modules 1 and 2."
-    },
-    "basis": []
-  },
-  {
-    "event_id": "B-e4",
-    "pack_id": "B",
-    "module_ids": [
+      "B-M1",
       "B-M2"
     ],
     "cell_ids": [],

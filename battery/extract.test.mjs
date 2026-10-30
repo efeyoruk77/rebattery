@@ -4,7 +4,8 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createExtractor, parseModelJson } from './extract.mjs';
+import { createExtractor, parseModelJson, canonicalId } from './extract.mjs';
+import { screenModules, group } from './group.mjs';
 import { ingest, readManifestFiles } from './ingest.mjs';
 import { verify } from './verify.mjs';
 
@@ -54,6 +55,25 @@ test('renumbers events per pack and keeps basis and warning links', async () => 
   assert.deepEqual(out.packs, [{ pack_id: 'A', battery: { chemistry: 'NMC' } }]);
 });
 
+test('writes module and cell IDs the way the test results do', () => {
+  assert.deepEqual(['A-M4', 'A-M04', 'a-m4', ' A-M4 '].map(canonicalId), ['A-M4', 'A-M4', 'A-M4', 'A-M4']);
+  assert.deepEqual(['A-M3-C7', 'A-M3-C07', 'a-m03-c7', 'A-M3-C123'].map(canonicalId), ['A-M3-C07', 'A-M3-C07', 'A-M3-C07', 'A-M3-C123']);
+  assert.deepEqual(['M4', 'A-4', 'A-M4-X1', 7].map(canonicalId), ['M4', 'A-4', 'A-M4-X1', 7]);
+});
+
+test('a cell named as C7 is still held back as A-M1-C07', async () => {
+  const cellEvent = replacement({ type: 'accident', module_ids: [], cell_ids: ['a-m1-c7', 'A-M1-C07'] });
+  const { events } = await extractor(async () => reply([cellEvent])).extractAll(packA);
+  assert.deepEqual(events[0].cell_ids, ['A-M1-C07']);
+  const cell = (n) => ({ cell_id: `A-M1-C${String(n).padStart(2, '0')}`, module_id: 'A-M1', cell_model: 'X1', chemistry: 'NMC',
+    nominal_capacity_ah: 66, capacity_ah: 58.5, internal_resistance_mohm: 0.85, tested_on: '2026-10-29', facility: { id: 'F1', name: 'F' } });
+  const modules = [{ module_id: 'A-M1', cell_model: 'X1', chemistry: 'NMC', capacity_ah: 58.5, internal_resistance_mohm: 1.43 }];
+  const r = group(modules, [1, 2, 3, 4, 5, 6, 7, 8, 9].map(cell), events, [], { capacity_band_pct: 2, resistance_band_pct: 10, cells_per_ess: 4 },
+    screenModules(modules, events, []));
+  assert.ok(r.held_back.some((h) => h.id === 'A-M1-C07' && h.level === 'cell'));
+  assert.ok(r.new_batteries.flatMap((b) => b.cells).every((c) => c.cell_id !== 'A-M1-C07'));
+});
+
 test('accepts replies wrapped in code fences or text', () => {
   assert.equal(parseModelJson('Here you go:\n```json\n{"events": []}\n```').events.length, 0);
   assert.throws(() => parseModelJson('no json'), /no JSON object/);
@@ -78,9 +98,38 @@ test('never calls the model past the deadline, and cuts a slow call off at the d
   assert.ok(Date.now() - started < 2000);
 });
 
+const badQuote = () => replacement({ source: { ...replacement().source, quote: 'Modul 9 ersetzt' } });
+
+test('asks again when the verifier rejects events, and stops at the first clean reply', async () => {
+  const replies = [reply([badQuote()]), reply([]), reply([replacement()])];
+  let calls = 0;
+  const log = [];
+  const { events } = await extractor(async () => replies[calls++], { log: (m) => log.push(m) }).extractAll(packA);
+  assert.equal(calls, 3);
+  assert.equal(events[0].source.quote, 'Modul 4 ersetzt (Grund: Zellungleichgewicht)');
+  assert.deepEqual(log, ['pack A attempt 1: 1 of 1 events rejected', 'pack A attempt 2: no events']);
+});
+
+test('keeps the reply with the most verified events when none is clean', async () => {
+  const fault = replacement({ event_id: 'f', type: 'fault', source: { ...replacement().source, line: 10, quote: 'Spannungsdifferenz in Modul 4, Zellungleichgewicht' } });
+  const replies = [reply([replacement(), badQuote()]), reply([replacement(), fault, badQuote()]), reply([badQuote()])];
+  let calls = 0;
+  const { events } = await extractor(async () => replies[calls++]).extractAll(packA);
+  assert.equal(calls, 3);
+  assert.deepEqual(events.map((e) => e.type), ['module_replacement', 'fault', 'module_replacement']);
+});
+
+test('at the deadline, uses the best reply so far instead of failing', async () => {
+  let calls = 0;
+  const ask = async () => { calls++; await new Promise((r) => setTimeout(r, 60)); return reply([replacement(), badQuote()]); };
+  const { events } = await extractor(ask).extractAll(packA, { deadline: Date.now() + 100 });
+  assert.equal(events.length, 2);
+  assert.ok(calls <= 2);
+});
+
 test('sends each pack separately with only its own documents', async () => {
   const all = ingest(readManifestFiles(join(demoDir, 'manifest.json'), demoDir));
   const seen = [];
-  await extractor(async (input) => { seen.push(JSON.parse(input).documents.map((d) => d.pack_id)); return reply([]); }).extractAll(all);
+  await extractor(async (input) => { seen.push(JSON.parse(input).documents.map((d) => d.pack_id)); return reply([]); }, { attempts: 1 }).extractAll(all);
   assert.deepEqual(seen.map((packs) => [...new Set(packs)]), [['A'], ['B'], ['C']]);
 });

@@ -19,9 +19,7 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 
 | # | Problem | Owner | Next step |
 |---|---|---|---|
-| 7 | **`sample-events.json` still expects two accident events** for B-M1 and B-M2. The model correctly writes one event with `module_ids: ["B-M1", "B-M2"]`, so `run-extract` reports it as missing. The demo draft is also built from the old sample. | Member 1 + Member 2 | Merge the two events into one, then regenerate the demo draft with `node examples/demo-job.mjs`. |
 | 8 | **The grouping explanation still reads `modules`.** It should read the draft's `new_batteries` (ESS units) and `held_back` (with `level`). | Member 1 | Update the GROUPING EXPLANATION section of [agent/instructions.md](../agent/instructions.md). |
-| 9 | **Cell numbers are not padded in code.** The instructions now ask for `A-M3-C07`, but if the model still writes `C7`, `normalizeEvent` does not fix it, and that cell would not be held back. | Member 1 | Pad cell numbers to two digits in `normalizeEvent`. |
 
 ## Demo and presentation
 
@@ -51,3 +49,6 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 - Stage A was not connected to the battery code. All four steps are connected (`c740f02`).
 - Extraction could run past the Masumi deadline. Model calls now stop at the deadline (`bc99b66`).
 - #6: invoiced work and report measurements lost their dates (`date: null`), so verify() rejected them. The instructions now use the invoice or report date unless the document gives another. Gemini: 7/11 verified before, 11/11 in two runs after (`cc032ff`).
+- #7: the sample events expected two accident events for B-M1 and B-M2. They now expect one event with both modules, as the model writes it; the demo draft is regenerated (11 events, 2 warnings, same ESS units and held-back items). Gemini on the demo documents: 11/11 expected events (`34c49d7`).
+- #9: cell numbers were not padded in code, so a cell the model wrote as `C7` would not match its test result (`C07`) and would not be held back. `normalizeEvent` now writes module and cell IDs in the test-result form (`31fcd57`).
+- One bad model reply could lose events in a paid run. Extraction now retries a pack when the verifier rejects events or the reply is empty, keeps the best reply, and uses it at the deadline. Live: Pack C's first Gemini call returned no answer, the retry was clean (`e403e8c`).

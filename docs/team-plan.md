@@ -188,14 +188,14 @@ Uploads are stored in `.local/uploads` (override with `UPLOAD_STORE_DIR`). Test 
 
 [stage-b.mjs](../stage-b.mjs) runs stage B. It first checks that the draft matches the result hash paid through Masumi, then calls Member 3's `sign`, `writeDonorLogs`, and `writeNewBatteryLog`.
 
-**Demo draft:** [examples/demo-draft.json](../examples/demo-draft.json) is stage A's real output on the demo files, with the hand-checked sample events standing in for the AI step: 12 events, 3 warnings, 1 rejected tampered claim, 5 ESS units of 48 cells, 3 modules not taken apart, and 12 cells not used. Regenerate it with `node examples/demo-job.mjs`. `npm run review` shows it at http://127.0.0.1:21952.
+**Demo draft:** [examples/demo-draft.json](../examples/demo-draft.json) is stage A's real output on the demo files, with the hand-checked sample events standing in for the AI step: 11 events, 2 warnings, 1 rejected tampered claim, 5 ESS units of 48 cells, 3 modules not taken apart, and 12 cells not used. Regenerate it with `node examples/demo-job.mjs`. `npm run review` shows it at http://127.0.0.1:21952.
 
 ## Member 1: Agent code
 
 Owns everything the agent computes: the AI extraction and the deterministic code in `battery/` that checks it, screens modules, and groups cells. The AI is the "clerk": it reports what documents say, never what is true. Code, not AI, decides what is verified and what is grouped.
 
 Tasks:
-1. **Extraction:** tune [battery/extract.mjs](../battery/extract.mjs) and [agent/instructions.md](../agent/instructions.md) on the demo documents with `node --env-file=.env battery/run-extract.mjs` until all 12 expected events pass verification. Never invent a module or cell number.
+1. **Extraction:** tune [battery/extract.mjs](../battery/extract.mjs) and [agent/instructions.md](../agent/instructions.md) on the demo documents with `node --env-file=.env battery/run-extract.mjs` until all 11 expected events pass verification. Never invent a module or cell number.
 2. **Grouping explanation:** make the GROUPING EXPLANATION part of the instructions read the draft's `new_batteries` (ESS units) and `held_back` (modules and cells, with `level`) instead of a New battery with `modules`.
 3. **Cell IDs:** cell numbers are padded to two digits (`A-M3-C07`), as in the cell test batches. The instructions now say so; consider also padding in `normalizeEvent`, so a model reply with `C7` still matches.
 4. **Keep the rules and grouping** (verification, inconsistency checks, module screening, cell grouping, ESS health) correct and tested. Rule values stay in [battery/config.mjs](../battery/config.mjs).
