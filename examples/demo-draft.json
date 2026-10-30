@@ -409,29 +409,7 @@
       "event_id": "B-e3",
       "pack_id": "B",
       "module_ids": [
-        "B-M1"
-      ],
-      "cell_ids": [],
-      "type": "accident",
-      "date": "2023-02-07",
-      "fields": {
-        "damage_area": "front left underbody",
-        "severity": "moderate"
-      },
-      "confidence": "documented",
-      "source": {
-        "doc_id": "packB-insurance-2023",
-        "sha256": "bbf4fbfc45c7ccdb5e69d7e5d09491dd9b9bcf5adaa92d510251c2ec8f85eec3",
-        "page": 1,
-        "line": 11,
-        "quote": "The battery housing is deformed near modules 1 and 2."
-      },
-      "basis": []
-    },
-    {
-      "event_id": "B-e4",
-      "pack_id": "B",
-      "module_ids": [
+        "B-M1",
         "B-M2"
       ],
       "cell_ids": [],
@@ -534,15 +512,7 @@
       "events": [
         "B-e3"
       ],
-      "message": "Accident on 2023-02-07 affecting B-M1 has no later health measurement."
-    },
-    {
-      "type": "inconsistency",
-      "rule": "accident_without_inspection",
-      "events": [
-        "B-e4"
-      ],
-      "message": "Accident on 2023-02-07 affecting B-M2 has no later health measurement."
+      "message": "Accident on 2023-02-07 affecting B-M1, B-M2 has no later health measurement."
     }
   ],
   "rejected_tests": [],
@@ -1937,7 +1907,7 @@
     {
       "id": "B-M2",
       "level": "module",
-      "reason": "accident event B-e4; open warning accident_without_inspection (B-e4); not taken apart"
+      "reason": "accident event B-e3; open warning accident_without_inspection (B-e3); not taken apart"
     },
     {
       "id": "A-M2-C11",
