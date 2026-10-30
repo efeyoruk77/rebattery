@@ -4,8 +4,12 @@ Start with the [TUM hackathon setup guide](https://www.masumi.network/tum-hackat
 It covers your account, Coworker, first task, and payment checkpoints.
 Join the [TUM Sokosumi Workspace](https://preprod.sokosumi.com/join/GTAHB3OQFWgg8rGetMfleiqgeL6_ltdW) with your own account.
 
-This starter suggests five team names and recommends one.
-Adapt `agent/instructions.md` to build your own agent.
+This project is the EV Battery History Recovery agent. It rebuilds the histories of passport-less EV batteries from their documents and proposes how to regroup matching cells into second-life batteries.
+See [docs/project-plan.md](docs/project-plan.md) for the idea and [docs/team-plan.md](docs/team-plan.md) for who builds what.
+
+Paid jobs take a job input (see `job-input.mjs`) that lists the donor packs and the uploaded files by ID and SHA-256, and return the stage A draft built in `draft.mjs`.
+Unpaid Coworker tasks still go straight to the model, so the connection test below keeps working.
+Adapt `agent/instructions.md` to change the agent's model behavior.
 Use the [full agent brief](https://www.masumi.network/tum-hackathon/agent) for your coding agent.
 Before handing in your project, follow the [submission checklist](https://www.masumi.network/tum-hackathon/submission).
 

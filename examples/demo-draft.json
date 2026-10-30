@@ -1,0 +1,1837 @@
+{
+  "packs": [
+    "A",
+    "B",
+    "C"
+  ],
+  "documents": [
+    {
+      "doc_id": "packA-label",
+      "pack_id": "A",
+      "kind": "battery_label",
+      "sha256": "ec96035a6e09619816f8e015372acf08112834f44b2dd5dbce08a463e8a05c9d",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packA-registration",
+      "pack_id": "A",
+      "kind": "vehicle_registration",
+      "sha256": "ab95966c8eaf4d0bdc39bd36ba14df053404570bedb6468c04a3a25b1e35d8ea",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packA-invoice-2021-de",
+      "pack_id": "A",
+      "kind": "service_invoice",
+      "sha256": "e51cda4c1bc7c5a7f8435df711d000bba89a96de6b57f1f9f11520d2e5a5502d",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packA-health-2022",
+      "pack_id": "A",
+      "kind": "dealer_health_report",
+      "sha256": "2922a1bd8a37f1b536e7181ca631040eb75ad12f424cc0fb024eaaf926615747",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packB-label",
+      "pack_id": "B",
+      "kind": "battery_label",
+      "sha256": "4d5513b34a299ef6fd9591a4e4e514bdb2c324e9c32953787aceb8897a02e482",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packB-registration",
+      "pack_id": "B",
+      "kind": "vehicle_registration",
+      "sha256": "716f7de0149ac76609e0f4516ed97a0218c92516df45fc0ab883db2f63e0a6ee",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packB-insurance-2023",
+      "pack_id": "B",
+      "kind": "insurance_record",
+      "sha256": "bbf4fbfc45c7ccdb5e69d7e5d09491dd9b9bcf5adaa92d510251c2ec8f85eec3",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packC-label",
+      "pack_id": "C",
+      "kind": "battery_label",
+      "sha256": "cb820e00e9fb55b07d2d233ed7bdafb8bd6dcc7bbc8e4d6f15648e2b8e6f960b",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packC-registration",
+      "pack_id": "C",
+      "kind": "vehicle_registration",
+      "sha256": "201713a9121d51616163297ffb0af269efc1400546fa6979d0c94873090d5b14",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packC-invoice-2022-en",
+      "pack_id": "C",
+      "kind": "service_invoice",
+      "sha256": "9cc8e37e21d44c4fa014023ae059496c9ea2362ffea76a8a23dd513dc6e55da5",
+      "anchor_tx": null
+    }
+  ],
+  "events": [
+    {
+      "event_id": "A-e1",
+      "pack_id": "A",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "production",
+      "date": "2020-03-11",
+      "fields": {
+        "manufacturer": "Altmark Cells GmbH",
+        "chemistry": "NMC"
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packA-label",
+        "sha256": "ec96035a6e09619816f8e015372acf08112834f44b2dd5dbce08a463e8a05c9d",
+        "page": 1,
+        "line": 9,
+        "quote": "Production date: 2020-03-11"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "A-e2",
+      "pack_id": "A",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "first_registration",
+      "date": "2020-05-12",
+      "fields": {},
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packA-registration",
+        "sha256": "ab95966c8eaf4d0bdc39bd36ba14df053404570bedb6468c04a3a25b1e35d8ea",
+        "page": 1,
+        "line": 8,
+        "quote": "Date of first registration: 2020-05-12"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "A-e3",
+      "pack_id": "A",
+      "module_ids": [
+        "A-M4"
+      ],
+      "cell_ids": [],
+      "type": "fault",
+      "date": "2021-06-14",
+      "fields": {
+        "finding": "voltage difference, cell imbalance"
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packA-invoice-2021-de",
+        "sha256": "e51cda4c1bc7c5a7f8435df711d000bba89a96de6b57f1f9f11520d2e5a5502d",
+        "page": 1,
+        "line": 10,
+        "quote": "Spannungsdifferenz in Modul 4, Zellungleichgewicht"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "A-e4",
+      "pack_id": "A",
+      "module_ids": [
+        "A-M4"
+      ],
+      "cell_ids": [],
+      "type": "module_replacement",
+      "date": "2021-06-14",
+      "fields": {
+        "reason": "cell imbalance"
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packA-invoice-2021-de",
+        "sha256": "e51cda4c1bc7c5a7f8435df711d000bba89a96de6b57f1f9f11520d2e5a5502d",
+        "page": 1,
+        "line": 13,
+        "quote": "Modul 4 ersetzt (Grund: Zellungleichgewicht)"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "A-e5",
+      "pack_id": "A",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "soh_measurement",
+      "date": "2022-09-20",
+      "fields": {
+        "soh_pct": 91
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packA-health-2022",
+        "sha256": "2922a1bd8a37f1b536e7181ca631040eb75ad12f424cc0fb024eaaf926615747",
+        "page": 1,
+        "line": 8,
+        "quote": "Measured state of health: 91 %"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "B-e1",
+      "pack_id": "B",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "production",
+      "date": "2020-04-02",
+      "fields": {
+        "manufacturer": "Altmark Cells GmbH",
+        "chemistry": "NMC"
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packB-label",
+        "sha256": "4d5513b34a299ef6fd9591a4e4e514bdb2c324e9c32953787aceb8897a02e482",
+        "page": 1,
+        "line": 9,
+        "quote": "Production date: 2020-04-02"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "B-e2",
+      "pack_id": "B",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "first_registration",
+      "date": "2020-06-30",
+      "fields": {},
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packB-registration",
+        "sha256": "716f7de0149ac76609e0f4516ed97a0218c92516df45fc0ab883db2f63e0a6ee",
+        "page": 1,
+        "line": 8,
+        "quote": "Date of first registration: 2020-06-30"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "B-e3",
+      "pack_id": "B",
+      "module_ids": [
+        "B-M1"
+      ],
+      "cell_ids": [],
+      "type": "accident",
+      "date": "2023-02-07",
+      "fields": {
+        "damage_area": "front left underbody",
+        "severity": "moderate"
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packB-insurance-2023",
+        "sha256": "bbf4fbfc45c7ccdb5e69d7e5d09491dd9b9bcf5adaa92d510251c2ec8f85eec3",
+        "page": 1,
+        "line": 11,
+        "quote": "The battery housing is deformed near modules 1 and 2."
+      },
+      "basis": []
+    },
+    {
+      "event_id": "B-e4",
+      "pack_id": "B",
+      "module_ids": [
+        "B-M2"
+      ],
+      "cell_ids": [],
+      "type": "accident",
+      "date": "2023-02-07",
+      "fields": {
+        "damage_area": "front left underbody",
+        "severity": "moderate"
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packB-insurance-2023",
+        "sha256": "bbf4fbfc45c7ccdb5e69d7e5d09491dd9b9bcf5adaa92d510251c2ec8f85eec3",
+        "page": 1,
+        "line": 11,
+        "quote": "The battery housing is deformed near modules 1 and 2."
+      },
+      "basis": []
+    },
+    {
+      "event_id": "C-e1",
+      "pack_id": "C",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "production",
+      "date": "2020-02-19",
+      "fields": {
+        "manufacturer": "Altmark Cells GmbH",
+        "chemistry": "NMC"
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packC-label",
+        "sha256": "cb820e00e9fb55b07d2d233ed7bdafb8bd6dcc7bbc8e4d6f15648e2b8e6f960b",
+        "page": 1,
+        "line": 9,
+        "quote": "Production date: 2020-02-19"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "C-e2",
+      "pack_id": "C",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "first_registration",
+      "date": "2020-04-21",
+      "fields": {},
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packC-registration",
+        "sha256": "201713a9121d51616163297ffb0af269efc1400546fa6979d0c94873090d5b14",
+        "page": 1,
+        "line": 8,
+        "quote": "Date of first registration: 2020-04-21"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "C-e3",
+      "pack_id": "C",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "software_update",
+      "date": "2022-11-03",
+      "fields": {
+        "component": "battery management system",
+        "version": "4.2.1"
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packC-invoice-2022-en",
+        "sha256": "9cc8e37e21d44c4fa014023ae059496c9ea2362ffea76a8a23dd513dc6e55da5",
+        "page": 1,
+        "line": 11,
+        "quote": "Battery management system software updated to version 4.2.1"
+      },
+      "basis": []
+    }
+  ],
+  "rejected": [
+    {
+      "event_id": "A-x1",
+      "reason": "quote not found at packA-invoice-2021-de page 1 line 13"
+    }
+  ],
+  "warnings": [
+    {
+      "type": "inconsistency",
+      "rule": "soh_after_replacement",
+      "events": [
+        "A-e4",
+        "A-e5"
+      ],
+      "message": "Health of 91% reported 15 months after A-M4 was replaced; one pack-level value is inconsistent with a pack that mixes old and new modules."
+    },
+    {
+      "type": "inconsistency",
+      "rule": "accident_without_inspection",
+      "events": [
+        "B-e3"
+      ],
+      "message": "Accident on 2023-02-07 affecting B-M1 has no later health measurement."
+    },
+    {
+      "type": "inconsistency",
+      "rule": "accident_without_inspection",
+      "events": [
+        "B-e4"
+      ],
+      "message": "Accident on 2023-02-07 affecting B-M2 has no later health measurement."
+    }
+  ],
+  "cell_test_files": [
+    {
+      "file_id": "packA-cell-tests",
+      "pack_id": "A",
+      "sha256": "8b2044f943af201c71ccb69384b1db1a19662f8c35b571d72a51ec40338d2a21"
+    },
+    {
+      "file_id": "packB-cell-tests",
+      "pack_id": "B",
+      "sha256": "684647d83817ef64ce098b3c044b1544dcab828f748d99fdbba16039930ddb38"
+    },
+    {
+      "file_id": "packC-cell-tests",
+      "pack_id": "C",
+      "sha256": "3c1ccb290b203112994a1ff94951b963bee4ec6e72082f62dcb3700a885757ca"
+    }
+  ],
+  "cell_tests": [
+    {
+      "cell_id": "A-M1-C01",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.44,
+      "self_discharge_mv_day": 0.69,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M1-C02",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.04,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.46,
+      "self_discharge_mv_day": 0.75,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M1-C03",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.41,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.44,
+      "self_discharge_mv_day": 0.78,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M1-C04",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.23,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.42,
+      "self_discharge_mv_day": 0.93,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M2-C01",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.61,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.4,
+      "self_discharge_mv_day": 0.85,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M2-C02",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.16,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.4,
+      "self_discharge_mv_day": 0.55,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M2-C03",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 55.2,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.42,
+      "self_discharge_mv_day": 0.86,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M2-C04",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.94,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.41,
+      "self_discharge_mv_day": 0.64,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M3-C01",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 57.65,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.49,
+      "self_discharge_mv_day": 0.51,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M3-C02",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 57.55,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.47,
+      "self_discharge_mv_day": 0.93,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M3-C03",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 57.41,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.46,
+      "self_discharge_mv_day": 1.03,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M3-C04",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 57.82,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.45,
+      "self_discharge_mv_day": 0.87,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M4-C01",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 65.27,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.11,
+      "self_discharge_mv_day": 1.04,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M4-C02",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 64.51,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.13,
+      "self_discharge_mv_day": 0.98,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M4-C03",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 65.26,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.11,
+      "self_discharge_mv_day": 0.6,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M4-C04",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 65.14,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.15,
+      "self_discharge_mv_day": 0.94,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M5-C01",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.6,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.47,
+      "self_discharge_mv_day": 0.76,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M5-C02",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.46,
+      "self_discharge_mv_day": 0.51,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M5-C03",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.56,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.47,
+      "self_discharge_mv_day": 0.71,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M5-C04",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.5,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.42,
+      "self_discharge_mv_day": 0.9,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M6-C01",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.36,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.4,
+      "self_discharge_mv_day": 0.91,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M6-C02",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.01,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.42,
+      "self_discharge_mv_day": 0.76,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M6-C03",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.34,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.43,
+      "self_discharge_mv_day": 0.76,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M6-C04",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.25,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.4,
+      "self_discharge_mv_day": 0.64,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M7-C01",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.24,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.4,
+      "self_discharge_mv_day": 1,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M7-C02",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.29,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.42,
+      "self_discharge_mv_day": 0.83,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M7-C03",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.5,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.43,
+      "self_discharge_mv_day": 0.56,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M7-C04",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.5,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.41,
+      "self_discharge_mv_day": 0.84,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M8-C01",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 57.94,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.49,
+      "self_discharge_mv_day": 0.56,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M8-C02",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.28,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.49,
+      "self_discharge_mv_day": 0.96,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M8-C03",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 57.95,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.45,
+      "self_discharge_mv_day": 1.02,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "A-M8-C04",
+      "file_id": "packA-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.02,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.46,
+      "self_discharge_mv_day": 0.68,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M1-C01",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 52.13,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.94,
+      "self_discharge_mv_day": 1.08,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M1-C02",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 52.16,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.97,
+      "self_discharge_mv_day": 0.59,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M1-C03",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 51.83,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.98,
+      "self_discharge_mv_day": 0.91,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M1-C04",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 51.93,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.97,
+      "self_discharge_mv_day": 0.72,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M2-C01",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 53.3,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.8,
+      "self_discharge_mv_day": 0.81,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M2-C02",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 52.78,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.78,
+      "self_discharge_mv_day": 0.98,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M2-C03",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 53.3,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.79,
+      "self_discharge_mv_day": 0.95,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M2-C04",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 52.87,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.82,
+      "self_discharge_mv_day": 0.76,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M3-C01",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.7,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.39,
+      "self_discharge_mv_day": 0.52,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M3-C02",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.15,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.41,
+      "self_discharge_mv_day": 0.98,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M3-C03",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.95,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.43,
+      "self_discharge_mv_day": 1.09,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M3-C04",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.09,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.44,
+      "self_discharge_mv_day": 0.6,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M4-C01",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.82,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.44,
+      "self_discharge_mv_day": 0.65,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M4-C02",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.51,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.44,
+      "self_discharge_mv_day": 0.87,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M4-C03",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.67,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.43,
+      "self_discharge_mv_day": 0.79,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M4-C04",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.71,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.42,
+      "self_discharge_mv_day": 0.88,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M5-C01",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.25,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.46,
+      "self_discharge_mv_day": 0.84,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M5-C02",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 57.77,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.48,
+      "self_discharge_mv_day": 0.72,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M5-C03",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 57.68,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.46,
+      "self_discharge_mv_day": 0.73,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M5-C04",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 57.76,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.46,
+      "self_discharge_mv_day": 3.4,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M6-C01",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.22,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.37,
+      "self_discharge_mv_day": 1,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M6-C02",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.57,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.4,
+      "self_discharge_mv_day": 0.64,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M6-C03",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.13,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.37,
+      "self_discharge_mv_day": 0.69,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M6-C04",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.63,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.4,
+      "self_discharge_mv_day": 0.84,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M7-C01",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.44,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.43,
+      "self_discharge_mv_day": 0.77,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M7-C02",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.69,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.4,
+      "self_discharge_mv_day": 0.97,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M7-C03",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.73,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.4,
+      "self_discharge_mv_day": 0.97,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M7-C04",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.49,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.44,
+      "self_discharge_mv_day": 0.51,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M8-C01",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.08,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.45,
+      "self_discharge_mv_day": 1.04,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M8-C02",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.6,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.4,
+      "self_discharge_mv_day": 0.72,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M8-C03",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.78,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.45,
+      "self_discharge_mv_day": 0.95,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "B-M8-C04",
+      "file_id": "packB-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.78,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.4,
+      "self_discharge_mv_day": 0.84,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M1-C01",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.38,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.48,
+      "self_discharge_mv_day": 0.69,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M1-C02",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 57.97,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.45,
+      "self_discharge_mv_day": 1.08,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M1-C03",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.57,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.42,
+      "self_discharge_mv_day": 0.85,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M1-C04",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.48,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.47,
+      "self_discharge_mv_day": 0.8,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M2-C01",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.09,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.38,
+      "self_discharge_mv_day": 1.05,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M2-C02",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.33,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.38,
+      "self_discharge_mv_day": 0.83,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M2-C03",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.08,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.41,
+      "self_discharge_mv_day": 1,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M2-C04",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.82,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.4,
+      "self_discharge_mv_day": 1.02,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M3-C01",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 57.85,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.5,
+      "self_discharge_mv_day": 0.6,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M3-C02",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 57.37,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.49,
+      "self_discharge_mv_day": 0.96,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M3-C03",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 57.28,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.49,
+      "self_discharge_mv_day": 1.01,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M3-C04",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 57.5,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.47,
+      "self_discharge_mv_day": 0.8,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M4-C01",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.66,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.39,
+      "self_discharge_mv_day": 0.81,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M4-C02",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.13,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.45,
+      "self_discharge_mv_day": 0.82,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M4-C03",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.26,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.44,
+      "self_discharge_mv_day": 0.72,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M4-C04",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.23,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.42,
+      "self_discharge_mv_day": 0.9,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M5-C01",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.26,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.48,
+      "self_discharge_mv_day": 0.59,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M5-C02",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.4,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.43,
+      "self_discharge_mv_day": 0.7,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M5-C03",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.49,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.47,
+      "self_discharge_mv_day": 1.06,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M5-C04",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.32,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.43,
+      "self_discharge_mv_day": 0.51,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M6-C01",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.71,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.4,
+      "self_discharge_mv_day": 0.81,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M6-C02",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.78,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.74,
+      "self_discharge_mv_day": 0.79,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M6-C03",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.51,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.41,
+      "self_discharge_mv_day": 0.98,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M6-C04",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.39,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.4,
+      "self_discharge_mv_day": 1.04,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M7-C01",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.92,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.44,
+      "self_discharge_mv_day": 0.71,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M7-C02",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.88,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.43,
+      "self_discharge_mv_day": 0.67,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M7-C03",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.98,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.41,
+      "self_discharge_mv_day": 0.67,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M7-C04",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 59.37,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.42,
+      "self_discharge_mv_day": 0.57,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M8-C01",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.44,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.45,
+      "self_discharge_mv_day": 0.89,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M8-C02",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.08,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.42,
+      "self_discharge_mv_day": 0.57,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M8-C03",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.09,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.46,
+      "self_discharge_mv_day": 0.91,
+      "tested_on": "2026-10-28"
+    },
+    {
+      "cell_id": "C-M8-C04",
+      "file_id": "packC-cell-tests",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "capacity_ah": 58.01,
+      "nominal_capacity_ah": 66,
+      "internal_resistance_mohm": 1.44,
+      "self_discharge_mv_day": 0.73,
+      "tested_on": "2026-10-28"
+    }
+  ],
+  "new_batteries": [
+    {
+      "battery_id": "NB-1",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "rules": {
+        "capacity_band_pct": 3,
+        "resistance_band_pct": 10,
+        "max_self_discharge_mv_day": 2
+      },
+      "cells": [
+        {
+          "cell_id": "A-M1-C01",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M1-C02",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M1-C03",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M1-C04",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M2-C01",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M2-C02",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M2-C04",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M3-C01",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M3-C02",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M3-C03",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M3-C04",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C01",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C02",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C03",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C04",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C01",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C02",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C03",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C04",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C01",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C02",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C03",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C04",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C01",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C02",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C03",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C04",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "B-M3-C01",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M3-C02",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M3-C03",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M3-C04",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M4-C01",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M4-C02",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M4-C03",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M4-C04",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M5-C01",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M5-C02",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M5-C03",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M6-C01",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M6-C02",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M6-C03",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M6-C04",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C01",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C02",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C03",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C04",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C01",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C02",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C03",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C04",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "C-M1-C01",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M1-C02",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M1-C03",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M1-C04",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M2-C01",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M2-C02",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M2-C03",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M2-C04",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M3-C01",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M3-C02",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M3-C03",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M3-C04",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C01",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C02",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C03",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C04",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C01",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C02",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C03",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C04",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M6-C01",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M6-C03",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M6-C04",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C01",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C02",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C03",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C04",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C01",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C02",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C03",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C04",
+          "donor_pack": "C"
+        }
+      ],
+      "held_back": [
+        {
+          "cell_id": "A-M4-C01",
+          "reason": "open warning soh_after_replacement (A-e4, A-e5) on module A-M4"
+        },
+        {
+          "cell_id": "A-M4-C02",
+          "reason": "open warning soh_after_replacement (A-e4, A-e5) on module A-M4"
+        },
+        {
+          "cell_id": "A-M4-C03",
+          "reason": "open warning soh_after_replacement (A-e4, A-e5) on module A-M4"
+        },
+        {
+          "cell_id": "A-M4-C04",
+          "reason": "open warning soh_after_replacement (A-e4, A-e5) on module A-M4"
+        },
+        {
+          "cell_id": "B-M1-C01",
+          "reason": "accident event B-e3 on module B-M1"
+        },
+        {
+          "cell_id": "B-M1-C02",
+          "reason": "accident event B-e3 on module B-M1"
+        },
+        {
+          "cell_id": "B-M1-C03",
+          "reason": "accident event B-e3 on module B-M1"
+        },
+        {
+          "cell_id": "B-M1-C04",
+          "reason": "accident event B-e3 on module B-M1"
+        },
+        {
+          "cell_id": "B-M2-C01",
+          "reason": "accident event B-e4 on module B-M2"
+        },
+        {
+          "cell_id": "B-M2-C02",
+          "reason": "accident event B-e4 on module B-M2"
+        },
+        {
+          "cell_id": "B-M2-C03",
+          "reason": "accident event B-e4 on module B-M2"
+        },
+        {
+          "cell_id": "B-M2-C04",
+          "reason": "accident event B-e4 on module B-M2"
+        },
+        {
+          "cell_id": "A-M2-C03",
+          "reason": "capacity 55.2 Ah is 5.6% below the group average 58.49 Ah (band ±3%)"
+        },
+        {
+          "cell_id": "B-M5-C04",
+          "reason": "self-discharge 3.4 mV/day is above the 2 mV/day limit"
+        },
+        {
+          "cell_id": "C-M6-C02",
+          "reason": "resistance 1.74 mΩ is 21.1% above the group average 1.437 mΩ (band ±10%)"
+        }
+      ]
+    }
+  ]
+}

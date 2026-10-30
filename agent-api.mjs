@@ -1,7 +1,8 @@
 import {createServer} from 'node:http';
 import {randomUUID} from 'node:crypto';
 import {existsSync,readFileSync,writeFileSync,mkdirSync,readdirSync} from 'node:fs';
-import {answer,client} from './client.mjs';
+import {buildDraft} from './draft.mjs';
+import {parseJobInput,MAX_JOB_INPUT_CHARS} from './job-input.mjs';
 import {inputHash,resultHash,sha256} from './standard-hash.mjs';
 import {confirmedState} from './paid-task.mjs';
 const jobsDir='.local/standard-jobs';mkdirSync(jobsDir,{recursive:true,mode:0o700});
@@ -13,7 +14,7 @@ export async function mps(path,body){
  const response=await fetch(process.env.MPS_URL+'/api/v1'+path,{method:body?'POST':'GET',headers:{token,'content-type':'application/json'},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(30000)});
  const data=await response.json();if(!response.ok)throw new Error(`Payment service HTTP ${response.status}`);return data.data;
 }
-const schema={input_data:[{id:'prompt',type:'string',name:'Team brief',data:{description:'Describe your hackathon project and preferred name style.'},validations:[{validation:'min',value:'1'},{validation:'max',value:'16000'}]}]};
+const schema={input_data:[{id:'job',type:'string',name:'Battery batch',data:{description:'JSON listing the donor packs and the uploaded documents and cell test files by ID and SHA-256: {"packs":["A"],"documents":[{"doc_id":"…","pack_id":"A","sha256":"…"}],"cell_test_files":[{"file_id":"…","pack_id":"A","sha256":"…"}]}'},validations:[{validation:'min',value:'1'},{validation:'max',value:String(MAX_JOB_INPUT_CHARS)}]}]};
 const respond=(res,status,data)=>{res.writeHead(status,{'content-type':'application/json'});res.end(JSON.stringify(data))};
 const port=Number(process.env.AGENT_API_PORT||21950);
 createServer(async(req,res)=>{
@@ -27,9 +28,10 @@ createServer(async(req,res)=>{
  const job=load(id);return respond(res,200,{id,status:job.status,result:job.status==='completed'?job.result:undefined});
  }
  if(req.method!=='POST'||url.pathname!=='/start_job')return respond(res,404,{error:'Route not found'});
- let bytes=0,body='';for await(const part of req){bytes+=part.length;if(bytes>20000)return respond(res,413,{error:'Request too large'});body+=part}
+ let bytes=0,body='';for await(const part of req){bytes+=part.length;if(bytes>MAX_JOB_INPUT_CHARS*2+4000)return respond(res,413,{error:'Request too large'});body+=part}
  const input=JSON.parse(body);const nonce=input.identifier_from_purchaser??input.identifierFromPurchaser;
- if(!/^[a-fA-F0-9]{14,26}$/.test(nonce||'')||typeof input.input_data?.prompt!=='string'||!input.input_data.prompt.trim()||input.input_data.prompt.length>16000||Object.keys(input.input_data).some(k=>k!=='prompt'))return respond(res,400,{error:'Expected hex purchaser nonce and input_data.prompt'});
+ if(!/^[a-fA-F0-9]{14,26}$/.test(nonce||'')||typeof input.input_data?.job!=='string'||Object.keys(input.input_data).some(k=>k!=='job'))return respond(res,400,{error:'Expected hex purchaser nonce and input_data.job'});
+ try{parseJobInput(input.input_data.job)}catch(e){return respond(res,400,{error:e.message})}
  const reg=registry();if(reg.registrationState!=='RegistrationConfirmed'&&reg.registration?.state!=='RegistrationConfirmed')return respond(res,503,{error:'Registration not confirmed'});
  // Persist before the payment write. Unknown outcomes require inspection, never automatic replay.
  const key=sha256(nonce);let job=readdirSync(jobsDir).filter(x=>/^[0-9a-f-]{36}\.json$/.test(x)).map(x=>load(x.replace('.json',''))).find(j=>j.nonceKey===key);
@@ -52,7 +54,7 @@ setInterval(async()=>{
  if(Number(payment.submitResultTime)<=Date.now()+120000){job.phase='deadline-blocked';job.status='failed';save(job);continue;}
  job.phase='model-pending';job.status='running';save(job);
  if(Number(payment.submitResultTime)<=Date.now()+120000)continue;
- job.result=await answer(job.input.prompt,`${jobsDir}/${job.id}-session`,Number(payment.submitResultTime));
+ job.result=await buildDraft(job.input.job,`${jobsDir}/${job.id}-session`,Number(payment.submitResultTime));
  writeFileSync(`${jobsDir}/${job.id}.txt`,job.result,{mode:0o600});job.resultHash=resultHash(job.result,job.nonce);job.phase='submit-pending';save(job);
  if(Number(payment.submitResultTime)<=Date.now()){job.phase='deadline-blocked';job.status='failed';save(job);continue;}
  await mps('/payment/submit-result',{network:'Preprod',blockchainIdentifier:payment.blockchainIdentifier,submitResultHash:job.resultHash});

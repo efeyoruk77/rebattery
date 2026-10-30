@@ -1,0 +1,4 @@
+# Demo documents and test files are hashed byte for byte.
+# Without this, Git on Windows rewrites line endings on checkout and every hash stops matching.
+battery/demo/** -text
+examples/** -text
