@@ -21,7 +21,7 @@ test('signed record points at the exact paid draft',async()=>{
 test('a draft edited after payment is never signed',async()=>{
  let signs = 0;
  const run = createStageB({sign:async()=>{signs++;return {}}});
- await assert.rejects(()=>run({...paid, draftText: draftText.replace('"NB-1"', '"NB-2"')}), /does not match the result hash/);
+ await assert.rejects(()=>run({...paid, draftText: draftText.replace('"ESS-1"', '"ESS-9"')}), /does not match the result hash/);
  assert.equal(signs, 0);
 });
 

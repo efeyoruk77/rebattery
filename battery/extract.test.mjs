@@ -3,11 +3,13 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createExtractor, parseModelJson } from './extract.mjs';
 import { ingest, readManifestFiles } from './ingest.mjs';
 import { verify } from './verify.mjs';
 
-const demoDir = new URL('./demo/', import.meta.url).pathname;
+// fileURLToPath, not URL.pathname: on Windows pathname gives "/C:/..." and the paths break.
+const demoDir = fileURLToPath(new URL('./demo/', import.meta.url));
 const packA = ingest(readManifestFiles(join(demoDir, 'manifest.json'), demoDir)).filter((d) => d.pack_id === 'A');
 const journalDir = mkdtempSync(join(tmpdir(), 'extract-test-'));
 test.after(() => rmSync(journalDir, { recursive: true, force: true }));

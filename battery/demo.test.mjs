@@ -3,10 +3,12 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { runDemo } from './run-demo.mjs';
 import { readManifestFiles, uploadDocuments, uploadModuleTests, uploadCellTests, loadJobInputs } from './ingest.mjs';
 
-const demoDir = new URL('./demo/', import.meta.url).pathname;
+// fileURLToPath, not URL.pathname: on Windows pathname gives "/C:/..." and the paths break.
+const demoDir = fileURLToPath(new URL('./demo/', import.meta.url));
 
 test('demo: events verify, the 91% warning appears, A-M4, B-M1, B-M2 are not taken apart, and cells form ESS units', () => {
   const r = runDemo({ today: '2026-10-30' });

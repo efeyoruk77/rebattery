@@ -40,6 +40,9 @@ section{background:var(--panel);border:1px solid var(--line);border-radius:10px;
 .mod{border:1px solid var(--accent);border-radius:6px;padding:2px 6px;font-size:12px;font-variant-numeric:tabular-nums}
 .mod.held{border-color:var(--bad);color:var(--bad);text-decoration:line-through}
 .docs{font-size:12px;color:var(--muted);margin:0;padding-left:18px}
+.ess{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}
+.passport{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+details summary{cursor:pointer;color:var(--muted);font-size:14px;margin:4px 0}
 .sign{display:flex;flex-direction:column;gap:8px}
 textarea{width:100%;min-height:60px}
 button{background:var(--accent);color:#fff;border:0;border-radius:6px;padding:8px 16px;font-weight:600;cursor:pointer;align-self:flex-start}
@@ -74,39 +77,50 @@ async function show(id) {
  const r = await (await fetch('/api/draft?id=' + encodeURIComponent(id))).json();
  current = r; const d = r.draft;
  const flagged = new Set(d.warnings.flatMap(w => w.events));
- const docs = Object.fromEntries(d.documents.map(x => [x.doc_id, x]));
- const tests = Object.fromEntries(d.cell_tests.map(c => [c.cell_id, c]));
- const used = d.new_batteries.reduce((n, b) => n + b.cells.length, 0);
- const held = d.new_batteries.reduce((n, b) => n + b.held_back.length, 0);
+ const ess = d.new_batteries || [];
+ const held = d.held_back || [];
+ const heldModules = held.filter(h => h.level === 'module'), heldCells = held.filter(h => h.level === 'cell');
+ const used = ess.reduce((n, b) => n + b.cells.length, 0);
+ const packOf = id => id.split('-')[0];
+ // Events name modules as module_ids/cell_ids (team format) or module_id (older battery code).
+ const parts = e => [...(e.cell_ids || []), ...(e.cell_ids?.length ? [] : e.module_ids || (e.module_id ? [e.module_id] : []))];
 
  const event = e => `<div class="event ${flagged.has(e.event_id) ? 'flagged' : ''}">
   <div class="top"><span class="date">${esc(e.date)}</span><span class="type">${esc(label(e.type))}</span>
-  <span class="chip">${esc([...(e.cell_ids || []), ...(e.cell_ids?.length ? [] : e.module_ids || [])].join(', ') || 'whole pack')}</span>
+  <span class="chip">${esc(parts(e).join(', ') || 'whole pack')}</span>
   <span class="conf ${esc(e.confidence)}">${esc(e.confidence)}</span></div>
   <div class="fields">${Object.entries(e.fields || {}).map(([k, v]) => `${esc(label(k))}: ${esc(v)}`).join(' · ')}</div>
   ${e.source ? `<div class="quote"><q>${esc(e.source.quote)}</q> <span class="muted">— ${esc(e.source.doc_id)}, p. ${esc(e.source.page)}, line ${esc(e.source.line)}</span></div>`
    : `<div class="quote muted">Derived from ${esc((e.basis || []).join(', '))}</div>`}
  </div>`;
 
- const pack = p => `<div><h2>Pack ${esc(p)}</h2>${d.events.filter(e => e.pack_id === p).sort((a, b) => a.date.localeCompare(b.date)).map(event).join('') || '<p class="muted">No events.</p>'}</div>`;
+ const pack = p => `<div><h2>Pack ${esc(p)}</h2>${d.events.filter(e => e.pack_id === p).sort((a, b) => String(a.date).localeCompare(String(b.date))).map(event).join('') || '<p class="muted">No events.</p>'}</div>`;
 
- // Cells are shown under their module, so module-level events (a replacement, an accident) stay visible.
- const cell = (id, reason) => { const t = tests[id]; const tip = (t ? `${t.capacity_ah} Ah, ${t.internal_resistance_mohm} mΩ, ${t.self_discharge_mv_day} mV/day` : '') + (reason ? ` — held back: ${reason}` : '');
-  return `<span class="mod ${reason ? 'held' : ''}" title="${esc(tip)}">${esc(id.split('-').pop())}</span>`; };
- const modulesOf = p => [...new Set(d.cell_tests.filter(c => c.cell_id.startsWith(p + '-')).map(c => c.cell_id.split('-').slice(0, 2).join('-')))];
- const battery = b => { const heldBy = Object.fromEntries(b.held_back.map(h => [h.cell_id, h.reason]));
-  return `<p><b>${esc(b.battery_id)}</b> — ${b.cells.length} cells${b.cell_model ? ` of ${esc(b.cell_model)}` : ''}. Rules: capacity ±${esc(b.rules.capacity_band_pct)}%, internal resistance ±${esc(b.rules.resistance_band_pct)}%, self-discharge ≤ ${esc(b.rules.max_self_discharge_mv_day)} mV/day. Struck-through cells are held back; hover a cell for its test values.</p>
-  <div class="tree">${d.packs.map(p => `<div class="donor"><b>From pack ${esc(p)}</b> <span class="muted">(${b.cells.filter(c => c.donor_pack === p).length} cells used)</span>
-   ${modulesOf(p).map(m => `<div class="mods"><span class="chip">${esc(m)}</span>${d.cell_tests.filter(c => c.cell_id.startsWith(m + '-')).map(c => cell(c.cell_id, heldBy[c.cell_id])).join('')}</div>`).join('')}
-   <ul class="docs">${d.documents.filter(x => x.pack_id === p).map(x => `<li>${esc(x.doc_id)} <span title="${esc(x.sha256)}">${esc(x.sha256.slice(0, 10))}…</span>${x.anchor_tx ? ` · anchored` : ''}</li>`).join('')}</ul></div>`).join('')}</div>
-  ${b.held_back.length ? `<h2 style="margin-top:14px">Held back</h2>${heldGroups(b.held_back).map(g => `<div class="note bad"><b>${esc(g.ids)}</b>: ${esc(g.reason)}</div>`).join('')}` : ''}`; };
- // Collapse whole modules held back for the same event into one line.
- function heldGroups(held) {
-  const groups = [];
-  for (const h of held) { const m = h.cell_id.split('-').slice(0, 2).join('-'); const key = / on module /.test(h.reason) ? m + '|' + h.reason : h.cell_id;
-   const g = groups.find(x => x.key === key); if (g) g.cells.push(h.cell_id); else groups.push({key, module: m, cells: [h.cell_id], reason: h.reason}); }
-  return groups.map(g => ({ids: g.cells.length > 1 ? `${g.module} (all ${g.cells.length} cells)` : g.cells[0], reason: g.reason}));
- }
+ // One card per ESS: what its QR code shows, then where its cells came from.
+ const essCard = b => {
+  const h = b.health || {}, f = b.second_life_facility || {};
+  const byModule = {};
+  for (const c of b.cells) (byModule[c.module_id] ||= []).push(c.cell_id.split('-').pop());
+  return `<div class="ess">
+   <div class="passport">
+    <div><b>${esc(b.battery_id)}</b> <span class="muted">${esc(b.cell_model)} · ${esc(b.chemistry)} · ${esc(h.cell_count)} cells in series</span></div>
+    <div class="stats">
+     <div class="stat"><b>${esc(h.soh_pct)}%</b><span>second-life health</span></div>
+     <div class="stat"><b>${esc(h.usable_capacity_ah)} Ah</b><span>usable of ${esc(h.nominal_capacity_ah)} Ah (weakest cell)</span></div>
+     <div class="stat"><b>${esc((b.donor_packs || []).join(', '))}</b><span>donor packs</span></div>
+    </div>
+    <div class="muted">Made at ${esc(f.name)}, ${esc(f.site)} · tested ${esc((h.cells_tested_on || []).join(', '))} · ${esc(h.basis)}</div>
+    <div class="muted">Rules: capacity ±${esc(b.rules?.capacity_band_pct)}%, resistance ±${esc(b.rules?.resistance_band_pct)}%, ${esc(b.rules?.cells_per_ess)} cells per ESS</div>
+   </div>
+   <details><summary>Family tree: ${esc(b.battery_id)} → modules → donor packs → documents</summary>
+    <div class="tree">${(b.donor_packs || []).map(p => `<div class="donor"><b>Pack ${esc(p)}</b>
+     ${Object.keys(byModule).filter(m => packOf(m) === p).map(m => `<div class="mods"><span class="chip">${esc(m)}</span>${byModule[m].map(n => `<span class="mod">${esc(n)}</span>`).join('')}</div>`).join('')}
+     <ul class="docs">${d.documents.filter(x => x.pack_id === p).map(x => `<li>${esc(x.doc_id)} <span title="${esc(x.sha256)}">${esc(x.sha256.slice(0, 10))}…</span>${x.anchor_tx ? ' · anchored' : ''}</li>`).join('')}</ul></div>`).join('')}</div>
+   </details>
+  </div>`;
+ };
+ // Many left-over cells share one reason; show each reason once with its cells.
+ const groupedReasons = list => { const g = new Map(); for (const h of list) (g.get(h.reason) || g.set(h.reason, []).get(h.reason)).push(h.id); return [...g]; };
 
  app.innerHTML = `
  <section><div class="stats">
@@ -114,15 +128,19 @@ async function show(id) {
   <div class="stat"><b>${d.events.length}</b><span>verified events</span></div>
   <div class="stat"><b>${d.warnings.length}</b><span>warnings</span></div>
   <div class="stat"><b>${d.rejected.length}</b><span>rejected claims</span></div>
-  <div class="stat"><b>${used}</b><span>cells regrouped</span></div>
-  <div class="stat"><b>${held}</b><span>cells held back</span></div>
+  <div class="stat"><b>${ess.length}</b><span>ESS units (${used} cells)</span></div>
+  <div class="stat"><b>${heldModules.length} / ${heldCells.length}</b><span>modules / cells held back</span></div>
  </div></section>
  ${d.warnings.length ? `<section><h2>Warnings</h2>${d.warnings.map(w => `<div class="note warn">${esc(w.message)} <span class="muted">(${esc(w.events.join(', '))})</span></div>`).join('')}</section>` : ''}
  ${d.rejected.length ? `<section><h2>Rejected by verification</h2>${d.rejected.map(x => `<div class="note bad"><b>${esc(x.event_id)}</b>: ${esc(x.reason)}</div>`).join('')}</section>` : ''}
  <section><h2>Donor histories</h2><div class="packs">${d.packs.map(pack).join('')}</div></section>
- <section><h2>New battery family tree</h2>${d.new_batteries.map(battery).join('') || '<p class="muted">No grouping proposed.</p>'}</section>
+ <section><h2>New ESS units and their QR passports</h2>${ess.map(essCard).join('') || '<p class="muted">No ESS proposed.</p>'}</section>
+ ${held.length ? `<section><h2>Held back</h2>
+  ${heldModules.length ? `<p class="muted">Modules not taken apart</p>${heldModules.map(h => `<div class="note bad"><b>${esc(h.id)}</b>: ${esc(h.reason)}</div>`).join('')}` : ''}
+  ${heldCells.length ? `<p class="muted">Cells not used</p>${groupedReasons(heldCells).map(([reason, ids]) => `<div class="note bad"><b>${esc(ids.join(', '))}</b>: ${esc(reason)}</div>`).join('')}` : ''}
+ </section>` : ''}
  <section class="sign"><h2>Sign and publish</h2>
-  ${r.paid ? '<p>Signing confirms this draft is the one paid for through Masumi, records your signature, and writes the donor and new-battery event logs on Cardano Preprod.</p>'
+  ${r.paid ? '<p>Signing confirms this draft is the one paid for through Masumi, records your signature, and writes the donor and ESS event logs and passports on Cardano Preprod.</p>'
    : '<p class="muted">This is the demo draft. Only a paid draft can be signed.</p>'}
   <label>Changes from the draft (optional)<textarea id="changes" placeholder="none"></textarea></label>
   <button id="sign" ${r.paid ? '' : 'disabled'}>Sign and publish</button>
@@ -136,7 +154,7 @@ async function sign() {
  btn.disabled = true; status.textContent = 'Signing…';
  const res = await fetch('/api/sign', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({id: current.id, changes: document.getElementById('changes').value})});
  const out = await res.json();
- status.textContent = res.ok ? `Signed. Donor log TxHashes: ${out.donorTxs.join(', ')}\nNew battery log TxHashes: ${out.newBatteryTxs.join(', ')}` : `Not signed: ${out.error}`;
+ status.textContent = res.ok ? `Signed. Donor log TxHashes: ${out.donorTxs.join(', ')}\nESS log and passport TxHashes: ${out.newBatteryTxs.join(', ')}` : `Not signed: ${out.error}`;
  btn.disabled = res.ok;
 }
 load();

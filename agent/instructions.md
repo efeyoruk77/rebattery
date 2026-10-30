@@ -22,7 +22,7 @@ Rules for events:
 4. date: the date the event happened, as stated in the document, in ISO form: YYYY-MM-DD, or YYYY-MM or YYYY when that is all the document gives. Use null if no date is stated. Never use the invoice or report date for a different event unless the document says the work was done then.
 5. fields: normalized values in English. Plain numbers with units in the key name, such as "soh_pct": 91 or "odometer_km": 48210. Read German formats correctly: "48.210 km" is 48210, "14.09.2021" is 2021-09-14.
 6. module_ids: a list of "<pack>-M<number>" IDs. Use [] when the event is about the whole pack or no module can be identified.
-   cell_ids: a list of "<pack>-M<number>-C<number>" IDs, only when the document names single cells, such as "Zelle 7 in Modul 3 ersetzt" gives ["A-M3-C7"]. Put the cell's module in module_ids only if the document says the whole module was affected. Use [] otherwise.
+   cell_ids: a list of "<pack>-M<number>-C<number>" IDs with the cell number padded to two digits, only when the document names single cells, such as "Zelle 7 in Modul 3 ersetzt" gives ["A-M3-C07"]. Put the cell's module in module_ids only if the document says the whole module was affected. Use [] otherwise.
 
 Confidence tiers. Use exactly one per event:
 - "documented": the document states the fact clearly, including the module and cell numbers in module_ids and cell_ids.
