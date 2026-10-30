@@ -5,69 +5,126 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Battery History Review</title>
 <style>
-:root{--bg:#f7f7f5;--panel:#fff;--ink:#1d1d1b;--muted:#6b6b66;--line:#e2e2dc;--accent:#2f6f4e;--warn:#a15c00;--warn-bg:#fff4e0;--bad:#a12b2b;--bad-bg:#fdecec;--chip:#eef2ef;--signed:#2f6f4e;--documented:#2b5ea1;--estimated:#8a5aa8}
-@media (prefers-color-scheme:dark){:root{--bg:#141413;--panel:#1d1d1b;--ink:#ececE8;--muted:#a3a39c;--line:#33332f;--accent:#6cc497;--warn:#f0b35a;--warn-bg:#2e2412;--bad:#f08a8a;--bad-bg:#2e1616;--chip:#262a27;--signed:#6cc497;--documented:#7fb0f0;--estimated:#c79be0}}
+:root{--bg:#fff;--panel:#fff;--soft:#f4f4f5;--ink:#0a0a0a;--muted:#71717a;--line:#e4e4e7;--accent:#0a0a0a;--accent-ink:#fff;--good:#15803d;--good-bg:#ecfdf3;--warn:#b45309;--warn-bg:#fff7ed;--bad:#b91c1c;--bad-bg:#fef2f2;--chip:#f4f4f5;--signed:#15803d;--documented:#1d4ed8;--estimated:#7e22ce;--shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.06)}
+@media (prefers-color-scheme:dark){:root{--bg:#09090b;--panel:#111113;--soft:#18181b;--ink:#fafafa;--muted:#a1a1aa;--line:#27272a;--accent:#fafafa;--accent-ink:#09090b;--good:#4ade80;--good-bg:#0f2a1a;--warn:#fbbf24;--warn-bg:#2a1f0a;--bad:#f87171;--bad-bg:#2a1010;--chip:#18181b;--signed:#4ade80;--documented:#93c5fd;--estimated:#d8b4fe;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.4)}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-main{max-width:1100px;margin:0 auto;padding:24px 16px 64px}
-header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:20px}
-h1{font-size:22px;margin:0}
-h2{font-size:17px;margin:0 0 12px}
+html{scroll-behavior:smooth;scroll-padding-top:120px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Inter,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}
 select,textarea,button{font:inherit;color:inherit}
-select,textarea{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
-section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
-.stats{display:flex;flex-wrap:wrap;gap:24px}
-.stat b{display:block;font-size:22px}
+
+/* Top bar */
+.bar{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar-in{max-width:1200px;margin:0 auto;padding:12px 16px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.01em}
+.logo{width:28px;height:28px;border-radius:8px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:14px}
+.bar-right{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bar-right a{font-size:14px;color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:999px}
+.bar-right a:hover{background:var(--soft);color:var(--ink)}
+select{background:var(--soft);border:1px solid transparent;border-radius:999px;padding:7px 12px;max-width:260px}
+.tabs{max-width:1200px;margin:0 auto;padding:0 16px 10px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+
+/* Pills */
+.pill{flex:0 0 auto;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;color:var(--ink);white-space:nowrap}
+.pill:hover{background:var(--soft)}
+.pill.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.pill .n{color:var(--muted);margin-left:4px;font-weight:400}
+.pill.on .n{color:inherit;opacity:.7}
+
+main{max-width:1200px;margin:0 auto;padding:32px 16px 80px}
+.hero h1{font-size:clamp(28px,5vw,44px);line-height:1.1;letter-spacing:-.03em;margin:0 0 8px}
+.hero p{color:var(--muted);margin:0 0 24px;max-width:640px;font-size:16px}
+h2{font-size:22px;letter-spacing:-.02em;margin:0}
+.sec{margin-top:48px}
+.sec-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sec-head p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{background:var(--soft);border-radius:16px;padding:16px}
+.stat b{display:block;font-size:28px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .stat span{color:var(--muted);font-size:13px}
-.note{padding:10px 12px;border-radius:8px;margin-bottom:8px}
+
+/* Notes */
+.note{padding:12px 14px;border-radius:12px;margin-bottom:8px;font-size:14px}
 .note.warn{background:var(--warn-bg);color:var(--warn)}
 .note.bad{background:var(--bad-bg);color:var(--bad)}
+.note .muted{opacity:.8}
+
+/* Timelines */
 .packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
-.event{border-left:3px solid var(--line);padding:4px 0 10px 12px;margin-left:4px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px;min-width:0}
+.card h3{margin:0 0 12px;font-size:16px}
+.event{position:relative;padding:0 0 14px 18px;border-left:2px solid var(--line);margin-left:5px}
+.event:last-child{padding-bottom:0}
+.event::before{content:"";position:absolute;left:-6px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--panel);border:2px solid var(--muted)}
 .event.flagged{border-left-color:var(--warn)}
+.event.flagged::before{border-color:var(--warn);background:var(--warn)}
 .event .top{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .date{font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px}
-.type{font-weight:600}
-.chip{background:var(--chip);border-radius:999px;padding:1px 8px;font-size:12px}
-.conf{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.type{font-weight:600;text-transform:capitalize}
+.chip{background:var(--chip);border-radius:999px;padding:1px 8px;font-size:12px;font-variant-numeric:tabular-nums}
+.conf{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
 .conf.signed{color:var(--signed)}.conf.documented{color:var(--documented)}.conf.estimated{color:var(--estimated)}
 .fields{font-size:13px;color:var(--muted)}
-.quote{font-size:13px;margin-top:2px}
+.quote{font-size:13px;margin-top:4px;background:var(--soft);border-radius:8px;padding:6px 8px;overflow-wrap:anywhere}
 .quote q{font-style:italic}
-.tree{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-.donor{border:1px solid var(--line);border-radius:8px;padding:10px}
-.mods{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-.mod{border:1px solid var(--accent);border-radius:6px;padding:2px 6px;font-size:12px;font-variant-numeric:tabular-nums}
-.mod.held{border-color:var(--bad);color:var(--bad);text-decoration:line-through}
-.docs{font-size:12px;color:var(--muted);margin:0;padding-left:18px}
-.ess{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}
-.passport{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;flex:1 1 280px;min-width:0}
-.passport-row{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
-.qr{flex:0 0 150px;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;font-size:12px;color:var(--muted);text-decoration:none}
-.qr svg{width:150px;height:150px;background:#fff;border-radius:6px;padding:4px}
-.qr.pending{height:150px;justify-content:center;border:1px dashed var(--line);border-radius:6px;padding:8px}
-details summary{cursor:pointer;color:var(--muted);font-size:14px;margin:4px 0}
-.sign{display:flex;flex-direction:column;gap:8px}
-textarea{width:100%;min-height:60px}
-button{background:var(--accent);color:#fff;border:0;border-radius:6px;padding:8px 16px;font-weight:600;cursor:pointer;align-self:flex-start}
-button:disabled{opacity:.5;cursor:not-allowed}
+
+/* ESS gallery */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.ess{background:var(--panel);border:1px solid var(--line);border-radius:20px;overflow:hidden;transition:transform .15s ease,box-shadow .15s ease;min-width:0}
+.ess:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.preview{background:var(--soft);padding:20px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.soh b{display:block;font-size:44px;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.soh span{color:var(--muted);font-size:13px}
+.meter{height:6px;border-radius:999px;background:var(--line);margin-top:10px;overflow:hidden;width:140px}
+.meter i{display:block;height:100%;background:var(--good);border-radius:inherit}
+.qr{flex:0 0 112px;display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center;font-size:11px;color:var(--muted);text-decoration:none}
+.qr svg{width:112px;height:112px;background:#fff;border-radius:10px;padding:4px}
+.qr.pending{height:112px;justify-content:center;border:1.5px dashed var(--line);border-radius:12px;padding:8px;background:var(--panel)}
+.caption{padding:14px 18px 18px}
+.caption .title{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.caption .title b{font-size:16px}
+.meta{color:var(--muted);font-size:13px;margin-top:2px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+details summary{cursor:pointer;color:var(--muted);font-size:13px;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"+ ";font-weight:600}
+details[open] summary::before{content:"− "}
+.tree{display:grid;gap:10px;margin-top:10px}
+.donor{background:var(--soft);border-radius:12px;padding:10px}
+.mods{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.mod{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:0 5px;font-size:11px;font-variant-numeric:tabular-nums}
+.docs{font-size:12px;color:var(--muted);margin:4px 0 0;padding-left:16px;overflow-wrap:anywhere}
+
+/* Sign */
+.sign{display:flex;flex-direction:column;gap:10px;max-width:640px}
+.sign label{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
+textarea{width:100%;min-height:72px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;color:var(--ink)}
+button{background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:10px 20px;font-weight:600;cursor:pointer;align-self:flex-start}
+button:disabled{opacity:.4;cursor:not-allowed}
 #status{font-size:14px;white-space:pre-wrap;word-break:break-word}
 .muted{color:var(--muted)}
+.sub{color:var(--muted);font-size:13px;margin:16px 0 8px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
 </style>
 </head>
 <body>
-<main>
-<header>
- <h1>Battery history review</h1>
- <span><a href="/status">Status</a> · <label>Draft <select id="pick"></select></label></span>
-</header>
-<div id="app"><p class="muted">Loading…</p></div>
-</main>
+<div class="bar">
+ <div class="bar-in">
+  <div class="brand"><span class="logo" aria-hidden="true">⚡</span>Battery history review</div>
+  <div class="bar-right"><a href="/status">Status</a><label><span class="muted" style="font-size:14px">Draft </span><select id="pick" aria-label="Draft"></select></label></div>
+ </div>
+ <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+</div>
+<main id="app"><p class="muted">Loading…</p></main>
 <script>
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const label = t => t.replace(/_/g, ' ');
-const pick = document.getElementById('pick'), app = document.getElementById('app');
-let current;
+const pick = document.getElementById('pick'), app = document.getElementById('app'), tabs = document.getElementById('tabs');
+let current, packFilter = 'all';
 
 async function load() {
  const drafts = await (await fetch('/api/drafts')).json();
@@ -75,11 +132,15 @@ async function load() {
  if (drafts.length) show(drafts[drafts.length - 1].id); else app.innerHTML = '<p class="muted">No drafts yet.</p>';
  pick.value = drafts.length ? drafts[drafts.length - 1].id : '';
 }
-pick.onchange = () => show(pick.value);
+pick.onchange = () => { packFilter = 'all'; show(pick.value); };
 
 async function show(id) {
  const r = await (await fetch('/api/draft?id=' + encodeURIComponent(id))).json();
- current = r; const d = r.draft;
+ current = r; render();
+}
+
+function render() {
+ const r = current, d = r.draft;
  const flagged = new Set(d.warnings.flatMap(w => w.events));
  const ess = d.new_batteries || [];
  const held = d.held_back || [];
@@ -88,6 +149,7 @@ async function show(id) {
  const packOf = id => id.split('-')[0];
  // Events name modules as module_ids/cell_ids (team format) or module_id (older battery code).
  const parts = e => [...(e.cell_ids || []), ...(e.cell_ids?.length ? [] : e.module_ids || (e.module_id ? [e.module_id] : []))];
+ const shownPacks = packFilter === 'all' ? d.packs : d.packs.filter(p => p === packFilter);
 
  const event = e => `<div class="event ${flagged.has(e.event_id) ? 'flagged' : ''}">
   <div class="top"><span class="date">${esc(e.date)}</span><span class="type">${esc(label(e.type))}</span>
@@ -98,74 +160,99 @@ async function show(id) {
    : `<div class="quote muted">Derived from ${esc((e.basis || []).join(', '))}</div>`}
  </div>`;
 
- const pack = p => `<div><h2>Pack ${esc(p)}</h2>${d.events.filter(e => e.pack_id === p).sort((a, b) => String(a.date).localeCompare(String(b.date))).map(event).join('') || '<p class="muted">No events.</p>'}</div>`;
+ const pack = p => `<div class="card"><h3>Pack ${esc(p)}</h3>${d.events.filter(e => e.pack_id === p).sort((a, b) => String(a.date).localeCompare(String(b.date))).map(event).join('') || '<p class="muted">No events.</p>'}</div>`;
 
- // One card per ESS: what its QR code shows, then where its cells came from.
+ // One card per ESS: what its QR code shows on top, then where its cells came from.
  const essCard = b => {
   const h = b.health || {}, f = b.second_life_facility || {};
   const byModule = {};
   for (const c of b.cells) (byModule[c.module_id] ||= []).push(c.cell_id.split('-').pop());
   const qr = (r.passports || {})[b.battery_id];
-  return `<div class="ess"><div class="passport-row">
-   <div class="passport">
-    <div><b>${esc(b.battery_id)}</b> <span class="muted">${esc(b.cell_model)} · ${esc(b.chemistry)} · ${esc(h.cell_count)} cells in series</span></div>
-    <div class="stats">
-     <div class="stat"><b>${esc(h.soh_pct)}%</b><span>second-life health</span></div>
-     <div class="stat"><b>${esc(h.usable_capacity_ah)} Ah</b><span>usable of ${esc(h.nominal_capacity_ah)} Ah (weakest cell)</span></div>
-     <div class="stat"><b>${esc((b.donor_packs || []).join(', '))}</b><span>donor packs</span></div>
+  const pct = Math.max(0, Math.min(100, Number(h.soh_pct) || 0));
+  return `<article class="ess">
+   <div class="preview">
+    <div class="soh"><b>${esc(h.soh_pct)}%</b><span>second-life health</span><div class="meter" aria-hidden="true"><i style="width:${pct}%"></i></div></div>
+    ${qr ? `<a class="qr" href="${esc(qr.url)}" target="_blank" rel="noopener" title="Passport transaction ${esc(qr.txHash)}">${qr.svg}<span>Scan: passport on Cardano Preprod</span></a>`
+     : '<div class="qr pending"><span>QR code appears once the passport is on-chain (after signing)</span></div>'}
+   </div>
+   <div class="caption">
+    <div class="title"><b>${esc(b.battery_id)}</b><span class="meta">${esc(h.cell_count)} cells</span></div>
+    <div class="meta">${esc(f.name)} · ${esc(f.site)}</div>
+    <div class="tags">
+     <span class="chip">${esc(h.usable_capacity_ah)} / ${esc(h.nominal_capacity_ah)} Ah</span>
+     <span class="chip">${esc(b.cell_model)}</span><span class="chip">${esc(b.chemistry)}</span>
+     <span class="chip">Packs ${esc((b.donor_packs || []).join(', '))}</span>
     </div>
-    <div class="muted">Made at ${esc(f.name)}, ${esc(f.site)} · tested ${esc((h.cells_tested_on || []).join(', '))} · ${esc(h.basis)}</div>
-    <div class="muted">Rules: capacity ±${esc(b.rules?.capacity_band_pct)}%, resistance ±${esc(b.rules?.resistance_band_pct)}%, ${esc(b.rules?.cells_per_ess)} cells per ESS</div>
+    <div class="meta" style="margin-top:10px">Tested ${esc((h.cells_tested_on || []).join(', '))} · ${esc(h.basis)} · capacity ±${esc(b.rules?.capacity_band_pct)}%, resistance ±${esc(b.rules?.resistance_band_pct)}%</div>
+    <details><summary>Family tree: ${esc(b.battery_id)} → modules → donor packs → documents</summary>
+     <div class="tree">${(b.donor_packs || []).map(p => `<div class="donor"><b>Pack ${esc(p)}</b>
+      ${Object.keys(byModule).filter(m => packOf(m) === p).map(m => `<div class="mods"><span class="chip">${esc(m)}</span>${byModule[m].map(n => `<span class="mod">${esc(n)}</span>`).join('')}</div>`).join('')}
+      <ul class="docs">${d.documents.filter(x => x.pack_id === p).map(x => `<li>${esc(x.doc_id)} <span title="${esc(x.sha256)}">${esc(String(x.sha256).slice(0, 10))}…</span>${x.anchor_tx ? ' · anchored' : ''}</li>`).join('')}</ul></div>`).join('')}</div>
+    </details>
    </div>
-   ${qr ? `<a class="qr" href="${esc(qr.url)}" target="_blank" rel="noopener" title="Passport transaction ${esc(qr.txHash)}">${qr.svg}<span>Scan or click: passport on Cardano Preprod</span></a>`
-    : '<div class="qr pending"><span>QR code appears once this ESS\'s passport is written on-chain (after signing)</span></div>'}
-   </div>
-   <details><summary>Family tree: ${esc(b.battery_id)} → modules → donor packs → documents</summary>
-    <div class="tree">${(b.donor_packs || []).map(p => `<div class="donor"><b>Pack ${esc(p)}</b>
-     ${Object.keys(byModule).filter(m => packOf(m) === p).map(m => `<div class="mods"><span class="chip">${esc(m)}</span>${byModule[m].map(n => `<span class="mod">${esc(n)}</span>`).join('')}</div>`).join('')}
-     <ul class="docs">${d.documents.filter(x => x.pack_id === p).map(x => `<li>${esc(x.doc_id)} <span title="${esc(x.sha256)}">${esc(x.sha256.slice(0, 10))}…</span>${x.anchor_tx ? ' · anchored' : ''}</li>`).join('')}</ul></div>`).join('')}</div>
-   </details>
-  </div>`;
+  </article>`;
  };
  // Many left-over cells share one reason; show each reason once with its cells.
  const groupedReasons = list => { const g = new Map(); for (const h of list) (g.get(h.reason) || g.set(h.reason, []).get(h.reason)).push(h.id); return [...g]; };
 
+ const sections = [
+  ['overview', 'Overview', null],
+  d.warnings.length && ['warnings', 'Warnings', d.warnings.length],
+  d.rejected.length && ['rejected', 'Rejected', d.rejected.length],
+  ['histories', 'Donor histories', d.packs.length],
+  ['ess', 'ESS passports', ess.length],
+  held.length && ['held', 'Held back', held.length],
+  ['sign', 'Sign', null],
+ ].filter(Boolean);
+ tabs.innerHTML = sections.map(([id, name, n]) => `<a class="pill" href="#${id}">${esc(name)}${n != null ? `<span class="n">${esc(n)}</span>` : ''}</a>`).join('');
+
  app.innerHTML = `
- <section><div class="stats">
-  <div class="stat"><b>${d.packs.length}</b><span>donor packs</span></div>
-  <div class="stat"><b>${d.events.length}</b><span>verified events</span></div>
-  <div class="stat"><b>${d.warnings.length}</b><span>warnings</span></div>
-  <div class="stat"><b>${d.rejected.length}</b><span>rejected claims</span></div>
-  <div class="stat"><b>${ess.length}</b><span>ESS units (${used} cells)</span></div>
-  <div class="stat"><b>${heldModules.length} / ${heldCells.length}</b><span>modules / cells held back</span></div>
- </div></section>
- ${d.warnings.length ? `<section><h2>Warnings</h2>${d.warnings.map(w => `<div class="note warn">${esc(w.message)} <span class="muted">(${esc(w.events.join(', '))})</span></div>`).join('')}</section>` : ''}
- ${d.rejected.length ? `<section><h2>Rejected by verification</h2>${d.rejected.map(x => `<div class="note bad"><b>${esc(x.event_id)}</b>: ${esc(x.reason)}</div>`).join('')}</section>` : ''}
- <section><h2>Donor histories</h2><div class="packs">${d.packs.map(pack).join('')}</div></section>
- <section><h2>New ESS units and their QR passports</h2>${ess.map(essCard).join('') || '<p class="muted">No ESS proposed.</p>'}</section>
- ${held.length ? `<section><h2>Held back</h2>
-  ${heldModules.length ? `<p class="muted">Modules not taken apart</p>${heldModules.map(h => `<div class="note bad"><b>${esc(h.id)}</b>: ${esc(h.reason)}</div>`).join('')}` : ''}
-  ${heldCells.length ? `<p class="muted">Cells not used</p>${groupedReasons(heldCells).map(([reason, ids]) => `<div class="note bad"><b>${esc(ids.join(', '))}</b>: ${esc(reason)}</div>`).join('')}` : ''}
+ <section class="hero" id="overview">
+  <h1>${esc(d.packs.length)} donor packs, ${esc(ess.length)} new ESS units</h1>
+  <p>Every event below is quoted from a source document and checked by code. Cells were grouped by deterministic rules; the AI only reports what the documents say.</p>
+  <div class="stats">
+   <div class="stat"><b>${esc(d.events.length)}</b><span>verified events</span></div>
+   <div class="stat"><b>${esc(d.warnings.length)}</b><span>warnings</span></div>
+   <div class="stat"><b>${esc(d.rejected.length)}</b><span>rejected claims</span></div>
+   <div class="stat"><b>${esc(used)}</b><span>cells in ${esc(ess.length)} ESS units</span></div>
+   <div class="stat"><b>${esc(heldModules.length)} / ${esc(heldCells.length)}</b><span>modules / cells held back</span></div>
+  </div>
+ </section>
+ ${d.warnings.length ? `<section class="sec" id="warnings"><div class="sec-head"><h2>Warnings</h2></div>${d.warnings.map(w => `<div class="note warn">${esc(w.message)} <span class="muted">(${esc(w.events.join(', '))})</span></div>`).join('')}</section>` : ''}
+ ${d.rejected.length ? `<section class="sec" id="rejected"><div class="sec-head"><div><h2>Rejected by verification</h2><p>Claims whose quote is not in the document.</p></div></div>${d.rejected.map(x => `<div class="note bad"><b>${esc(x.event_id)}</b>: ${esc(x.reason)}</div>`).join('')}</section>` : ''}
+ <section class="sec" id="histories">
+  <div class="sec-head"><div><h2>Donor histories</h2><p>Timeline per pack. Highlighted dots are part of a warning.</p></div>
+   <div class="filters">${['all', ...d.packs].map(p => `<button type="button" class="pill ${packFilter === p ? 'on' : ''}" data-pack="${esc(p)}">${p === 'all' ? 'All' : 'Pack ' + esc(p)}</button>`).join('')}</div></div>
+  <div class="packs">${shownPacks.map(pack).join('')}</div>
+ </section>
+ <section class="sec" id="ess"><div class="sec-head"><div><h2>New ESS units and their QR passports</h2><p>What the QR code on each unit shows.</p></div></div>
+  <div class="gallery">${ess.map(essCard).join('') || '<p class="muted">No ESS proposed.</p>'}</div></section>
+ ${held.length ? `<section class="sec" id="held"><div class="sec-head"><h2>Held back</h2></div>
+  ${heldModules.length ? `<p class="sub">Modules not taken apart</p>${heldModules.map(h => `<div class="note bad"><b>${esc(h.id)}</b>: ${esc(h.reason)}</div>`).join('')}` : ''}
+  ${heldCells.length ? `<p class="sub">Cells not used</p>${groupedReasons(heldCells).map(([reason, ids]) => `<div class="note bad"><b>${esc(ids.join(', '))}</b>: ${esc(reason)}</div>`).join('')}` : ''}
  </section>` : ''}
- <section class="sign"><h2>Sign and publish</h2>
+ <section class="sec sign" id="sign"><h2>Sign and publish</h2>
   ${r.paid ? '<p>Signing confirms this draft is the one paid for through Masumi, records your signature, and writes the donor and ESS event logs and passports on Cardano Preprod.</p>'
    : '<p class="muted">This is the demo draft. Only a paid draft can be signed.</p>'}
   <label>Changes from the draft (optional)<textarea id="changes" placeholder="none"></textarea></label>
-  <button id="sign" ${r.paid ? '' : 'disabled'}>Sign and publish</button>
+  <button id="sign-btn" ${r.paid ? '' : 'disabled'}>Sign and publish</button>
   <div id="status"></div>
  </section>`;
- document.getElementById('sign').onclick = sign;
+ document.getElementById('sign-btn').onclick = sign;
+ for (const b of app.querySelectorAll('[data-pack]')) b.onclick = () => {
+  packFilter = b.dataset.pack; const y = window.scrollY; render(); window.scrollTo(0, y);
+ };
 }
 
 async function sign() {
- const btn = document.getElementById('sign'), status = document.getElementById('status');
+ const btn = document.getElementById('sign-btn'), status = document.getElementById('status');
  btn.disabled = true; status.textContent = 'Signing…';
  const res = await fetch('/api/sign', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({id: current.id, changes: document.getElementById('changes').value})});
  const out = await res.json();
  if (!res.ok) { status.textContent = `Not signed: ${out.error}`; btn.disabled = false; return; }
  // Reload so each ESS card shows the QR code of its new passport.
  await show(current.id);
- document.getElementById('sign').disabled = true;
+ document.getElementById('sign-btn').disabled = true;
  document.getElementById('status').textContent = `Signed. Donor log TxHashes: ${out.donorTxs.join(', ')}\nESS log and passport TxHashes: ${out.newBatteryTxs.join(', ')}`;
 }
 load();
