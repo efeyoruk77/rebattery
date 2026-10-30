@@ -61,20 +61,25 @@ export function uploadDocuments(files, storeDir) {
   return listed;
 }
 
-// Stores module test files and returns the job input's `module_tests` list: [{ module_id, sha256 }].
-export function uploadModuleTests(tests, storeDir) {
+// Stores signed JSON test records by content hash under `<prefix>:<module_id>`.
+function uploadRecords(records, prefix, storeDir) {
   mkdirSync(storeDir, { recursive: true });
   const index = readIndex(storeDir);
-  const listed = tests.map((test) => {
-    const bytes = Buffer.from(`${JSON.stringify(test, null, 2)}\n`, 'utf8');
+  const listed = records.map((record) => {
+    const bytes = Buffer.from(`${JSON.stringify(record, null, 2)}\n`, 'utf8');
     const hash = sha256(bytes);
     writeFileSync(join(storeDir, hash), bytes);
-    index[`test:${test.module_id}`] = { sha256: hash };
-    return { module_id: test.module_id, sha256: hash };
+    index[`${prefix}:${record.module_id}`] = { sha256: hash };
+    return { module_id: record.module_id, sha256: hash };
   });
   writeFileSync(indexPath(storeDir), JSON.stringify(index, null, 2));
   return listed;
 }
+
+// Returns the job input's `module_tests` list: [{ module_id, sha256 }].
+export const uploadModuleTests = (tests, storeDir) => uploadRecords(tests, 'test', storeDir);
+// Returns the job input's `cell_tests` list: [{ module_id, sha256 }], one batch per disassembled module.
+export const uploadCellTests = (batches, storeDir) => uploadRecords(batches, 'cells', storeDir);
 
 // Inside the job: load exactly the files the job input lists. Stops on any missing file or hash mismatch.
 export function loadJobInputs(jobInput, storeDir) {
@@ -91,10 +96,12 @@ export function loadJobInputs(jobInput, storeDir) {
     const { entry, bytes } = read(`doc:${doc_id}`, listed);
     return ingestOne({ doc_id, ...entry, bytes });
   });
-  const moduleTests = jobInput.module_tests.map(({ module_id, sha256: listed }) =>
-    JSON.parse(read(`test:${module_id}`, listed).bytes.toString('utf8')));
+  const readRecords = (list, prefix) => (list ?? []).map(({ module_id, sha256: listed }) =>
+    JSON.parse(read(`${prefix}:${module_id}`, listed).bytes.toString('utf8')));
+  const moduleTests = readRecords(jobInput.module_tests, 'test');
+  const cellTests = readRecords(jobInput.cell_tests, 'cells');
   for (const doc of documents) {
     if (!jobInput.packs.includes(doc.pack_id)) throw new Error(`${doc.doc_id} belongs to pack ${doc.pack_id}, which is not in the job`);
   }
-  return { documents, moduleTests };
+  return { documents, moduleTests, cellTests };
 }

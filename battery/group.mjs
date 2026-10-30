@@ -1,22 +1,28 @@
-// Deterministic grouping of tested modules into new batteries.
-// Rules: same cell model and chemistry; capacity and resistance within bands of the group average;
-// clean history (no accident, no open warning, traceable donor). Uses signed test values only.
+// Deterministic grouping in two steps, using signed test values only (never estimated fields).
+// 1. screenModules: a module with an accident, an open warning, or no traceable donor is held back.
+//    Every other tested module is cleared to be taken apart into cells.
+// 2. groupCells: cells of cleared modules with the same cell model and chemistry, and with capacity and
+//    resistance within set bands, are combined into new ESS units of a fixed size.
 import { groupingRules as defaults } from './config.mjs';
 
 const round = (n, d = 1) => Math.round(n * 10 ** d) / 10 ** d;
 const mean = (xs) => xs.reduce((a, b) => a + b, 0) / xs.length;
+const median = (xs) => { const s = [...xs].sort((a, b) => a - b); const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+const pct = (value, ref) => ((value - ref) / ref) * 100;
 const packOf = (moduleId) => moduleId.split('-M')[0];
-const byModuleId = (a, b) => a.module_id.localeCompare(b.module_id, 'en', { numeric: true });
+const byId = (key) => (a, b) => a[key].localeCompare(b[key], 'en', { numeric: true });
 
-// Why a module must be held back before band checks, from events and warnings. Returns Map<module_id, reasons[]>.
-function historyHolds(tests, events, warnings) {
+// ---- Step 1: modules ----
+
+// screenModules(moduleTests, events, warnings) -> { cleared: moduleTests, held_back: [{ id, level, reason }] }
+export function screenModules(moduleTests, events, warnings) {
   const holds = new Map();
   const add = (id, reason) => holds.set(id, [...(holds.get(id) ?? []), reason]);
-  const modulesOfPack = (pack) => tests.filter((t) => packOf(t.module_id) === pack).map((t) => t.module_id);
+  const modulesOfPack = (pack) => moduleTests.filter((t) => packOf(t.module_id) === pack).map((t) => t.module_id);
   const eventsById = new Map(events.map((e) => [e.event_id, e]));
   const donorPacks = new Set(events.map((e) => e.pack_id));
 
-  for (const t of tests) {
+  for (const t of moduleTests) {
     if (!donorPacks.has(packOf(t.module_id))) add(t.module_id, `no traceable donor: no verified events for pack ${packOf(t.module_id)}`);
   }
   // An accident names its modules, or (module_ids empty) puts the whole pack in doubt.
@@ -30,77 +36,112 @@ function historyHolds(tests, events, warnings) {
     const ids = named.length ? named : [...new Set(linked.map((e) => e.pack_id))].flatMap(modulesOfPack);
     for (const id of ids) add(id, `open warning ${w.rule} (${w.events.join(', ')})`);
   }
-  return holds;
+
+  const sorted = [...moduleTests].sort(byId('module_id'));
+  return {
+    cleared: sorted.filter((t) => !holds.has(t.module_id)),
+    held_back: sorted.filter((t) => holds.has(t.module_id))
+      .map((t) => ({ id: t.module_id, level: 'module', reason: `${holds.get(t.module_id).join('; ')}; not taken apart` })),
+  };
 }
 
-const deviationPct = (value, avg) => ((value - avg) / avg) * 100;
+// ---- Step 2: cells ----
 
-// Removes the worst band violator one at a time until every remaining module fits. Ties break by module_id.
-function fitBands(candidates, rules) {
-  let group = [...candidates];
-  for (;;) {
-    if (!group.length) return group;
-    const cap = mean(group.map((t) => t.capacity_ah));
-    const res = mean(group.map((t) => t.internal_resistance_mohm));
-    const score = (t) => Math.max(
-      Math.abs(deviationPct(t.capacity_ah, cap)) / rules.capacity_band_pct,
-      Math.abs(deviationPct(t.internal_resistance_mohm, res)) / rules.resistance_band_pct,
-    );
-    const worst = group.reduce((w, t) => (score(t) > score(w) ? t : w));
-    if (score(worst) <= 1) return group;
-    group = group.filter((t) => t !== worst);
-  }
+function fits(cells, rules, { ignoreResistance = false } = {}) {
+  const cap = mean(cells.map((c) => c.capacity_ah));
+  const res = mean(cells.map((c) => c.internal_resistance_mohm));
+  return cells.every((c) => Math.abs(pct(c.capacity_ah, cap)) <= rules.capacity_band_pct
+    && (ignoreResistance || Math.abs(pct(c.internal_resistance_mohm, res)) <= rules.resistance_band_pct));
 }
 
-// Plain reasons for a module that does not fit the bands of the final group.
-function bandReasons(t, group, rules) {
-  if (!group.length) return [];
-  const cap = mean(group.map((g) => g.capacity_ah));
-  const res = mean(group.map((g) => g.internal_resistance_mohm));
-  const reasons = [];
-  const dc = deviationPct(t.capacity_ah, cap);
-  const dr = deviationPct(t.internal_resistance_mohm, res);
-  if (Math.abs(dc) > rules.capacity_band_pct) {
-    reasons.push(`capacity ${t.capacity_ah} Ah is ${round(Math.abs(dc))}% ${dc > 0 ? 'above' : 'below'} the group average ${round(cap, 2)} Ah (band ±${rules.capacity_band_pct}%)`);
-  }
-  if (Math.abs(dr) > rules.resistance_band_pct) {
-    reasons.push(`resistance ${t.internal_resistance_mohm} mΩ is ${round(Math.abs(dr))}% ${dr > 0 ? 'above' : 'below'} the group average ${round(res, 3)} mΩ (band ±${rules.resistance_band_pct}%)`);
-  }
-  return reasons;
+// What a QR code on the new ESS shows about its second-life health and where it was made.
+// Cells are in series, so usable capacity is set by the weakest cell.
+function essHealth(cells) {
+  const caps = cells.map((c) => c.capacity_ah);
+  const nominal = cells[0].nominal_capacity_ah;
+  const facilities = [...new Map(cells.map((c) => [c.facility.id, c.facility])).values()];
+  return {
+    health: {
+      cell_count: cells.length,
+      usable_capacity_ah: Math.min(...caps),
+      nominal_capacity_ah: nominal,
+      soh_pct: round((Math.min(...caps) / nominal) * 100),
+      avg_cell_capacity_ah: round(mean(caps), 2),
+      avg_cell_resistance_mohm: round(mean(cells.map((c) => c.internal_resistance_mohm)), 3),
+      cells_tested_on: [...new Set(cells.map((c) => c.tested_on))].sort(),
+      basis: 'signed cell test results',
+    },
+    second_life_facility: facilities.length === 1 ? facilities[0] : facilities,
+  };
 }
 
-// group(moduleTests, events, warnings) -> newBatteries
-// moduleTests must already have passed checkModuleTests. One entry per cell model + chemistry.
-// An entry with battery_id null means too few modules matched; all its modules are held back.
-export function group(moduleTests, events, warnings, rules = defaults) {
-  const holds = historyHolds(moduleTests, events, warnings);
+// groupCells(cells, rules) -> { new_batteries, held_back }
+// Cells are sorted by capacity and filled into ESS units in that order, so each unit holds neighbouring cells.
+export function groupCells(cells, rules = defaults) {
   const families = new Map();
-  for (const t of [...moduleTests].sort(byModuleId)) {
-    const key = `${t.cell_model}|${t.chemistry}`;
-    families.set(key, [...(families.get(key) ?? []), t]);
+  for (const c of [...cells].sort(byId('cell_id'))) {
+    const key = `${c.cell_model}|${c.chemistry}`;
+    families.set(key, [...(families.get(key) ?? []), c]);
   }
+  const new_batteries = [];
+  const held_back = [];
+  const hold = (c, reason) => held_back.push({ id: c.cell_id, level: 'cell', reason });
 
-  let next = 1;
-  return [...families.keys()].sort().map((key) => {
-    const tests = families.get(key);
-    const clean = tests.filter((t) => !holds.has(t.module_id));
-    let members = fitBands(clean, rules);
-    const tooFew = members.length < rules.min_modules;
-    if (tooFew) members = [];
+  for (const key of [...families.keys()].sort()) {
+    const family = families.get(key);
+    // Resistance outliers first, against the family median, so one bad cell cannot start or break a unit.
+    const medRes = median(family.map((c) => c.internal_resistance_mohm));
+    const usable = [];
+    for (const c of family) {
+      const d = pct(c.internal_resistance_mohm, medRes);
+      if (Math.abs(d) > rules.resistance_band_pct) {
+        hold(c, `resistance ${c.internal_resistance_mohm} mΩ is ${round(Math.abs(d))}% ${d > 0 ? 'above' : 'below'} the median ${round(medRes, 3)} mΩ of ${c.cell_model} cells (band ±${rules.resistance_band_pct}%)`);
+      } else usable.push(c);
+    }
+    usable.sort((a, b) => a.capacity_ah - b.capacity_ah || a.internal_resistance_mohm - b.internal_resistance_mohm || byId('cell_id')(a, b));
 
-    const held_back = tests.filter((t) => !members.includes(t)).map((t) => {
-      const reasons = [...(holds.get(t.module_id) ?? []), ...bandReasons(t, members, rules)];
-      if (tooFew) reasons.push(`only ${fitBands(clean, rules).length} modules match; a battery needs at least ${rules.min_modules}`);
-      return { module_id: t.module_id, reason: reasons.join('; ') };
-    });
-
-    return {
-      battery_id: tooFew ? null : `NB-${next++}`,
-      cell_model: tests[0].cell_model,
-      chemistry: tests[0].chemistry,
-      rules: { ...rules },
-      modules: members.map((t) => ({ module_id: t.module_id, donor_pack: packOf(t.module_id) })),
-      held_back,
+    let current = [];
+    const flush = () => {
+      if (!current.length) return;
+      const lo = current[0].capacity_ah;
+      const hi = current.at(-1).capacity_ah;
+      for (const c of current) {
+        hold(c, current.length === 1
+          ? `capacity ${c.capacity_ah} Ah matches no neighbouring cell within ±${rules.capacity_band_pct}%`
+          : `left over: only ${current.length} matching cells remain between ${lo} and ${hi} Ah; an ESS needs ${rules.cells_per_ess}`);
+      }
+      current = [];
     };
-  });
+    for (const c of usable) {
+      if (fits([...current, c], rules)) current.push(c);
+      else if (fits([...current, c], rules, { ignoreResistance: true })) {
+        hold(c, `resistance ${c.internal_resistance_mohm} mΩ does not match the cells around ${c.capacity_ah} Ah (band ±${rules.resistance_band_pct}%)`);
+        continue;
+      } else { flush(); current = [c]; }
+      if (current.length === rules.cells_per_ess) {
+        const unit = [...current].sort(byId('cell_id'));
+        new_batteries.push({
+          battery_id: `ESS-${new_batteries.length + 1}`,
+          cell_model: c.cell_model,
+          chemistry: c.chemistry,
+          rules: { ...rules },
+          cells: unit.map((x) => ({ cell_id: x.cell_id, module_id: x.module_id, donor_pack: packOf(x.module_id) })),
+          donor_packs: [...new Set(unit.map((x) => packOf(x.module_id)))].sort(),
+          ...essHealth(unit),
+        });
+        current = [];
+      }
+    }
+    flush();
+  }
+  return { new_batteries, held_back: held_back.sort(byId('id')) };
+}
+
+// group(moduleTests, cellTests, events, warnings) -> { new_batteries, held_back }
+// moduleTests must have passed checkModuleTests; cellTests (flat cells) must have passed checkCellTests
+// against the cleared modules. Pass screenModules' result via `screened` to avoid screening twice.
+export function group(moduleTests, cells, events, warnings, rules = defaults, screened = screenModules(moduleTests, events, warnings)) {
+  const cleared = new Set(screened.cleared.map((m) => m.module_id));
+  const grouped = groupCells(cells.filter((c) => cleared.has(c.module_id)), rules);
+  return { new_batteries: grouped.new_batteries, held_back: [...screened.held_back, ...grouped.held_back] };
 }

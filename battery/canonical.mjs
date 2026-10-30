@@ -11,16 +11,16 @@ export function canonicalJson(value) {
   return JSON.stringify(value);
 }
 
-// A module test is signed over its canonical JSON without the `signature` field (Ed25519, base64).
+// Module and cell test records are signed over their canonical JSON without the `signature` field (Ed25519, base64).
 const signedBytes = ({ signature, ...rest }) => Buffer.from(canonicalJson(rest), 'utf8');
 
-export const signModuleTest = (test, privateKey) =>
-  ({ ...test, signature: sign(null, signedBytes(test), privateKey).toString('base64') });
+export const signRecord = (record, privateKey) =>
+  ({ ...record, signature: sign(null, signedBytes(record), privateKey).toString('base64') });
 
-export function verifyModuleTestSignature(test, publicKeyPem) {
-  if (typeof test.signature !== 'string' || !test.signature) return false;
+export function verifySignature(record, publicKeyPem) {
+  if (typeof record.signature !== 'string' || !record.signature) return false;
   try {
-    return verify(null, signedBytes(test), createPublicKey(publicKeyPem), Buffer.from(test.signature, 'base64'));
+    return verify(null, signedBytes(record), createPublicKey(publicKeyPem), Buffer.from(record.signature, 'base64'));
   } catch {
     return false;
   }

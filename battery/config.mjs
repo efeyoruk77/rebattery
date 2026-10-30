@@ -1,9 +1,9 @@
 // All rule values for verification and grouping live here.
-// They are demo placeholders; real limits depend on the cell model and the new battery's design.
+// They are demo placeholders; real limits depend on the cell model and the new ESS design.
 export const groupingRules = {
-  capacity_band_pct: 3,      // each module within ±3% of the group's average capacity
-  resistance_band_pct: 10,   // each module within ±10% of the group's average internal resistance
-  min_modules: 4,            // fewer matching modules than this do not form a battery
+  capacity_band_pct: 2,      // each cell within ±2% of its ESS's average capacity
+  resistance_band_pct: 10,   // each cell within ±10% of its ESS's average internal resistance
+  cells_per_ess: 48,         // cells in series per new ESS (48 × 3.7 V × 66 Ah ≈ 11.7 kWh home storage)
 };
 
 export const inconsistencyRules = {
