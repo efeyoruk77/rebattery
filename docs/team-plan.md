@@ -2,7 +2,7 @@
 
 How the work in [project-plan.md](project-plan.md) is split across four people. Member 1 owns all agent code (AI and deterministic), and Member 2 owns the demo material and the presentation.
 
-**What's still open, with owners: [open-problems.md](open-problems.md).** Check it before you start, and update it when you fix something.
+**Frontend (review screen and status page): [frontend.md](frontend.md).** **What's still open, with owners: [open-problems.md](open-problems.md).** Check it before you start, and update it when you fix something.
 
 The project's focus: several donor packs are taken apart in two steps. **Module screening:** a module with an accident, an open warning, or no traceable donor is held back and not taken apart. **Cell grouping:** the cells of cleared modules are tested and combined into new ESS units (energy storage systems) of a fixed size. Each ESS gets a QR code that shows its second-life health and the facility that made it, and links back to every donor.
 
