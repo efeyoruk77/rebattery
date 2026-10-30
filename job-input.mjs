@@ -30,6 +30,11 @@ function checkEntries(items, idKey, idPattern, where, check = () => {}) {
  }
 }
 
+// True when a task description is a job input (JSON with packs and documents), not a plain chat message.
+export function looksLikeJobInput(text) {
+ try { const j = JSON.parse(text); return Boolean(j && typeof j === 'object' && 'packs' in j && 'documents' in j); } catch { return false; }
+}
+
 export function parseJobInput(text) {
  if (typeof text !== 'string' || !text.trim() || text.length > MAX_JOB_INPUT_CHARS) throw Error(`Job input must contain 1 to ${MAX_JOB_INPUT_CHARS} characters`);
  let job;

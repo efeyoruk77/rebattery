@@ -9,18 +9,17 @@ When you fix one, move it to **Solved** at the bottom with the commit hash, and 
 | # | Problem | Why it matters | Owner | Next step |
 |---|---|---|---|---|
 | 1 | **Sokosumi access is `PENDING`** for Coworker "EV Battery History Recovery" in the TUM Workspace (access request `01a18e65-a2f3-776c-a880-da1e2e340986`). | No task can run in the TUM Workspace until it is `GRANTED`. | Member 4 / Sandro (Masumi) | Asked Sandro directly and booked a call. Re-check with `coworkers connect` (returns the same request, creates nothing). |
-| 2 | **Masumi Payment Service not set up.** | Escrow, agent registration, payout, and the payment TxHashes for the demo all depend on it. Largest remaining piece. | Member 4 | Read the current setup guide, check machine requirements, then create a fresh database and wallets with team approval. Fund them from the [Masumi dispenser](https://dispenser.masumi.network). |
-| 3 | **No way yet for a buyer to upload files.** Stage A reads uploads from the local store (`.local/uploads`), but nothing puts them there for a real job. | A paid job cannot start without its documents and test files. | Member 4 | Demo: pre-load the demo files with the upload functions and put the job input in the task description. Later: Sokosumi's task files API (`POST /v1/tasks/{id}/files`). |
+| 2 | **No paid run yet.** The payment service runs and the agent is registered (see Solved), but no paid task has gone through escrow. | The demo needs real TxHashes for escrow lock, result hash, and payout. | Member 4 | Run one paid task once Sokosumi access is granted (#1), then check the seller's net receipt. |
+| 3 | **Buyers cannot upload files remotely yet.** For the demo this is solved: `node upload.mjs [batchDir]` stores a batch in `.local/uploads` and prints the job input, which goes into the Sokosumi task description. | A buyer outside our machine still has no upload path. | Member 4 | After the demo flow works: Sokosumi's task files API (`POST /v1/tasks/{id}/files`). |
 | 4 | **Member 3's branch uses the earlier format** (one new battery, per-pack cell test files). Main now has 5 ESS units and per-module test files. | It cannot be merged, so nothing can be written on-chain yet. | Member 3 | Read `test_files` from the draft, write one log and passport per ESS with `health` and `second_life_facility`, take held-back items from the top-level `held_back`. Details under Member 3 in [team-plan.md](team-plan.md). |
 | 5 | **First real on-chain write needs team approval**, and the metadata label is still a placeholder (`1984`). | Member 3 is waiting on both. | Whole team | Agree on the label, then approve one test write on Preprod. |
 
 ## AI step (real model: Gemini `gemini-3.5-flash`)
 
-First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. Run it with `node --env-file=.env battery/run-extract.mjs` while `npm start` is running.
+First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. After the date fix (#6): 11/11 verified in two runs, about 80 s. Run it with `node --env-file=.env battery/run-extract.mjs` while `npm start` is running.
 
 | # | Problem | Owner | Next step |
 |---|---|---|---|
-| 6 | **Pack C's software update is rejected.** The invoice only states "Invoice date: 2022-11-03". The instructions tell the model to write `date: null` when the work date isn't stated, and `verify()` rejects a null date. The two rules contradict each other, so one real event is lost. | Member 1 | Either tell the model to use the invoice date for work listed on a service invoice, or let `verify()` accept a null date. |
 | 7 | **`sample-events.json` still expects two accident events** for B-M1 and B-M2. The model correctly writes one event with `module_ids: ["B-M1", "B-M2"]`, so `run-extract` reports it as missing. The demo draft is also built from the old sample. | Member 1 + Member 2 | Merge the two events into one, then regenerate the demo draft with `node examples/demo-job.mjs`. |
 | 8 | **The grouping explanation still reads `modules`.** It should read the draft's `new_batteries` (ESS units) and `held_back` (with `level`). | Member 1 | Update the GROUPING EXPLANATION section of [agent/instructions.md](../agent/instructions.md). |
 | 9 | **Cell numbers are not padded in code.** The instructions now ask for `A-M3-C07`, but if the model still writes `C7`, `normalizeEvent` does not fix it, and that cell would not be held back. | Member 1 | Pad cell numbers to two digits in `normalizeEvent`. |
@@ -43,7 +42,11 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 
 ## Solved
 
+- Masumi Payment Service 0.29.0 runs with its own fresh PostgreSQL database and wallets on Member 4's machine (no Docker). Selling wallet funded from the dispenser. Agent "EV Battery History Recovery" registered on Preprod: [tx 04dd6863…c8f2](https://preprod.cardanoscan.io/transaction/04dd6863747ada3997441e5b1d7fae6c18bee51d9b6b88d6736d8dcbd8d3c8f2), confirmed in block 5354711.
+- Tasks whose description is a job input now run stage A in the worker, even without payment, so the full flow can be tested in Sokosumi before payments are set up.
+
 - Windows checkouts changed demo file line endings, so every document hash failed. Fixed with [.gitattributes](../.gitattributes) (`4c37990`).
 - Two battery tests built Windows paths as `C:\C:\...`. Fixed with `fileURLToPath` (`c740f02`).
 - Stage A was not connected to the battery code. All four steps are connected (`c740f02`).
 - Extraction could run past the Masumi deadline. Model calls now stop at the deadline (`bc99b66`).
+- #6: invoiced work and report measurements lost their dates (`date: null`), so verify() rejected them. The instructions now use the invoice or report date unless the document gives another. Gemini: 7/11 verified before, 11/11 in two runs after (`cc032ff`).
