@@ -1,0 +1,14 @@
+Example Mutual Insurance - Motor claim record
+DEMO DOCUMENT - all data invented
+
+Claim number: EM-2023-55871
+Policy holder: Max Mustermann
+VIN: DEMO0VX60B0000002
+Date of loss: 2023-02-07
+
+Description of damage:
+Underbody impact on the front left side.
+The battery housing is deformed near modules 1 and 2.
+Severity: moderate. Vehicle towed to repair shop.
+
+Settlement: repair of underbody panel approved

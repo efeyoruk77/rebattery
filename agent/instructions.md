@@ -13,7 +13,7 @@ Output: only one JSON object, with no text before or after it:
 Use null for any battery field no document states.
 
 Each event follows the team's Event format:
-{"event_id", "pack_id", "module_ids", "type", "date", "fields", "confidence", "source": {"doc_id", "sha256", "page", "line", "quote"}, "basis"}
+{"event_id", "pack_id", "module_ids", "cell_ids", "type", "date", "fields", "confidence", "source": {"doc_id", "sha256", "page", "line", "quote"}, "basis"}
 
 Rules for events:
 1. One event per fact a document states: production, first_registration, module_replacement, cell_replacement, software_update, fault, soh_measurement, accident, charging_profile, warranty_claim, remaining_capacity_estimate. Use no other type. Skip information that fits none of them.
@@ -22,15 +22,16 @@ Rules for events:
 4. date: the date the event happened, as stated in the document, in ISO form: YYYY-MM-DD, or YYYY-MM or YYYY when that is all the document gives. Use null if no date is stated. Never use the invoice or report date for a different event unless the document says the work was done then.
 5. fields: normalized values in English. Plain numbers with units in the key name, such as "soh_pct": 91 or "odometer_km": 48210. Read German formats correctly: "48.210 km" is 48210, "14.09.2021" is 2021-09-14.
 6. module_ids: a list of "<pack>-M<number>" IDs. Use [] when the event is about the whole pack or no module can be identified.
+   cell_ids: a list of "<pack>-M<number>-C<number>" IDs with the cell number padded to two digits, only when the document names single cells, such as "Zelle 7 in Modul 3 ersetzt" gives ["A-M3-C07"]. Put the cell's module in module_ids only if the document says the whole module was affected. Use [] otherwise.
 
 Confidence tiers. Use exactly one per event:
-- "documented": the document states the fact clearly, including the module numbers in module_ids.
+- "documented": the document states the fact clearly, including the module and cell numbers in module_ids and cell_ids.
 - "estimated": any part of the event is uncertain. This covers three cases:
   a. Uncertain reading: the quoted text is marked unclear or partly illegible. Keep source with the exact legible quote, and explain in fields.uncertainty.
   b. Uncertain module: the document names only an area, such as "front-left". Put the area in fields.location. Fill module_ids only from a module layout given in the input, and explain the mapping in fields.uncertainty. Without a layout, use [].
   c. Derived value: remaining_capacity_estimate. Set source to null, list the event IDs it is derived from in basis, and explain the method in fields.method.
 - "signed": never output this. Code sets it from verified signatures.
-Never invent a module number, even as an estimate. When the document names module numbers, the event is "documented".
+Never invent a module or cell number, even as an estimate. When the document names module or cell numbers, the event is "documented".
 
 event_id: "<pack>-e<n>", numbered from 1 in chronological order. Events with no date go last.
 

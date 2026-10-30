@@ -14,7 +14,7 @@ export async function mps(path,body){
  const response=await fetch(process.env.MPS_URL+'/api/v1'+path,{method:body?'POST':'GET',headers:{token,'content-type':'application/json'},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(30000)});
  const data=await response.json();if(!response.ok)throw new Error(`Payment service HTTP ${response.status}`);return data.data;
 }
-const schema={input_data:[{id:'job',type:'string',name:'Battery batch',data:{description:'JSON listing the donor packs and the uploaded documents and cell test files by ID and SHA-256: {"packs":["A"],"documents":[{"doc_id":"…","pack_id":"A","sha256":"…"}],"cell_test_files":[{"file_id":"…","pack_id":"A","sha256":"…"}]}'},validations:[{validation:'min',value:'1'},{validation:'max',value:String(MAX_JOB_INPUT_CHARS)}]}]};
+const schema={input_data:[{id:'job',type:'string',name:'Battery batch',data:{description:'JSON listing the donor packs and the uploaded documents, module tests, and cell test batches by ID and SHA-256: {"packs":["A"],"documents":[{"doc_id":"…","sha256":"…"}],"module_tests":[{"module_id":"A-M1","sha256":"…"}],"cell_tests":[{"module_id":"A-M1","sha256":"…"}]}'},validations:[{validation:'min',value:'1'},{validation:'max',value:String(MAX_JOB_INPUT_CHARS)}]}]};
 const respond=(res,status,data)=>{res.writeHead(status,{'content-type':'application/json'});res.end(JSON.stringify(data))};
 const port=Number(process.env.AGENT_API_PORT||21950);
 createServer(async(req,res)=>{

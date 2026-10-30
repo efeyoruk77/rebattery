@@ -1,0 +1,8 @@
+Vehicle registration certificate, part I (excerpt)
+DEMO DOCUMENT - all data invented
+
+Registration number: M-DE 1001
+Holder: Erika Musterfrau, Beispielweg 3, 80331 Muenchen
+Vehicle identification number: DEMO0VX60A0000001
+Make and model: Voltaro VX-60
+Date of first registration: 2020-05-12

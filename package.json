@@ -11,7 +11,7 @@
     "api": "node --env-file-if-exists=.env --env-file-if-exists=.local/mps-runtime.env agent-api.mjs",
     "review": "node --env-file-if-exists=.env review.mjs",
     "cardano": "node --env-file-if-exists=.env --env-file-if-exists=.local/cardano.env cardano-cli.mjs",
-    "test": "node --env-file-if-exists=.env --test *.test.mjs"
+    "test": "node --env-file-if-exists=.env --test *.test.mjs battery/*.test.mjs"
   },
   "dependencies": {
     "eve": "0.71.0",
