@@ -3,13 +3,13 @@
 How the work in [project-plan.md](project-plan.md) is split across four people.
 Each member owns one slice of the pipeline end to end. Slices meet at the shared data formats below, so everyone can build in parallel against mock data from the first hour.
 
-The project's focus: several donor packs are taken apart, modules with matching health are regrouped into a new battery, and the new battery's passport links back to every donor. We work at **module level**, not cell level.
+The project's focus: several donor packs are taken apart. Modules with a clean history are taken apart into cells, cells with matching health are combined into new ESS units (energy storage systems), and each ESS gets a QR code. The QR code shows the ESS's second-life health, the facility that made it, and links back to every donor. We work in two steps: **module screening**, then **cell grouping**.
 
 | Member | Role | Owns plan steps | Main question they answer |
 |---|---|---|---|
 | 1 | AI extraction | 3 | "What does each document say, and about which module?" |
-| 2 | Documents, verification, grouping | 1 (upload), 4, 5, 6 | "Is it really in the document, does it add up, and which modules belong together?" |
-| 3 | Cardano on-chain | 1 (anchor), 8 (key), 9, 10 | "Is it anchored, signed, and traceable from new battery back to every donor?" |
+| 2 | Documents, verification, grouping | 1 (upload), 4, 5, 6 | "Is it really in the document, does it add up, which modules may be taken apart, and which cells belong together?" |
+| 3 | Cardano on-chain | 1 (anchor), 8 (key), 9, 10 | "Is it anchored, signed, and traceable from each ESS back to every donor?" |
 | 4 | Sokosumi, Masumi, demo | 2, 7, demo, pitch | "Can someone hire it, pay for it, and see the family tree?" |
 
 The pipeline has two stages. Masumi requires the agent's result within 20 minutes of the funds being locked ([agent-api.mjs](../agent-api.mjs)), so the paid job produces a draft with no human step inside it. Signing and the event logs happen afterwards.
@@ -19,11 +19,11 @@ Stage A: paid draft (one Masumi job)
   Upload docs + module tests, hash each (2) -> Anchor hashes (3)
   -> Hire on Sokosumi, escrow locks (4)
   -> Extract events per module (1) -> Verify quotes (2) -> Flag inconsistencies (2)
-  -> Propose grouping (2) -> Draft hash submitted to Masumi, payout (4)
+  -> Screen modules, group cells into ESS units (2) -> Draft hash submitted to Masumi, payout (4)
 
 Stage B: sign and publish (company, after payment)
   Review + sign draft, incl. Masumi result hash (4 UI, 3 key)
-  -> Write donor + new-battery event logs (3) -> New passport linked to all donors (3)
+  -> Write donor + ESS event logs (3) -> ESS passport + QR code linked to all donors (3, 4)
 ```
 
 ## Shared data formats (agree in the first hour)
@@ -78,16 +78,48 @@ All four members agree on these before writing code. Member 1 drafts them; chang
 }
 ```
 
-**New battery** (produced by Member 2's grouping):
+**Cell test batch** (one per module taken apart, uploaded and signed by the second-life company, read by Member 2). Cell IDs are `<module_id>-C<number>`:
 
 ```json
 {
-  "battery_id": "NB-1",
-  "rules": { "capacity_band_pct": 3, "resistance_band_pct": 10 },
-  "modules": [{ "module_id": "A-M2", "donor_pack": "A" }],
-  "held_back": [{ "module_id": "B-M1", "reason": "accident event B-e5" }]
+  "module_id": "A-M2",
+  "cell_model": "…",
+  "chemistry": "NMC",
+  "nominal_capacity_ah": 66.0,
+  "tested_on": "2026-10-29",
+  "facility": { "id": "DSL-AUG-01", "name": "…", "site": "…" },
+  "cells": [{ "cell_id": "A-M2-C07", "capacity_ah": 58.4, "internal_resistance_mohm": 0.85 }],
+  "signature": "…"
 }
 ```
+
+**New ESS** (produced by Member 2's grouping). `health` and `second_life_facility` are what the QR code shows:
+
+```json
+{
+  "battery_id": "ESS-1",
+  "cell_model": "…",
+  "chemistry": "NMC",
+  "rules": { "capacity_band_pct": 2, "resistance_band_pct": 10, "cells_per_ess": 48 },
+  "cells": [{ "cell_id": "A-M2-C07", "module_id": "A-M2", "donor_pack": "A" }],
+  "donor_packs": ["A", "B", "C"],
+  "health": {
+    "cell_count": 48,
+    "usable_capacity_ah": 57.11,
+    "nominal_capacity_ah": 66,
+    "soh_pct": 86.5,
+    "avg_cell_capacity_ah": 57.5,
+    "avg_cell_resistance_mohm": 0.85,
+    "cells_tested_on": ["2026-10-29"],
+    "basis": "signed cell test results"
+  },
+  "second_life_facility": { "id": "DSL-AUG-01", "name": "…", "site": "…" }
+}
+```
+
+Cells are in series, so usable capacity and `soh_pct` follow the weakest cell.
+
+**Held back** (modules not taken apart, and cells not used): `{ "id": "B-M1", "level": "module", "reason": "accident event B-e3; not taken apart" }`
 
 **Job input** (what the buyer sends to the Masumi job; replaces the starter's single `prompt` field):
 
@@ -95,7 +127,8 @@ All four members agree on these before writing code. Member 1 drafts them; chang
 {
   "packs": ["A", "B", "C"],
   "documents": [{ "doc_id": "packA-invoice-2021-de", "sha256": "…" }],
-  "module_tests": [{ "module_id": "A-M2", "sha256": "…" }]
+  "module_tests": [{ "module_id": "A-M2", "sha256": "…" }],
+  "cell_tests": [{ "module_id": "A-M2", "sha256": "…" }]
 }
 ```
 
@@ -111,7 +144,8 @@ Documents are uploaded before the job starts. The job input only lists them by I
   "rejected": [{ "event_id": "…", "reason": "quote not found" }],
   "warnings": [{ "type": "inconsistency", "events": ["A-e3", "A-e4"], "message": "…" }],
   "module_tests": [],
-  "new_batteries": []
+  "new_batteries": [],
+  "held_back": []
 }
 ```
 
@@ -155,33 +189,33 @@ Tasks:
 3. **Quote verification:** for each event, check that `source.quote` exists at the stated page and line of the document with the matching hash. Reject the event otherwise and record the reason in `rejected`. Normalize whitespace only; no fuzzy matching.
 4. **Confidence rules:** reject any `documented` or `signed` event without a verified quote; reject any `estimated` event whose `basis` points to missing or rejected events.
 5. **Inconsistency checks:** rule-based checks that produce `warnings`, starting with the demo case (a 91% health value soon after a module replacement). Add a few more: dates out of order, health rising without a repair, accident with no later inspection.
-6. **Module tests:** load the signed test results and check each signature and that every `module_id` belongs to a known donor pack.
-7. **Grouping:** deterministic code that builds new batteries from tested modules using the plan's grouping rules: same cell model and chemistry, capacity and resistance within set bands, and no accident or open warning. Record held-back modules with a reason. Keep the band values in one config file.
+6. **Module and cell tests:** load the signed test results and check each signature, that every `module_id` belongs to a known donor pack, and that cell tests only exist for modules cleared for disassembly.
+7. **Grouping in two steps:** (a) module screening: a module with an accident, an open warning, or no traceable donor is held back and not taken apart; (b) cell grouping: cells with the same cell model and chemistry, and capacity and resistance within set bands, are combined into ESS units of a fixed size. Record held-back modules and cells with a reason, and compute each ESS's second-life health for the QR code. Keep the band values in one config file.
 8. **Bonus scene:** a tampered input (a "documented" fact that is not in the invoice) that the verifier rejects.
 9. Add `node --test` tests for verification, each inconsistency rule, and each grouping rule. Keep `npm test` passing.
 
-Delivers to the team: `ingest(files) -> documents`, `verify(documents, events) -> { events, rejected, warnings }`, and `group(moduleTests, events, warnings) -> newBatteries`.
+Delivers to the team: `ingest(files) -> documents`, `verify(documents, events) -> { events, rejected, warnings }`, and `group(moduleTests, cells, events, warnings) -> { new_batteries, held_back }`. See [battery/README.md](../battery/README.md).
 
-Done when: the demo set passes, the tampered input is rejected, the 91% warning appears, and grouping builds one new battery while holding back Pack B's modules 1–2 and Pack A's module 4.
+Done when: the demo set passes, the tampered input is rejected, the 91% warning appears, Pack B's modules 1–2 and Pack A's module 4 are not taken apart, and the cells of the other modules form ESS units with health values.
 
 ## Member 3: Cardano on-chain
 
-Writes everything permanent on Cardano Preprod, including the links between donor packs and the new battery. Uses the Cardano Foundation DPP standard's Event Log pattern and example code rather than building from scratch.
+Writes everything permanent on Cardano Preprod, including the links between donor packs and the new ESS units. Uses the Cardano Foundation DPP standard's Event Log pattern and example code rather than building from scratch.
 
 Tasks:
-1. Study the cardano-dpp-standards Event Log pattern and its example code. Map our Event, Module test, and New battery formats onto it and share the mapping with Members 1 and 2.
+1. Study the cardano-dpp-standards Event Log pattern and its example code. Map our Event, Module test, Cell test, and New ESS formats onto it and share the mapping with Members 1 and 2.
 2. Set up a fresh project Preprod wallet and Blockfrost key, kept in private env files (see [AGENTS.md](../AGENTS.md)). Never reuse another project's wallet.
 3. **Anchor document hashes:** write each document's SHA-256 on-chain and return the transaction hash per document (fills `anchor_tx`).
 4. **Signing (stage B, after payment):** let the second-life company sign the draft with its own key (a separate demo key from the agent's wallet). The signed record includes the draft hash and the Masumi blockchain identifier, so it points back to the exact draft that was paid for.
-5. **Donor event logs:** one event log per donor pack, holding its verified events and ending with a "disassembled" event that says which module went to which new battery and which were held back.
-6. **New-battery event log:** starts with an "assembled from" event listing each module, its donor pack, and a reference to that donor's event log.
-7. **Passport link:** a minimal second-life passport record for the new battery that points to its event log and, through it, to every donor log.
+5. **Donor event logs:** one event log per donor pack, holding its verified events and ending with a "disassembled" event that says which module's cells went to which ESS and which modules were held back.
+6. **ESS event log:** starts with an "assembled from" event listing each cell, its module and donor pack, and a reference to that donor's event log. It also records the ESS's second-life health and the facility that made it (`health` and `second_life_facility`).
+7. **Passport link and QR code:** a second-life passport record per ESS that points to its event log and, through it, to every donor log. The QR code on the ESS opens this passport.
 8. Measure the real cost per batch and for a full three-donor run, and compare with the plan's 0.25 ADA estimate.
 9. Ask the Masumi team (at their booth) how the result hash should link to several event logs in one job; this is an open question in the plan.
 
 Delivers to the team: `anchorDocuments(documents)`, `sign(draft, masumiInfo, key) -> signedRecord`, `writeDonorLogs(signedRecord)`, `writeNewBatteryLog(signedRecord) -> txHashes`.
 
-Done when: a full demo run produces real Preprod TxHashes for the document anchors, all three donor logs, and the new-battery log. A module can be followed from the new battery back to its source documents on a Preprod explorer.
+Done when: a full demo run produces real Preprod TxHashes for the document anchors, all three donor logs, and the ESS logs. A cell can be followed from its ESS back to its source documents on a Preprod explorer.
 
 Get team approval before each new kind of on-chain write or any funds transfer.
 
@@ -200,7 +234,8 @@ Tasks:
 8. **Review screen:** a simple page with:
    - a timeline per donor pack, each event showing its source, module, and confidence level;
    - rejected items and warnings;
-   - the **family tree**: new battery → modules → donor packs → source documents, with held-back modules and their reasons;
+   - the **family tree**: ESS → cells → modules → donor packs → source documents, with held-back modules and cells and their reasons;
+   - the **QR code page** per ESS: second-life health, the facility that made it, and the family tree;
    - a "Sign" button that calls Member 3's signing.
 9. **Demo and pitch:** script the nine demo steps from the plan, rehearse them end to end, record a backup video, and prepare slides. Collect the real TxHashes (escrow payment, result hash, and event logs) as evidence. The payout unlocks about 36 minutes after the job starts, so start the paid demo run well before presenting.
 10. Follow the [submission checklist](https://www.masumi.network/tum-hackathon/submission).
@@ -220,7 +255,7 @@ Get team approval before creating external accounts or resources, registering th
 
 Integration checkpoints:
 - End of phase 1: Member 1's sample events for all three packs pass Member 2's verifier.
-- Middle of phase 2: one full local run, from documents to grouped new battery, mocks replaced, without payment.
+- Middle of phase 2: one full local run, from documents to grouped ESS units, mocks replaced, without payment.
 - End of phase 2: one full paid run on Preprod: draft delivered inside the deadline and paid, then signed, with real TxHashes for all donor logs and the new-battery log.
 
 ## Team rules
