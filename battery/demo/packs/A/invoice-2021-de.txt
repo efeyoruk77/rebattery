@@ -1,0 +1,16 @@
+Autohaus Beispiel GmbH - Autorisierter Voltaro Service
+DEMO-DOKUMENT - alle Daten erfunden
+
+Rechnung Nr. 2021-0614
+Rechnungsdatum: 14.06.2021
+Kunde: Erika Musterfrau
+FIN: DEMO0VX60A0000001
+Kilometerstand: 41.250 km
+
+Befund: Spannungsdifferenz in Modul 4, Zellungleichgewicht
+Arbeiten:
+1. Hochvoltbatterie diagnostiziert
+2. Modul 4 ersetzt (Grund: Zellungleichgewicht)
+3. Batteriemanagement neu kalibriert
+
+Summe netto: 2.840,00 EUR

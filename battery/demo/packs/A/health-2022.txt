@@ -1,0 +1,12 @@
+Voltaro Dealer Battery Health Report
+DEMO DOCUMENT - all data invented
+
+Report date: 2022-09-20
+VIN: DEMO0VX60A0000001
+Odometer: 63,900 km
+
+Measured state of health: 91 %
+Module voltage spread at rest: 18 mV
+Result: battery within specification
+
+Technician: T. Example, Autohaus Beispiel GmbH

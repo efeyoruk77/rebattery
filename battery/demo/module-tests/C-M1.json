@@ -1,0 +1,10 @@
+{
+  "module_id": "C-M1",
+  "cell_model": "AC-NMC-66P",
+  "chemistry": "NMC",
+  "capacity_ah": 58.3,
+  "nominal_capacity_ah": 66,
+  "internal_resistance_mohm": 1.45,
+  "tested_on": "2026-10-28",
+  "signature": "eo5NsxADlwB+ba64kwbKFtWyHujOKaYE+FcTIWsgw9UwigsJwOPMsaweL2oYNHIgbc4ZuY7/m/aX+zbLW9RkBA=="
+}
