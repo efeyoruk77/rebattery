@@ -144,7 +144,7 @@ const ruleNames = {
 };
 const sentence = s => s.charAt(0).toUpperCase() + s.slice(1);
 // "accident event B-e3; open warning accident_without_inspection (B-e3); not taken apart" -> readable bullet points
-const reasonItems = reason => String(reason).split(/;\s*(?!an ESS needs)/).filter(p => p && p !== 'not taken apart').map(p => sentence(placeName(p
+const reasonItems = reason => String(reason).split(/;(?!\s*an ESS needs)\s*/).filter(p => p && p !== 'not taken apart').map(p => sentence(placeName(p
  .replace(/^accident event (\S+)/, 'accident recorded (event $1)')
  .replace(/^open warning (\w+)/, (_, rule) => `open warning: ${ruleNames[rule] || label(rule)}`) .replace(/^quote not found at (\S+) page (\d+) line (\d+)/, 'the quoted text is not in $1 at page $2, line $3'))));
 const pick = document.getElementById('pick'), app = document.getElementById('app'), tabs = document.getElementById('tabs');
