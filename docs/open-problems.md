@@ -16,11 +16,10 @@ When you fix one, move it to **Solved** at the bottom with the commit hash, and 
 
 ## AI step (real model: Gemini `gemini-3.5-flash`)
 
-First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. Run it with `node --env-file=.env battery/run-extract.mjs` while `npm start` is running.
+First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. After the date fix (#6): 11/11 verified in two runs, about 80 s. Run it with `node --env-file=.env battery/run-extract.mjs` while `npm start` is running.
 
 | # | Problem | Owner | Next step |
 |---|---|---|---|
-| 6 | **Pack C's software update is rejected.** The invoice only states "Invoice date: 2022-11-03". The instructions tell the model to write `date: null` when the work date isn't stated, and `verify()` rejects a null date. The two rules contradict each other, so one real event is lost. | Member 1 | Either tell the model to use the invoice date for work listed on a service invoice, or let `verify()` accept a null date. |
 | 7 | **`sample-events.json` still expects two accident events** for B-M1 and B-M2. The model correctly writes one event with `module_ids: ["B-M1", "B-M2"]`, so `run-extract` reports it as missing. The demo draft is also built from the old sample. | Member 1 + Member 2 | Merge the two events into one, then regenerate the demo draft with `node examples/demo-job.mjs`. |
 | 8 | **The grouping explanation still reads `modules`.** It should read the draft's `new_batteries` (ESS units) and `held_back` (with `level`). | Member 1 | Update the GROUPING EXPLANATION section of [agent/instructions.md](../agent/instructions.md). |
 | 9 | **Cell numbers are not padded in code.** The instructions now ask for `A-M3-C07`, but if the model still writes `C7`, `normalizeEvent` does not fix it, and that cell would not be held back. | Member 1 | Pad cell numbers to two digits in `normalizeEvent`. |
@@ -49,3 +48,4 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 - Two battery tests built Windows paths as `C:\C:\...`. Fixed with `fileURLToPath` (`c740f02`).
 - Stage A was not connected to the battery code. All four steps are connected (`c740f02`).
 - Extraction could run past the Masumi deadline. Model calls now stop at the deadline (`bc99b66`).
+- #6: invoiced work and report measurements lost their dates (`date: null`), so verify() rejected them. The instructions now use the invoice or report date unless the document gives another. Gemini: 7/11 verified before, 11/11 in two runs after (`cc032ff`).
