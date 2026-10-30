@@ -28,15 +28,22 @@ In most EV packs, cells are welded or glued into modules, so taking a pack down 
 
 ## How it works
 
-1. **Hiring:** A second-life company hires the "History Recovery" agent on Sokosumi for a batch of donor packs, through Masumi. The fee is locked in escrow.
-2. **Documents:** The company uploads all documents for each donor pack and vehicle. The hash of each document is anchored on-chain.
+The work is split into two stages. The agent is paid for a draft in stage A. The company signs and publishes in stage B, at its own pace.
+
+**Stage A: paid draft (Masumi job)**
+
+1. **Documents:** The company uploads all documents for each donor pack and vehicle, plus the signed module test results. The hash of each document is anchored on-chain.
+2. **Hiring:** The company hires the "History Recovery" agent on Sokosumi for the batch, through Masumi. The job input lists the uploaded documents by ID and SHA-256 hash, so the job's input hash fixes exactly which documents were submitted. The fee is locked in escrow.
 3. **AI extracts events per module:** The agent reads the documents and turns them into chronologically ordered events. Each event is linked to its location in the document (page, line) and, where the document says so, to a specific module (for example "module 4 replaced").
 4. **Code verifies:** Deterministic code verifies that every quote actually exists in the document. Information not found in the document is rejected.
 5. **Inconsistencies are flagged:** The agent finds contradictions between events, for example a high health value after a module replacement.
-6. **Module test results come in:** The company tests each removed module (capacity, internal resistance) and uploads the results, signed with its own key.
-7. **Code groups modules:** Deterministic code groups modules into new batteries. A group must share the same cell model and chemistry and stay within set limits for capacity and internal resistance. Modules with an accident or open warning are held back. The agent explains each grouping decision; it does not make it.
-8. **A human signs:** The company reviews the histories and the grouping, signs them with its own key, and takes responsibility.
-9. **On-chain record and payment:** Each donor's event log gets a "disassembled, module X moved to new battery Y" event, and the new battery gets an "assembled from" event listing every module and donor. The hash of the result is delivered to Masumi, and the escrow is paid to the agent.
+6. **Code groups modules:** Using the signed module test results (capacity, internal resistance), deterministic code proposes how to group modules into new batteries. A group must share the same cell model and chemistry and stay within set limits for capacity and internal resistance. Modules with an accident or open warning are held back. The agent explains each grouping decision; it does not make it.
+7. **Draft delivered and paid:** The agent delivers the draft (donor histories, rejected items, warnings, proposed grouping). Its hash is submitted to Masumi on-chain, and after the dispute window the escrow is paid to the agent. Masumi requires the result within 20 minutes of the funds being locked, which is why no human step sits inside stage A.
+
+**Stage B: sign and publish (company, after payment)**
+
+8. **A human signs:** The company reviews the draft, can reject the proposed grouping, signs it with its own key, and takes responsibility. The signed record includes the Masumi result hash, so it points back to the exact draft the agent was paid for.
+9. **On-chain record:** Each donor's event log gets a "disassembled, module X moved to new battery Y" event, and the new battery gets an "assembled from" event listing every module and donor.
 10. **New passport:** The new battery's passport links to the event logs of all its donor batteries.
 
 ## EV documents: what is extracted from which document
@@ -84,7 +91,7 @@ The on-chain side is built with ready-made patterns, so the effort goes into the
 
 - **Cardano Foundation DPP standard, Event Log pattern:** An append-only history to which multiple companies add events throughout the product's life cycle. About 0.25 ADA per batch record. The events the agent extracts are written in this pattern's format, using its example code.
 - **Lineage between batteries:** Each donor's event log ends with a "disassembled" event saying which module went to which new battery. The new battery's event log starts with an "assembled from" event listing each module and the donor log it came from. Anyone can follow a module in either direction.
-- **Masumi and Sokosumi:** The agent is hired, the fee is held in escrow, the hash of the result is written on-chain, and the escrow is paid out. The fingerprint of the reconstructed histories and grouping lands on-chain at the same time as the payment.
+- **Masumi and Sokosumi:** The agent is registered in Masumi's on-chain registry with its own selling wallet, so buyers can find it on Sokosumi. When hired, the fee is held in escrow. The agent starts work only after the funds are confirmed locked, submits the hash of its draft on-chain, and is paid out after the dispute window. The fingerprint of the draft lands on-chain with the payment; the company's signed record later points to that same hash.
 - **Document hashes:** The hash of each source document is written on-chain; the document itself is stored off-chain.
 - **Signature:** The second-life company's signature permanently records on-chain who took responsibility.
 
@@ -94,17 +101,18 @@ The on-chain side is built with ready-made patterns, so the effort goes into the
 
 Three 2020-model EV packs of the same model will be taken apart and their good modules regrouped into one home storage battery. None of the packs has a passport.
 
-1. The second-life company hires the agent on Sokosumi for the three packs; the fee is locked in escrow on Preprod.
-2. Documents are uploaded per pack:
+1. Documents and signed module test results are uploaded per pack, then the second-life company hires the agent on Sokosumi for the three packs; the fee is locked in escrow on Preprod.
+2. The uploaded documents:
    - **Pack A:** label photo, registration, a German service invoice for a 2021 module 4 replacement, a 2022 dealer health report.
    - **Pack B:** label photo, registration, an insurance record for a 2023 accident with damage near modules 1–2.
    - **Pack C:** label photo, registration, an English service invoice for a software update.
 3. The agent shows a timeline per pack, with each event tied to a module where the document allows it. Each event shows its source and confidence level.
 4. The agent raises a warning: Pack A's 2022 report states 91% health, but this is inconsistent with the 2021 module replacement.
-5. Signed module test results are uploaded. The grouping code builds one new battery from matching modules. It holds back Pack B's modules 1–2 (accident) and Pack A's module 4 (it doesn't match the others).
+5. The grouping code proposes one new battery from matching modules. It holds back Pack B's modules 1–2 (accident) and Pack A's module 4 (it doesn't match the others).
 6. The family tree appears: new battery → modules → donor packs → source documents.
 7. Bonus scene: someone tries to add a piece of information that is not in an invoice as supposedly "documented". The code cannot find the quote in the document and rejects it.
-8. The company signs, the donor and new-battery events are written on-chain, and the escrow is paid. Real TxHashes are shown for the escrow payment and the event logs.
+8. The agent submits the draft's hash to Masumi and the escrow is paid.
+9. The company signs, and the donor and new-battery events are written on-chain. Real TxHashes are shown for the escrow payment, the result hash, and the event logs.
 
 ## Limits and open questions
 
@@ -114,7 +122,8 @@ Three 2020-model EV packs of the same model will be taken apart and their good m
 - **Grouping limits are examples.** The capacity and resistance bands in the demo are placeholders. Real limits depend on the cell model and the new battery's design.
 - **Personal data.** Registration and insurance documents contain personal data. Documents are kept off-chain; only hashes are on-chain. Personal information must be stripped from the events.
 - **Passport access rules are not finalized yet.** Implementing decisions that will determine who can access which fields are still pending.
-- **To confirm with Masumi:** How the result hash should be linked to the event logs, now that one job covers several donors and one new battery; to be discussed with the team at their booth.
+- **Payment happens before signing.** The agent is paid for a draft, even if the company later rejects parts of it. A company that disagrees with the draft can use Masumi's dispute window. The demo payout timing (about 36 minutes before unlock, 52 before the dispute deadline) comes from the starter code.
+- **To confirm with Masumi:** How the result hash should be linked to the event logs, now that one job covers several donors and one new battery, and whether a larger or dynamic price is possible instead of the fixed 1 test USDM; to be discussed with the team at their booth.
 
 ## Sources
 
