@@ -226,7 +226,7 @@ Done when: the slides and script are final, the backup video exists, and a full 
 Writes everything permanent on Cardano Preprod, including the links between donor packs and the new ESS units. Uses the Cardano Foundation DPP standard's Event Log pattern and example code rather than building from scratch.
 
 Tasks:
-1. Map our Event, Module test, Cell test batch, and New ESS formats onto the DPP Event Log pattern (`docs/cardano-mapping.md` on your branch) and share it with Member 1.
+1. Map our Event, Module test, Cell test batch, and New ESS formats onto the DPP Event Log pattern ([cardano-mapping.md](cardano-mapping.md)) and share it with Member 1.
 2. A fresh project Preprod wallet and Blockfrost key, kept in private env files (see [AGENTS.md](../AGENTS.md)).
 3. **Anchor hashes:** each document's SHA-256 and each test file's SHA-256 from the draft's `test_files`.
 4. **Signing (stage B, after payment):** the company signs the draft with its own key. The signed record includes the draft hash and the Masumi result hash and blockchain identifier.
@@ -237,10 +237,7 @@ Tasks:
 9. Ask the Masumi team how the result hash should link to several event logs in one job.
 10. **Connect to [stage-b.mjs](../stage-b.mjs)** and test with [examples/demo-draft.json](../examples/demo-draft.json).
 
-Status (Oct 30): branch `member3/cardano-onchain` has signing, anchoring, donor and battery logs, passport, trace, and tests, connected in `review.mjs` with writes off until `CARDANO_WRITES_ENABLED=true`. Nothing sent on-chain yet. It was built on the earlier format (one new battery, per-pack cell test files). To merge:
-- Read the draft's `test_files` (module tests and cell test batches) instead of `cell_test_files`.
-- Write one log and passport per ESS in `new_batteries`, with `health` and `second_life_facility`, and take held-back modules and cells from the top-level `held_back`.
-- Keep `battery/*.test.mjs` in the `npm test` script when resolving the `package.json` conflict.
+Status (Oct 30, evening): merged into `main` through PR #1. Tasks 1–7 and 10 are done in code and tested on the demo draft: anchoring of every document and test file, signing, donor logs, one log and passport per ESS with `health` and `second_life_facility`, QR links, and `trace`. Connected in `review.mjs`, with writes off until `CARDANO_WRITES_ENABLED=true`. Nothing has been sent on-chain yet. A dry run of the full demo builds all 14 transactions for about 3.08 tADA. Details and commands are in [member3-tasks.md](member3-tasks.md).
 
 Blocked on the team: approval for the first real write, and the metadata label.
 

@@ -40,7 +40,7 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 
 ## Solved
 
-- #4: Member 3's branch now uses the ESS format. It anchors every document and test file from `test_files`, writes one log and one passport per ESS with `health` and `second_life_facility`, and takes held-back modules and cells from the top-level `held_back` (`e1b63e9`, branch `member3/cardano-onchain`, PR #1 to merge). Nothing is on-chain until #5.
+- #4: Member 3's branch now uses the ESS format. It anchors every document and test file from `test_files`, writes one log and one passport per ESS with `health` and `second_life_facility`, and takes held-back modules and cells from the top-level `held_back` (`e1b63e9`, merged into main through PR #1). Nothing is on-chain until #5.
 - Masumi Payment Service 0.29.0 runs with its own fresh PostgreSQL database and wallets on Member 4's machine (no Docker). Selling wallet funded from the dispenser. Agent "EV Battery History Recovery" registered on Preprod: [tx 04dd6863…c8f2](https://preprod.cardanoscan.io/transaction/04dd6863747ada3997441e5b1d7fae6c18bee51d9b6b88d6736d8dcbd8d3c8f2), confirmed in block 5354711.
 - Tasks whose description is a job input now run stage A in the worker, even without payment, so the full flow can be tested in Sokosumi before payments are set up.
 
