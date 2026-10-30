@@ -41,7 +41,11 @@ section{background:var(--panel);border:1px solid var(--line);border-radius:10px;
 .mod.held{border-color:var(--bad);color:var(--bad);text-decoration:line-through}
 .docs{font-size:12px;color:var(--muted);margin:0;padding-left:18px}
 .ess{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}
-.passport{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.passport{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;flex:1 1 280px;min-width:0}
+.passport-row{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+.qr{flex:0 0 150px;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;font-size:12px;color:var(--muted);text-decoration:none}
+.qr svg{width:150px;height:150px;background:#fff;border-radius:6px;padding:4px}
+.qr.pending{height:150px;justify-content:center;border:1px dashed var(--line);border-radius:6px;padding:8px}
 details summary{cursor:pointer;color:var(--muted);font-size:14px;margin:4px 0}
 .sign{display:flex;flex-direction:column;gap:8px}
 textarea{width:100%;min-height:60px}
@@ -101,7 +105,8 @@ async function show(id) {
   const h = b.health || {}, f = b.second_life_facility || {};
   const byModule = {};
   for (const c of b.cells) (byModule[c.module_id] ||= []).push(c.cell_id.split('-').pop());
-  return `<div class="ess">
+  const qr = (r.passports || {})[b.battery_id];
+  return `<div class="ess"><div class="passport-row">
    <div class="passport">
     <div><b>${esc(b.battery_id)}</b> <span class="muted">${esc(b.cell_model)} · ${esc(b.chemistry)} · ${esc(h.cell_count)} cells in series</span></div>
     <div class="stats">
@@ -111,6 +116,9 @@ async function show(id) {
     </div>
     <div class="muted">Made at ${esc(f.name)}, ${esc(f.site)} · tested ${esc((h.cells_tested_on || []).join(', '))} · ${esc(h.basis)}</div>
     <div class="muted">Rules: capacity ±${esc(b.rules?.capacity_band_pct)}%, resistance ±${esc(b.rules?.resistance_band_pct)}%, ${esc(b.rules?.cells_per_ess)} cells per ESS</div>
+   </div>
+   ${qr ? `<a class="qr" href="${esc(qr.url)}" target="_blank" rel="noopener" title="Passport transaction ${esc(qr.txHash)}">${qr.svg}<span>Scan or click: passport on Cardano Preprod</span></a>`
+    : '<div class="qr pending"><span>QR code appears once this ESS\'s passport is written on-chain (after signing)</span></div>'}
    </div>
    <details><summary>Family tree: ${esc(b.battery_id)} → modules → donor packs → documents</summary>
     <div class="tree">${(b.donor_packs || []).map(p => `<div class="donor"><b>Pack ${esc(p)}</b>
@@ -154,8 +162,11 @@ async function sign() {
  btn.disabled = true; status.textContent = 'Signing…';
  const res = await fetch('/api/sign', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({id: current.id, changes: document.getElementById('changes').value})});
  const out = await res.json();
- status.textContent = res.ok ? `Signed. Donor log TxHashes: ${out.donorTxs.join(', ')}\nESS log and passport TxHashes: ${out.newBatteryTxs.join(', ')}` : `Not signed: ${out.error}`;
- btn.disabled = res.ok;
+ if (!res.ok) { status.textContent = `Not signed: ${out.error}`; btn.disabled = false; return; }
+ // Reload so each ESS card shows the QR code of its new passport.
+ await show(current.id);
+ document.getElementById('sign').disabled = true;
+ document.getElementById('status').textContent = `Signed. Donor log TxHashes: ${out.donorTxs.join(', ')}\nESS log and passport TxHashes: ${out.newBatteryTxs.join(', ')}`;
 }
 load();
 </script>

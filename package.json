@@ -14,10 +14,11 @@
     "test": "node --env-file-if-exists=.env --test *.test.mjs battery/*.test.mjs"
   },
   "dependencies": {
-    "eve": "0.71.0",
-    "ai": "7.0.127",
-    "zod": "4.6.5",
     "@ai-sdk/openai-compatible": "3.0.62",
-    "@meshsdk/core": "1.9.1"
+    "@meshsdk/core": "1.9.1",
+    "ai": "7.0.127",
+    "eve": "0.71.0",
+    "qrcode": "1.5.4",
+    "zod": "4.6.5"
   }
 }

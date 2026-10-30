@@ -3,6 +3,7 @@
 import {createServer} from 'node:http';
 import {existsSync,readFileSync,readdirSync,writeFileSync,mkdirSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';
+import QRCode from 'qrcode';
 import {createStageB} from './stage-b.mjs';
 import {createCardanoSteps} from './cardano-steps.mjs';
 
@@ -30,6 +31,19 @@ export function listDrafts(root = '.') {
  return drafts;
 }
 
+// QR codes for a signed draft: ESS id -> {txHash, url, svg}. Only real passport transactions get a code;
+// a draft that was never signed, or a link that is not a Preprod transaction, gets none.
+const PASSPORT_URL = /^https:\/\/preprod\.cardanoscan\.io\/transaction\/[0-9a-f]{64}$/;
+export async function passportQrs(id, root = '.') {
+ const passports = readJson(`${root}/.local/signed/${id}.json`)?.passports ?? {};
+ const out = {};
+ for (const [ess, p] of Object.entries(passports)) {
+  if (!PASSPORT_URL.test(p?.url ?? '')) continue;
+  out[ess] = {txHash: p.txHash, url: p.url, svg: await QRCode.toString(p.url, {type: 'svg', margin: 1, errorCorrectionLevel: 'M'})};
+ }
+ return out;
+}
+
 const respond = (res, status, data, type = 'application/json') => { res.writeHead(status, {'content-type': type}); res.end(type === 'application/json' ? JSON.stringify(data) : data); };
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
@@ -41,7 +55,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
    if (req.method === 'GET' && url.pathname === '/api/drafts') return respond(res, 200, listDrafts().map(({id, label, paid}) => ({id, label, paid: Boolean(paid)})));
    if (req.method === 'GET' && url.pathname === '/api/draft') {
     const d = listDrafts().find(x => x.id === url.searchParams.get('id'));
-    return d ? respond(res, 200, {id: d.id, paid: Boolean(d.paid), draft: JSON.parse(d.draftText)}) : respond(res, 404, {error: 'Draft not found'});
+    return d ? respond(res, 200, {id: d.id, paid: Boolean(d.paid), draft: JSON.parse(d.draftText), passports: await passportQrs(d.id)}) : respond(res, 404, {error: 'Draft not found'});
    }
    if (req.method === 'POST' && url.pathname === '/api/sign') {
     let body = ''; for await (const part of req) { body += part; if (body.length > 20000) return respond(res, 413, {error: 'Request too large'}); }

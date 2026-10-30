@@ -26,7 +26,6 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 | # | Problem | Owner | Next step |
 |---|---|---|---|
 | 10 | **No demo script, slides, rehearsal, or backup video yet.** Presentation rules (duration, whether the demo is live) are unknown. | Member 2 | Check the opening slides (`TBC26_Hackathon_Opening.pdf` in the Telegram Announcements topic) for the rules, then write the script. |
-| 11 | **No QR code image per ESS.** The review screen shows each ESS's passport card, but there is no QR code yet. | Member 4 | Member 3 part done (`e1b63e9`): each ESS passport is a transaction, its QR link is `https://preprod.cardanoscan.io/transaction/<passport tx>`, and the `/api/sign` response now carries them as `passports` (`ESS-1: {txHash, url}`). Member 4 adds the QR image to the review screen. |
 | 12 | **Article 77 wording** on linking to several original batteries is not checked. | Member 2 | Check the exact text before putting it on a slide. |
 
 ## Smaller items
@@ -40,6 +39,7 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 
 ## Solved
 
+- #11: each ESS card on the review screen shows a QR code for its passport transaction (`https://preprod.cardanoscan.io/transaction/<passport tx>`) once the draft is signed. Unsigned drafts show a placeholder, and only Preprod transaction links get a code. Uses `qrcode` 1.5.4, pinned.
 - #4: Member 3's branch now uses the ESS format. It anchors every document and test file from `test_files`, writes one log and one passport per ESS with `health` and `second_life_facility`, and takes held-back modules and cells from the top-level `held_back` (`e1b63e9`, merged into main through PR #1). Nothing is on-chain until #5.
 - Masumi Payment Service 0.29.0 runs with its own fresh PostgreSQL database and wallets on Member 4's machine (no Docker). Selling wallet funded from the dispenser. Agent "EV Battery History Recovery" registered on Preprod: [tx 04dd6863…c8f2](https://preprod.cardanoscan.io/transaction/04dd6863747ada3997441e5b1d7fae6c18bee51d9b6b88d6736d8dcbd8d3c8f2), confirmed in block 5354711.
 - Tasks whose description is a job input now run stage A in the worker, even without payment, so the full flow can be tested in Sokosumi before payments are set up.
