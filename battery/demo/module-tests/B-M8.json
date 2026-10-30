@@ -1,0 +1,10 @@
+{
+  "module_id": "B-M8",
+  "cell_model": "AC-NMC-66P",
+  "chemistry": "NMC",
+  "capacity_ah": 58.8,
+  "nominal_capacity_ah": 66,
+  "internal_resistance_mohm": 1.42,
+  "tested_on": "2026-10-28",
+  "signature": "qusADXf9YOReb6vl2NZSc6/IKVMOvFELXbj/2/nqgt/HCEgC5oyFcqpBTvvdr7G2PYHCvSoIGTstm+CrVtU+Bg=="
+}
