@@ -9,8 +9,8 @@ When you fix one, move it to **Solved** at the bottom with the commit hash, and 
 | # | Problem | Why it matters | Owner | Next step |
 |---|---|---|---|---|
 | 1 | **Sokosumi access is `PENDING`** for Coworker "EV Battery History Recovery" in the TUM Workspace (access request `01a18e65-a2f3-776c-a880-da1e2e340986`). | No task can run in the TUM Workspace until it is `GRANTED`. | Member 4 / Sandro (Masumi) | Asked Sandro directly and booked a call. Re-check with `coworkers connect` (returns the same request, creates nothing). |
-| 2 | **Masumi Payment Service not set up.** | Escrow, agent registration, payout, and the payment TxHashes for the demo all depend on it. Largest remaining piece. | Member 4 | Read the current setup guide, check machine requirements, then create a fresh database and wallets with team approval. Fund them from the [Masumi dispenser](https://dispenser.masumi.network). |
-| 3 | **No way yet for a buyer to upload files.** Stage A reads uploads from the local store (`.local/uploads`), but nothing puts them there for a real job. | A paid job cannot start without its documents and test files. | Member 4 | Demo: pre-load the demo files with the upload functions and put the job input in the task description. Later: Sokosumi's task files API (`POST /v1/tasks/{id}/files`). |
+| 2 | **Masumi Payment Service not set up.** | Escrow, agent registration, payout, and the payment TxHashes for the demo all depend on it. Largest remaining piece. | Member 4 | In progress. A project-only setup (payment service 0.29.0 + its own PostgreSQL, ports on 127.0.0.1 only, fresh database and wallets) is ready on Member 4's machine; Docker Desktop's WSL integration currently fails to start. Next: start it, read the payment source and selling wallet, fund the wallet from the [Masumi dispenser](https://dispenser.masumi.network), then register the agent with team approval. |
+| 3 | **Buyers cannot upload files remotely yet.** For the demo this is solved: `node upload.mjs [batchDir]` stores a batch in `.local/uploads` and prints the job input, which goes into the Sokosumi task description. | A buyer outside our machine still has no upload path. | Member 4 | After the demo flow works: Sokosumi's task files API (`POST /v1/tasks/{id}/files`). |
 | 4 | **Member 3's branch uses the earlier format** (one new battery, per-pack cell test files). Main now has 5 ESS units and per-module test files. | It cannot be merged, so nothing can be written on-chain yet. | Member 3 | Read `test_files` from the draft, write one log and passport per ESS with `health` and `second_life_facility`, take held-back items from the top-level `held_back`. Details under Member 3 in [team-plan.md](team-plan.md). |
 | 5 | **First real on-chain write needs team approval**, and the metadata label is still a placeholder (`1984`). | Member 3 is waiting on both. | Whole team | Agree on the label, then approve one test write on Preprod. |
 
@@ -42,6 +42,8 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 - **Three starter tests fail on Windows only** (Linux paths and file permissions). They test the starter's own code, not ours.
 
 ## Solved
+
+- Tasks whose description is a job input now run stage A in the worker, even without payment, so the full flow can be tested in Sokosumi before payments are set up.
 
 - Windows checkouts changed demo file line endings, so every document hash failed. Fixed with [.gitattributes](../.gitattributes) (`4c37990`).
 - Two battery tests built Windows paths as `C:\C:\...`. Fixed with `fileURLToPath` (`c740f02`).

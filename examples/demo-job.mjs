@@ -1,25 +1,16 @@
 // Uploads the demo files in battery/demo/ into a store and returns the job input a buyer would send.
 // Also regenerates examples/demo-draft.json: node examples/demo-job.mjs
-import {readFileSync, readdirSync, writeFileSync, mkdtempSync, rmSync} from 'node:fs';
+import {readFileSync, writeFileSync, mkdtempSync, rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {readManifestFiles, uploadDocuments, uploadModuleTests, uploadCellTests} from '../battery/ingest.mjs';
 import {createDraftBuilder} from '../draft.mjs';
+import {uploadBatch} from '../upload.mjs';
 
 const demo = fileURLToPath(new URL('../battery/demo/', import.meta.url));
-const readDir = dir => readdirSync(join(demo, dir)).filter(f => f.endsWith('.json')).sort().map(f => JSON.parse(readFileSync(join(demo, dir, f), 'utf8')));
 export const demoTesterKeyPath = join(demo, 'tester-public.pem');
 
-export function prepareDemoJob(storeDir) {
- const files = readManifestFiles(join(demo, 'manifest.json'), demo);
- return JSON.stringify({
-  packs: [...new Set(files.map(f => f.pack_id))],
-  documents: uploadDocuments(files, storeDir),
-  module_tests: uploadModuleTests(readDir('module-tests'), storeDir),
-  cell_tests: uploadCellTests(readDir('cell-tests'), storeDir),
- });
-}
+export const prepareDemoJob = storeDir => uploadBatch(demo, storeDir);
 
 // Mock extraction until Member 1's extract() is ready: the hand-made sample events.
 export const sampleExtract = async () => JSON.parse(readFileSync(join(demo, 'sample-events.json'), 'utf8'));

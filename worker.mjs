@@ -3,6 +3,7 @@ import {existsSync,readFileSync,writeFileSync} from 'node:fs';
 import {acquireWorkerLock} from './worker-lock.mjs';
 import {answer,client} from './client.mjs';
 import {buildDraft} from './draft.mjs';
+import {looksLikeJobInput} from './job-input.mjs';
 import {reply} from './comments.mjs';
 import {createPaidAdapter,isPaidReady} from './paid-task.mjs';
 import {taskTarget,isTaskForTarget} from './task-target.mjs';
@@ -28,7 +29,8 @@ while(true){
  if(state.paid||(state.phase==='started'&&process.env.PAID_TASKS_ENABLED==='true'&&isPaidReady())){state=await paid.advance(t,state);if(state.phase==='completed')await reply(t);continue;}
  if(state.phase==='started'){
  writeFileSync(journal,JSON.stringify({...state,phase:'model-pending'}),{mode:0o600});
- const result=await answer(state.input,`.local/${t.id}-session.json`);
+ // A job input runs stage A (draft without payment); anything else goes to the model as chat.
+ const result=await (looksLikeJobInput(state.input)?buildDraft:answer)(state.input,`.local/${t.id}-session.json`);
  writeFileSync(resultFile,result,{mode:0o600});state={...state,phase:'result-saved'};writeFileSync(journal,JSON.stringify(state),{mode:0o600});
  }
  if(state.phase==='result-saved'){
