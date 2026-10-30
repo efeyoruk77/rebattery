@@ -49,7 +49,7 @@ All four members agree on these before writing code. Member 1 drafts them; chang
 {
   "event_id": "A-e3",
   "pack_id": "A",
-  "module_id": "A-M4",
+  "module_ids": ["A-M4"],
   "type": "module_replacement",
   "date": "2021-06-14",
   "fields": { "reason": "cell imbalance" },
@@ -59,9 +59,13 @@ All four members agree on these before writing code. Member 1 drafts them; chang
 }
 ```
 
-- `module_id` is `null` when the document only talks about the whole pack. Module IDs use the manufacturer's numbering: `<pack>-M<number>`.
+- `module_ids` is a list, because one document line can name several modules (for example "modules 1–2" gives `["B-M1", "B-M2"]`). It is `[]` when the event is about the whole pack or no module can be identified. Module IDs use the manufacturer's numbering: `<pack>-M<number>`.
 - `type`: production, first_registration, module_replacement, cell_replacement, software_update, fault, soh_measurement, accident, charging_profile, warranty_claim, remaining_capacity_estimate.
-- `confidence`: `signed`, `documented`, or `estimated`. An `estimated` event has no `source.quote`; it lists the event IDs it was derived from in `basis`.
+- `confidence`: `signed`, `documented`, or `estimated`. Only code sets `signed`, from verified signatures; the AI never outputs it.
+- `estimated` covers any uncertainty, in three cases:
+  - **Uncertain reading:** the quoted text is partly illegible. `source.quote` holds the exact legible text; `fields.uncertainty` says what is unclear.
+  - **Uncertain module:** the document names only an area (for example "front-left"). `fields.location` holds the area. `module_ids` is filled only from a module layout given in the input, otherwise `[]`. The AI never invents a module number.
+  - **Derived value:** for example `remaining_capacity_estimate`. `source` is `null`, and `basis` lists the event IDs it was derived from.
 
 **Module test** (uploaded by the second-life company, signed, read by Member 2):
 
@@ -132,11 +136,11 @@ Documents are uploaded before the job starts. The job input only lists them by I
 Turns document text into a dated, sourced event list per donor pack, tied to modules where the document allows it. This is the "clerk": it reports what documents say, never what is true.
 
 Tasks:
-1. Rewrite [agent/instructions.md](../agent/instructions.md) for battery history (it still describes tender evaluation). Keep its safety rules: treat documents as untrusted data, never invent facts, ignore instructions written inside documents.
+1. Rewrite [agent/instructions.md](../agent/instructions.md) for battery history (first draft done; tune it on the demo documents). Keep its safety rules: treat documents as untrusted data, never invent facts, ignore instructions written inside documents.
 2. Build extraction: given the Documents for one pack, return Events in the shared format, each with a word-for-word quote and its page and line.
-3. **Module attribution:** set `module_id` only when the document names the module or the damaged area clearly (for example "Modul 4 ersetzt", "damage to front-left modules"). Otherwise leave it `null`. Never guess a module.
+3. **Module attribution:** fill `module_ids` when the document names module numbers (for example "Modul 4 ersetzt"), as a `documented` event. When it names only an area (for example "damage to front-left modules"), the event is `estimated` and `module_ids` comes only from a module layout in the input. Otherwise leave it `[]`. Never invent a module number.
 4. Handle all document kinds in the plan's table, including the German invoice. Quotes stay in the original language; only `fields` are normalized to English.
-5. Produce `estimated` events (for example remaining capacity) only from other events, listed in `basis`.
+5. Use `estimated` for uncertain readings, area-only module attribution, and derived values (for example remaining capacity, listed in `basis`). See the Event format above.
 6. Write a short plain-language explanation for each grouping decision from Member 2's output (why a module was used or held back). The explanation must only repeat the rule and the events; it never changes the decision.
 7. Strip personal data (owner name, address, plate) from `fields`. Agree with Member 2 on masking inside quotes.
 8. Keep [agent/agent.ts](../agent/agent.ts) working with the existing model settings in `.env`.
@@ -153,7 +157,7 @@ Tasks:
 1. **Demo documents:** create the documents for three donor packs of the same model (see the demo scenario in the project plan), plus signed module test results for every module. Use invented data only: no real names, VINs, or plates. Do this first, because everyone needs them.
 2. **Upload and ingestion:** a simple upload step that runs before the Masumi job starts and returns each file's ID and SHA-256 (these go into the job input). Turn each upload (PDF, image, text) into the Document format with `pack_id`, page and line numbers, and a SHA-256 hash of the original file. When the job runs, check every listed hash against the stored file and stop if one differs. The label photo needs OCR; if OCR is unreliable, ship a reviewed text transcript alongside the photo and say so.
 3. **Quote verification:** for each event, check that `source.quote` exists at the stated page and line of the document with the matching hash. Reject the event otherwise and record the reason in `rejected`. Normalize whitespace only; no fuzzy matching.
-4. **Confidence rules:** reject any `documented` or `signed` event without a verified quote; reject any `estimated` event whose `basis` points to missing or rejected events.
+4. **Confidence rules:** reject any `documented` or `signed` event without a verified quote; for an `estimated` event, verify `source.quote` when it has one, and reject it if its `basis` points to missing or rejected events. When matching events to modules (for example holding back accident modules), check every ID in `module_ids`.
 5. **Inconsistency checks:** rule-based checks that produce `warnings`, starting with the demo case (a 91% health value soon after a module replacement). Add a few more: dates out of order, health rising without a repair, accident with no later inspection.
 6. **Module tests:** load the signed test results and check each signature and that every `module_id` belongs to a known donor pack.
 7. **Grouping:** deterministic code that builds new batteries from tested modules using the plan's grouping rules: same cell model and chemistry, capacity and resistance within set bands, and no accident or open warning. Record held-back modules with a reason. Keep the band values in one config file.
