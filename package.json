@@ -10,12 +10,14 @@
     "worker": "node --env-file-if-exists=.env worker.mjs",
     "api": "node --env-file-if-exists=.env --env-file-if-exists=.local/mps-runtime.env agent-api.mjs",
     "review": "node --env-file-if-exists=.env review.mjs",
+    "cardano": "node --env-file-if-exists=.env --env-file-if-exists=.local/cardano.env cardano-cli.mjs",
     "test": "node --env-file-if-exists=.env --test *.test.mjs"
   },
   "dependencies": {
     "eve": "0.71.0",
     "ai": "7.0.127",
     "zod": "4.6.5",
-    "@ai-sdk/openai-compatible": "3.0.62"
+    "@ai-sdk/openai-compatible": "3.0.62",
+    "@meshsdk/core": "1.9.1"
   }
 }

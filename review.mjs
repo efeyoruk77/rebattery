@@ -3,8 +3,12 @@
 import {createServer} from 'node:http';
 import {existsSync,readFileSync,readdirSync,writeFileSync,mkdirSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';
-import {finalize} from './stage-b.mjs';
+import {createStageB} from './stage-b.mjs';
+import {createCardanoSteps} from './cardano-steps.mjs';
 
+// Member 3's Cardano steps are connected here, not in stage-b.mjs defaults, so tests never reach the real chain.
+// Writes stay off until CARDANO_WRITES_ENABLED=true.
+const finalize = createStageB(createCardanoSteps());
 const DEMO = 'examples/demo-draft.json';
 const readJson = path => { try { return JSON.parse(readFileSync(path, 'utf8')); } catch { return null; } };
 const files = dir => existsSync(dir) ? readdirSync(dir).filter(f => /^[0-9a-f-]{36}\.json$/.test(f)) : [];
