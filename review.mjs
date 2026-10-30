@@ -6,6 +6,7 @@ import {pathToFileURL} from 'node:url';
 import QRCode from 'qrcode';
 import {createStageB} from './stage-b.mjs';
 import {createCardanoSteps} from './cardano-steps.mjs';
+import {collectStatus} from './status.mjs';
 
 // Member 3's Cardano steps are connected here, not in stage-b.mjs defaults, so tests never reach the real chain.
 // Writes stay off until CARDANO_WRITES_ENABLED=true.
@@ -52,6 +53,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   try {
    const url = new URL(req.url, 'http://127.0.0.1');
    if (req.method === 'GET' && url.pathname === '/') return respond(res, 200, readFileSync('review.html', 'utf8'), 'text/html; charset=utf-8');
+   if (req.method === 'GET' && url.pathname === '/status') return respond(res, 200, readFileSync('status.html', 'utf8'), 'text/html; charset=utf-8');
+   if (req.method === 'GET' && url.pathname === '/api/status') return respond(res, 200, await collectStatus());
    if (req.method === 'GET' && url.pathname === '/api/drafts') return respond(res, 200, listDrafts().map(({id, label, paid}) => ({id, label, paid: Boolean(paid)})));
    if (req.method === 'GET' && url.pathname === '/api/draft') {
     const d = listDrafts().find(x => x.id === url.searchParams.get('id'));
