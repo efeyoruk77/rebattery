@@ -1,0 +1,14 @@
+{
+  "documents": [
+    { "doc_id": "packA-label", "pack_id": "A", "kind": "battery_label", "language": "en", "path": "packs/A/label.txt" },
+    { "doc_id": "packA-registration", "pack_id": "A", "kind": "vehicle_registration", "language": "en", "path": "packs/A/registration.txt" },
+    { "doc_id": "packA-invoice-2021-de", "pack_id": "A", "kind": "service_invoice", "language": "de", "path": "packs/A/invoice-2021-de.txt" },
+    { "doc_id": "packA-health-2022", "pack_id": "A", "kind": "dealer_health_report", "language": "en", "path": "packs/A/health-2022.txt" },
+    { "doc_id": "packB-label", "pack_id": "B", "kind": "battery_label", "language": "en", "path": "packs/B/label.txt" },
+    { "doc_id": "packB-registration", "pack_id": "B", "kind": "vehicle_registration", "language": "en", "path": "packs/B/registration.txt" },
+    { "doc_id": "packB-insurance-2023", "pack_id": "B", "kind": "insurance_record", "language": "en", "path": "packs/B/insurance-2023.txt" },
+    { "doc_id": "packC-label", "pack_id": "C", "kind": "battery_label", "language": "en", "path": "packs/C/label.txt" },
+    { "doc_id": "packC-registration", "pack_id": "C", "kind": "vehicle_registration", "language": "en", "path": "packs/C/registration.txt" },
+    { "doc_id": "packC-invoice-2022-en", "pack_id": "C", "kind": "service_invoice", "language": "en", "path": "packs/C/invoice-2022-en.txt" }
+  ]
+}

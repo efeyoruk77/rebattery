@@ -1,0 +1,230 @@
+[
+  {
+    "event_id": "A-e1",
+    "pack_id": "A",
+    "module_id": null,
+    "type": "production",
+    "date": "2020-03-11",
+    "fields": {
+      "manufacturer": "Altmark Cells GmbH",
+      "chemistry": "NMC"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packA-label",
+      "sha256": "ec96035a6e09619816f8e015372acf08112834f44b2dd5dbce08a463e8a05c9d",
+      "page": 1,
+      "line": 9,
+      "quote": "Production date: 2020-03-11"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "A-e2",
+    "pack_id": "A",
+    "module_id": null,
+    "type": "first_registration",
+    "date": "2020-05-12",
+    "fields": {},
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packA-registration",
+      "sha256": "ab95966c8eaf4d0bdc39bd36ba14df053404570bedb6468c04a3a25b1e35d8ea",
+      "page": 1,
+      "line": 8,
+      "quote": "Date of first registration: 2020-05-12"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "A-e3",
+    "pack_id": "A",
+    "module_id": "A-M4",
+    "type": "fault",
+    "date": "2021-06-14",
+    "fields": {
+      "finding": "voltage difference, cell imbalance"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packA-invoice-2021-de",
+      "sha256": "e51cda4c1bc7c5a7f8435df711d000bba89a96de6b57f1f9f11520d2e5a5502d",
+      "page": 1,
+      "line": 10,
+      "quote": "Spannungsdifferenz in Modul 4, Zellungleichgewicht"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "A-e4",
+    "pack_id": "A",
+    "module_id": "A-M4",
+    "type": "module_replacement",
+    "date": "2021-06-14",
+    "fields": {
+      "reason": "cell imbalance"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packA-invoice-2021-de",
+      "sha256": "e51cda4c1bc7c5a7f8435df711d000bba89a96de6b57f1f9f11520d2e5a5502d",
+      "page": 1,
+      "line": 13,
+      "quote": "Modul 4 ersetzt (Grund: Zellungleichgewicht)"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "A-e5",
+    "pack_id": "A",
+    "module_id": null,
+    "type": "soh_measurement",
+    "date": "2022-09-20",
+    "fields": {
+      "soh_pct": 91
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packA-health-2022",
+      "sha256": "2922a1bd8a37f1b536e7181ca631040eb75ad12f424cc0fb024eaaf926615747",
+      "page": 1,
+      "line": 8,
+      "quote": "Measured state of health: 91 %"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "B-e1",
+    "pack_id": "B",
+    "module_id": null,
+    "type": "production",
+    "date": "2020-04-02",
+    "fields": {
+      "manufacturer": "Altmark Cells GmbH",
+      "chemistry": "NMC"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packB-label",
+      "sha256": "4d5513b34a299ef6fd9591a4e4e514bdb2c324e9c32953787aceb8897a02e482",
+      "page": 1,
+      "line": 9,
+      "quote": "Production date: 2020-04-02"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "B-e2",
+    "pack_id": "B",
+    "module_id": null,
+    "type": "first_registration",
+    "date": "2020-06-30",
+    "fields": {},
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packB-registration",
+      "sha256": "716f7de0149ac76609e0f4516ed97a0218c92516df45fc0ab883db2f63e0a6ee",
+      "page": 1,
+      "line": 8,
+      "quote": "Date of first registration: 2020-06-30"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "B-e3",
+    "pack_id": "B",
+    "module_id": "B-M1",
+    "type": "accident",
+    "date": "2023-02-07",
+    "fields": {
+      "damage_area": "front left underbody",
+      "severity": "moderate"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packB-insurance-2023",
+      "sha256": "bbf4fbfc45c7ccdb5e69d7e5d09491dd9b9bcf5adaa92d510251c2ec8f85eec3",
+      "page": 1,
+      "line": 11,
+      "quote": "The battery housing is deformed near modules 1 and 2."
+    },
+    "basis": []
+  },
+  {
+    "event_id": "B-e4",
+    "pack_id": "B",
+    "module_id": "B-M2",
+    "type": "accident",
+    "date": "2023-02-07",
+    "fields": {
+      "damage_area": "front left underbody",
+      "severity": "moderate"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packB-insurance-2023",
+      "sha256": "bbf4fbfc45c7ccdb5e69d7e5d09491dd9b9bcf5adaa92d510251c2ec8f85eec3",
+      "page": 1,
+      "line": 11,
+      "quote": "The battery housing is deformed near modules 1 and 2."
+    },
+    "basis": []
+  },
+  {
+    "event_id": "C-e1",
+    "pack_id": "C",
+    "module_id": null,
+    "type": "production",
+    "date": "2020-02-19",
+    "fields": {
+      "manufacturer": "Altmark Cells GmbH",
+      "chemistry": "NMC"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packC-label",
+      "sha256": "cb820e00e9fb55b07d2d233ed7bdafb8bd6dcc7bbc8e4d6f15648e2b8e6f960b",
+      "page": 1,
+      "line": 9,
+      "quote": "Production date: 2020-02-19"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "C-e2",
+    "pack_id": "C",
+    "module_id": null,
+    "type": "first_registration",
+    "date": "2020-04-21",
+    "fields": {},
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packC-registration",
+      "sha256": "201713a9121d51616163297ffb0af269efc1400546fa6979d0c94873090d5b14",
+      "page": 1,
+      "line": 8,
+      "quote": "Date of first registration: 2020-04-21"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "C-e3",
+    "pack_id": "C",
+    "module_id": null,
+    "type": "software_update",
+    "date": "2022-11-03",
+    "fields": {
+      "component": "battery management system",
+      "version": "4.2.1"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packC-invoice-2022-en",
+      "sha256": "9cc8e37e21d44c4fa014023ae059496c9ea2362ffea76a8a23dd513dc6e55da5",
+      "page": 1,
+      "line": 11,
+      "quote": "Battery management system software updated to version 4.2.1"
+    },
+    "basis": []
+  }
+]

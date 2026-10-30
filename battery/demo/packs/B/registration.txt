@@ -1,0 +1,8 @@
+Vehicle registration certificate, part I (excerpt)
+DEMO DOCUMENT - all data invented
+
+Registration number: B-DE 2002
+Holder: Max Mustermann, Musterstrasse 1, 10115 Berlin
+Vehicle identification number: DEMO0VX60B0000002
+Make and model: Voltaro VX-60
+Date of first registration: 2020-06-30

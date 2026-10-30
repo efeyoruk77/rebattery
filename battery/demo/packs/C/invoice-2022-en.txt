@@ -1,0 +1,14 @@
+Example Motors Ltd - Authorized Voltaro Service
+DEMO DOCUMENT - all data invented
+
+Invoice no. EXM-22-3307
+Invoice date: 2022-11-03
+Customer: Jane Example
+VIN: DEMO0VX60C0000003
+Mileage: 38,410 km
+
+Work performed:
+1. Battery management system software updated to version 4.2.1
+2. Battery health check, no faults stored
+
+Total: 0.00 EUR (goodwill update)

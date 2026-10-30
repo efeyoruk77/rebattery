@@ -1,0 +1,8 @@
+Vehicle registration certificate, part I (excerpt)
+DEMO DOCUMENT - all data invented
+
+Registration number: HH-DE 3003
+Holder: Jane Example, Example Lane 7, 20095 Hamburg
+Vehicle identification number: DEMO0VX60C0000003
+Make and model: Voltaro VX-60
+Date of first registration: 2020-04-21

@@ -1,0 +1,10 @@
+Transcript of battery label photo (packB-label.jpg), typed and checked by hand.
+The photo is legible; OCR was not used for this demo.
+
+Manufacturer: Altmark Cells GmbH
+Model: VX-60 Traction Pack
+Chemistry: NMC
+Nominal capacity: 66.0 Ah / 58 kWh
+Modules: 8
+Production date: 2020-04-02
+Serial number: AC-VX60-200402-1123

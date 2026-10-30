@@ -1,0 +1,21 @@
+[
+  {
+    "event_id": "A-x1",
+    "pack_id": "A",
+    "module_id": "A-M4",
+    "type": "soh_measurement",
+    "date": "2021-06-14",
+    "fields": {
+      "soh_pct": 100
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packA-invoice-2021-de",
+      "sha256": "e51cda4c1bc7c5a7f8435df711d000bba89a96de6b57f1f9f11520d2e5a5502d",
+      "page": 1,
+      "line": 13,
+      "quote": "Batteriekapazitaet auf 100 % wiederhergestellt"
+    },
+    "basis": []
+  }
+]

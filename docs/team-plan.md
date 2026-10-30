@@ -159,13 +159,13 @@ Files are uploaded before the job starts. The job input only lists them by ID an
 | `writeDonorLogs` | Member 3 | `(signedRecord, draft) -> txHashes` |
 | `writeNewBatteryLog` | Member 3 | `(signedRecord, draft) -> txHashes` |
 
-**Demo draft:** [examples/demo-draft.json](../examples/demo-draft.json) is the target output for the three-pack demo, built from the demo documents on the `member2/verify-and-grouping` branch: 12 events, 3 warnings, 1 rejected tampered claim, and 96 cells (81 used, 15 held back). `npm run review` shows it at http://127.0.0.1:21952.
+**Demo draft:** [examples/demo-draft.json](../examples/demo-draft.json) is the target output for the three-pack demo, built from the demo documents in `battery/demo/`: 12 events, 3 warnings, 1 rejected tampered claim, and 96 cells (81 used, 15 held back). `npm run review` shows it at http://127.0.0.1:21952.
 
 ## Member 1: Agent code
 
 Owns everything the agent computes: the AI extraction and the deterministic code that checks it and groups cells. The AI is the "clerk": it reports what documents say, never what is true. Code, not AI, decides what is verified and how cells are grouped.
 
-Takes over the code on the `member2/verify-and-grouping` branch (`battery/*.mjs`: ingest, verify, rules, module tests, grouping, and their tests). The demo files under `battery/demo/` stay with Member 2.
+Takes over the code in `battery/` (`battery/*.mjs`: ingest, verify, rules, module tests, grouping, and their tests). The demo files under `battery/demo/` stay with Member 2.
 
 Tasks:
 1. **Instructions:** keep [agent/instructions.md](../agent/instructions.md) in line with the formats above. Add `cell_ids` to the Event format, and in the grouping explanation read the New battery's `cells` and `held_back` instead of `modules`.
@@ -195,7 +195,7 @@ Tasks:
 6. **Rehearsal and backup:** rehearse end to end with Member 4 at least twice, and record a backup video of a full successful run.
 7. **Submission:** follow the [submission checklist](https://www.masumi.network/tum-hackathon/submission) and collect the evidence from Members 3 and 4 (real TxHashes for the escrow payment, result hash, and event logs).
 
-Status (Oct 30): demo documents and per-module test files exist on the `member2/verify-and-grouping` branch. Still to do: cell test files, script, slides, rehearsal, video.
+Status (Oct 30): demo documents and per-module test files exist in `battery/demo/`. Still to do: cell test files, script, slides, rehearsal, video.
 
 Done when: the slides and script are final, the backup video exists, and a full rehearsal ran without help.
 
