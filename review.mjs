@@ -3,8 +3,13 @@
 import {createServer} from 'node:http';
 import {existsSync,readFileSync,readdirSync,writeFileSync,mkdirSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';
-import {finalize} from './stage-b.mjs';
+import {createStageB} from './stage-b.mjs';
+import {createCardanoSteps} from './cardano-steps.mjs';
 
+// Member 3's Cardano steps are connected here, not in stage-b.mjs defaults, so tests never reach the real chain.
+// Writes stay off until CARDANO_WRITES_ENABLED=true.
+const cardano = createCardanoSteps();
+const finalize = createStageB(cardano);
 const DEMO = 'examples/demo-draft.json';
 const readJson = path => { try { return JSON.parse(readFileSync(path, 'utf8')); } catch { return null; } };
 const files = dir => existsSync(dir) ? readdirSync(dir).filter(f => /^[0-9a-f-]{36}\.json$/.test(f)) : [];
@@ -45,6 +50,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     if (!d) return respond(res, 404, {error: 'Draft not found'});
     if (!d.paid) return respond(res, 400, {error: 'Only a paid draft can be signed. The demo draft is for display.'});
     const out = await finalize({draftText: d.draftText, ...d.paid}, {changes: typeof changes === 'string' && changes.trim() ? changes.trim().slice(0, 2000) : 'none'});
+    out.passports = cardano.passports(out.signedRecord); // ESS id -> {txHash, url}: what each QR code opens
     mkdirSync('.local/signed', {recursive: true, mode: 0o700});
     writeFileSync(`.local/signed/${id}.json`, JSON.stringify(out, null, 2), {mode: 0o600});
     return respond(res, 200, out);
