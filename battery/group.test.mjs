@@ -9,7 +9,7 @@ const rules = { capacity_band_pct: 3, resistance_band_pct: 10, min_modules: 3 };
 const mod = (module_id, capacity_ah = 58.5, internal_resistance_mohm = 1.43, over = {}) =>
   ({ module_id, cell_model: 'X1', chemistry: 'NMC', capacity_ah, internal_resistance_mohm, ...over });
 const base = ['A-M1', 'A-M2', 'A-M3', 'A-M4'].map((id) => mod(id));
-const known = [{ event_id: 'A-e1', pack_id: 'A', module_id: null, type: 'production', date: '2020-01-01' }];
+const known = [{ event_id: 'A-e1', pack_id: 'A', module_ids: [], type: 'production', date: '2020-01-01' }];
 const ids = (list) => list.map((m) => m.module_id);
 const heldReason = (battery, id) => battery.held_back.find((h) => h.module_id === id)?.reason ?? '';
 
@@ -38,15 +38,16 @@ test('holds back modules outside the resistance band', () => {
 });
 
 test('holds back a module named in an accident, or the whole pack when no module is named', () => {
-  const crash = (module_id) => ({ event_id: 'A-e9', pack_id: 'A', module_id, type: 'accident', date: '2023-02-07' });
-  assert.deepEqual(ids(group([...base, mod('A-M5')], [...known, crash('A-M1')], [], rules)[0].held_back), ['A-M1']);
-  const [b] = group(base, [...known, crash(null)], [], rules);
+  const crash = (module_ids) => ({ event_id: 'A-e9', pack_id: 'A', module_ids, type: 'accident', date: '2023-02-07' });
+  assert.deepEqual(ids(group([...base, mod('A-M5')], [...known, crash(['A-M1'])], [], rules)[0].held_back), ['A-M1']);
+  assert.deepEqual(ids(group([...base, mod('A-M5'), mod('A-M6')], [...known, crash(['A-M1', 'A-M2'])], [], rules)[0].held_back), ['A-M1', 'A-M2']);
+  const [b] = group(base, [...known, crash([])], [], rules);
   assert.equal(b.battery_id, null);
   assert.match(heldReason(b, 'A-M3'), /accident event A-e9/);
 });
 
 test('holds back modules named by an open warning', () => {
-  const repl = { event_id: 'A-e2', pack_id: 'A', module_id: 'A-M2', type: 'module_replacement', date: '2021-06-14' };
+  const repl = { event_id: 'A-e2', pack_id: 'A', module_ids: ['A-M2'], type: 'module_replacement', date: '2021-06-14' };
   const warning = { type: 'inconsistency', rule: 'soh_after_replacement', events: ['A-e2'], message: '' };
   const [b] = group([...base, mod('A-M5')], [...known, repl], [warning], rules);
   assert.deepEqual(ids(b.held_back), ['A-M2']);

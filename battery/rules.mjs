@@ -2,6 +2,9 @@
 // { type: 'inconsistency', rule, events: [event_id...], message }
 import { inconsistencyRules as defaults } from './config.mjs';
 
+// Dates may be partial (2020, 2020-03). Compare only the precision both dates have.
+const before = (a, b) => { const n = Math.min(a.length, b.length); return a.slice(0, n) < b.slice(0, n); };
+const modules = (e) => (e.module_ids?.length ? e.module_ids.join(', ') : null);
 const byDate = (a, b) => a.date.localeCompare(b.date) || a.event_id.localeCompare(b.event_id);
 const monthsBetween = (from, to) => (Date.parse(to) - Date.parse(from)) / (1000 * 60 * 60 * 24 * 30.4375);
 const soh = (e) => (typeof e.fields?.soh_pct === 'number' ? e.fields.soh_pct : null);
@@ -18,7 +21,7 @@ function sohAfterReplacement(events, rules) {
       const months = monthsBetween(repl.date, m.date);
       if (months >= 0 && months <= window_months && soh(m) >= min_soh_pct) {
         out.push(warn('soh_after_replacement', [repl, m],
-          `Health of ${soh(m)}% reported ${Math.round(months)} months after ${repl.module_id ?? 'a module'} was replaced; ` +
+          `Health of ${soh(m)}% reported ${Math.round(months)} months after ${modules(repl) ?? 'a module'} was replaced; ` +
           'one pack-level value is inconsistent with a pack that mixes old and new modules.'));
       }
     }
@@ -31,11 +34,11 @@ function datesOutOfOrder(events, rules, today) {
   const out = [];
   const production = events.find((e) => e.type === 'production');
   if (production) {
-    for (const e of events.filter((x) => x !== production && x.date < production.date)) {
+    for (const e of events.filter((x) => x !== production && before(x.date, production.date))) {
       out.push(warn('dates_out_of_order', [production, e], `${e.type} on ${e.date} is dated before production on ${production.date}.`));
     }
   }
-  for (const e of events.filter((x) => x.date > today)) {
+  for (const e of events.filter((x) => before(today, x.date))) {
     out.push(warn('dates_out_of_order', [e], `${e.type} is dated ${e.date}, which is in the future.`));
   }
   return out;
@@ -61,7 +64,7 @@ function accidentWithoutInspection(events) {
   return events.filter((e) => e.type === 'accident')
     .filter((a) => !events.some((e) => e.type === 'soh_measurement' && e.date > a.date))
     .map((a) => warn('accident_without_inspection', [a],
-      `Accident on ${a.date}${a.module_id ? ` affecting ${a.module_id}` : ''} has no later health measurement.`));
+      `Accident on ${a.date}${modules(a) ? ` affecting ${modules(a)}` : ''} has no later health measurement.`));
 }
 
 export function findInconsistencies(events, { rules = defaults, today = new Date().toISOString().slice(0, 10) } = {}) {

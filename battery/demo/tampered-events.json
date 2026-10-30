@@ -2,7 +2,10 @@
   {
     "event_id": "A-x1",
     "pack_id": "A",
-    "module_id": "A-M4",
+    "module_ids": [
+      "A-M4"
+    ],
+    "cell_ids": [],
     "type": "soh_measurement",
     "date": "2021-06-14",
     "fields": {

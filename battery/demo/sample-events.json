@@ -2,7 +2,8 @@
   {
     "event_id": "A-e1",
     "pack_id": "A",
-    "module_id": null,
+    "module_ids": [],
+    "cell_ids": [],
     "type": "production",
     "date": "2020-03-11",
     "fields": {
@@ -22,7 +23,8 @@
   {
     "event_id": "A-e2",
     "pack_id": "A",
-    "module_id": null,
+    "module_ids": [],
+    "cell_ids": [],
     "type": "first_registration",
     "date": "2020-05-12",
     "fields": {},
@@ -39,7 +41,10 @@
   {
     "event_id": "A-e3",
     "pack_id": "A",
-    "module_id": "A-M4",
+    "module_ids": [
+      "A-M4"
+    ],
+    "cell_ids": [],
     "type": "fault",
     "date": "2021-06-14",
     "fields": {
@@ -58,7 +63,10 @@
   {
     "event_id": "A-e4",
     "pack_id": "A",
-    "module_id": "A-M4",
+    "module_ids": [
+      "A-M4"
+    ],
+    "cell_ids": [],
     "type": "module_replacement",
     "date": "2021-06-14",
     "fields": {
@@ -77,7 +85,8 @@
   {
     "event_id": "A-e5",
     "pack_id": "A",
-    "module_id": null,
+    "module_ids": [],
+    "cell_ids": [],
     "type": "soh_measurement",
     "date": "2022-09-20",
     "fields": {
@@ -96,7 +105,8 @@
   {
     "event_id": "B-e1",
     "pack_id": "B",
-    "module_id": null,
+    "module_ids": [],
+    "cell_ids": [],
     "type": "production",
     "date": "2020-04-02",
     "fields": {
@@ -116,7 +126,8 @@
   {
     "event_id": "B-e2",
     "pack_id": "B",
-    "module_id": null,
+    "module_ids": [],
+    "cell_ids": [],
     "type": "first_registration",
     "date": "2020-06-30",
     "fields": {},
@@ -133,7 +144,10 @@
   {
     "event_id": "B-e3",
     "pack_id": "B",
-    "module_id": "B-M1",
+    "module_ids": [
+      "B-M1"
+    ],
+    "cell_ids": [],
     "type": "accident",
     "date": "2023-02-07",
     "fields": {
@@ -153,7 +167,10 @@
   {
     "event_id": "B-e4",
     "pack_id": "B",
-    "module_id": "B-M2",
+    "module_ids": [
+      "B-M2"
+    ],
+    "cell_ids": [],
     "type": "accident",
     "date": "2023-02-07",
     "fields": {
@@ -173,7 +190,8 @@
   {
     "event_id": "C-e1",
     "pack_id": "C",
-    "module_id": null,
+    "module_ids": [],
+    "cell_ids": [],
     "type": "production",
     "date": "2020-02-19",
     "fields": {
@@ -193,7 +211,8 @@
   {
     "event_id": "C-e2",
     "pack_id": "C",
-    "module_id": null,
+    "module_ids": [],
+    "cell_ids": [],
     "type": "first_registration",
     "date": "2020-04-21",
     "fields": {},
@@ -210,7 +229,8 @@
   {
     "event_id": "C-e3",
     "pack_id": "C",
-    "module_id": null,
+    "module_ids": [],
+    "cell_ids": [],
     "type": "software_update",
     "date": "2022-11-03",
     "fields": {

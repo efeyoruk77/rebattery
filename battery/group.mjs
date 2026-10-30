@@ -19,14 +19,14 @@ function historyHolds(tests, events, warnings) {
   for (const t of tests) {
     if (!donorPacks.has(packOf(t.module_id))) add(t.module_id, `no traceable donor: no verified events for pack ${packOf(t.module_id)}`);
   }
-  // An accident names its module, or (module_id null) puts the whole pack in doubt.
+  // An accident names its modules, or (module_ids empty) puts the whole pack in doubt.
   for (const a of events.filter((e) => e.type === 'accident')) {
-    for (const id of a.module_id ? [a.module_id] : modulesOfPack(a.pack_id)) add(id, `accident event ${a.event_id}`);
+    for (const id of a.module_ids?.length ? a.module_ids : modulesOfPack(a.pack_id)) add(id, `accident event ${a.event_id}`);
   }
   // A warning holds back the modules its events name; if none names a module, the whole pack.
   for (const w of warnings) {
     const linked = w.events.map((id) => eventsById.get(id)).filter(Boolean);
-    const named = [...new Set(linked.map((e) => e.module_id).filter(Boolean))];
+    const named = [...new Set(linked.flatMap((e) => e.module_ids ?? []))];
     const ids = named.length ? named : [...new Set(linked.map((e) => e.pack_id))].flatMap(modulesOfPack);
     for (const id of ids) add(id, `open warning ${w.rule} (${w.events.join(', ')})`);
   }

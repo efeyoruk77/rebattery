@@ -28,7 +28,24 @@ export function checkQuote(source, docsById) {
   return `quote not found at ${doc.doc_id} page ${source.page} line ${source.line}`;
 }
 
-const isDate = (d) => typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(Date.parse(d));
+// Full or partial ISO dates: a document may only state the year or the month.
+const isDate = (d) => typeof d === 'string' && /^\d{4}(-\d{2}(-\d{2})?)?$/.test(d) && !Number.isNaN(Date.parse(d));
+const MODULE = /^([A-Za-z0-9]+)-M\d+$/;
+const CELL = /^([A-Za-z0-9]+)-M\d+-C\d+$/;
+
+// module_ids and cell_ids are lists ([] = whole pack or not identified). Every ID must belong to the event's pack.
+function checkComponentIds(event) {
+  for (const [field, pattern] of [['module_ids', MODULE], ['cell_ids', CELL]]) {
+    const ids = event[field];
+    if (!Array.isArray(ids)) return `${field} must be a list`;
+    for (const id of ids) {
+      const match = typeof id === 'string' ? pattern.exec(id) : null;
+      if (!match) return `${field} has an invalid ID ${id}`;
+      if (match[1] !== event.pack_id) return `${field === 'module_ids' ? 'module' : 'cell'} ${id} is not in pack ${event.pack_id}`;
+    }
+  }
+  return null;
+}
 
 // Shape checks that apply to every event, whatever its confidence.
 function checkShape(event, docsById) {
@@ -36,11 +53,10 @@ function checkShape(event, docsById) {
   if (!eventTypes.includes(event.type)) return `unknown type ${event.type}`;
   if (!confidenceLevels.includes(event.confidence)) return `unknown confidence ${event.confidence}`;
   if (!isDate(event.date)) return `invalid date ${event.date}`;
-  if (event.module_id != null && !event.module_id.startsWith(`${event.pack_id}-M`)) {
-    return `module ${event.module_id} is not in pack ${event.pack_id}`;
-  }
-  if (event.confidence !== 'estimated') {
-    const doc = docsById.get(event.source?.doc_id);
+  const idProblem = checkComponentIds(event);
+  if (idProblem) return idProblem;
+  if (event.source) {
+    const doc = docsById.get(event.source.doc_id);
     if (doc && doc.pack_id !== event.pack_id) return `source ${doc.doc_id} belongs to pack ${doc.pack_id}, not ${event.pack_id}`;
   }
   return null;
@@ -58,10 +74,12 @@ export function verify(documents, events, options = {}) {
   for (const event of events) {
     if (seen.has(event.event_id)) { reject(event, 'duplicate event_id'); continue; }
     seen.add(event.event_id);
+    // An estimated event either quotes an unclear passage (the quote is still checked) or derives from other events (basis).
     const reason = checkShape(event, docsById)
-      ?? (event.confidence === 'estimated' ? null : checkQuote(event.source, docsById));
+      ?? (event.confidence === 'estimated' && !event.source ? null : checkQuote(event.source, docsById));
     if (reason) reject(event, reason);
-    else if (event.confidence === 'estimated') estimated.push(event);
+    else if (event.confidence === 'estimated' && event.basis?.length) estimated.push(event);
+    else if (event.confidence === 'estimated' && !event.source) reject(event, 'estimated event has no basis');
     else accepted.set(event.event_id, event);
   }
 

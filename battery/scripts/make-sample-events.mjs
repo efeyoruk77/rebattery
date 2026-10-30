@@ -9,7 +9,7 @@ const demo = fileURLToPath(new URL('../demo/', import.meta.url));
 const docs = new Map(ingest(readManifestFiles(`${demo}manifest.json`, demo)).map((d) => [d.doc_id, d]));
 const src = (doc_id, line, quote) => ({ doc_id, sha256: docs.get(doc_id).sha256, page: 1, line, quote });
 const ev = (event_id, type, date, module_id, fields, source) =>
-  ({ event_id, pack_id: event_id[0], module_id, type, date, fields, confidence: 'documented', source, basis: [] });
+  ({ event_id, pack_id: event_id[0], module_ids: module_id ? [module_id] : [], cell_ids: [], type, date, fields, confidence: 'documented', source, basis: [] });
 
 const events = [
   ev('A-e1', 'production', '2020-03-11', null, { manufacturer: 'Altmark Cells GmbH', chemistry: 'NMC' }, src('packA-label', 9, 'Production date: 2020-03-11')),
