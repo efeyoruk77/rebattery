@@ -98,9 +98,38 @@ test('never calls the model past the deadline, and cuts a slow call off at the d
   assert.ok(Date.now() - started < 2000);
 });
 
+const badQuote = () => replacement({ source: { ...replacement().source, quote: 'Modul 9 ersetzt' } });
+
+test('asks again when the verifier rejects events, and stops at the first clean reply', async () => {
+  const replies = [reply([badQuote()]), reply([]), reply([replacement()])];
+  let calls = 0;
+  const log = [];
+  const { events } = await extractor(async () => replies[calls++], { log: (m) => log.push(m) }).extractAll(packA);
+  assert.equal(calls, 3);
+  assert.equal(events[0].source.quote, 'Modul 4 ersetzt (Grund: Zellungleichgewicht)');
+  assert.deepEqual(log, ['pack A attempt 1: 1 of 1 events rejected', 'pack A attempt 2: no events']);
+});
+
+test('keeps the reply with the most verified events when none is clean', async () => {
+  const fault = replacement({ event_id: 'f', type: 'fault', source: { ...replacement().source, line: 10, quote: 'Spannungsdifferenz in Modul 4, Zellungleichgewicht' } });
+  const replies = [reply([replacement(), badQuote()]), reply([replacement(), fault, badQuote()]), reply([badQuote()])];
+  let calls = 0;
+  const { events } = await extractor(async () => replies[calls++]).extractAll(packA);
+  assert.equal(calls, 3);
+  assert.deepEqual(events.map((e) => e.type), ['module_replacement', 'fault', 'module_replacement']);
+});
+
+test('at the deadline, uses the best reply so far instead of failing', async () => {
+  let calls = 0;
+  const ask = async () => { calls++; await new Promise((r) => setTimeout(r, 60)); return reply([replacement(), badQuote()]); };
+  const { events } = await extractor(ask).extractAll(packA, { deadline: Date.now() + 100 });
+  assert.equal(events.length, 2);
+  assert.ok(calls <= 2);
+});
+
 test('sends each pack separately with only its own documents', async () => {
   const all = ingest(readManifestFiles(join(demoDir, 'manifest.json'), demoDir));
   const seen = [];
-  await extractor(async (input) => { seen.push(JSON.parse(input).documents.map((d) => d.pack_id)); return reply([]); }).extractAll(all);
+  await extractor(async (input) => { seen.push(JSON.parse(input).documents.map((d) => d.pack_id)); return reply([]); }, { attempts: 1 }).extractAll(all);
   assert.deepEqual(seen.map((packs) => [...new Set(packs)]), [['A'], ['B'], ['C']]);
 });

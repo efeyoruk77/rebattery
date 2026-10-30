@@ -3,10 +3,10 @@
 // and never adds facts. verify() still decides what is accepted.
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { checkQuote } from './verify.mjs';
+import { checkQuote, verify } from './verify.mjs';
 
 export const extractDefaults = {
-  attempts: 3,          // model calls per pack before giving up
+  attempts: 3,          // model calls per pack: retries after a failed call, or after a reply with rejected events
   timeoutMs: 180_000,   // a model call that takes longer counts as failed (a parked Eve session never answers)
   retryDelayMs: 5_000,  // wait between attempts; the free model is often briefly overloaded
   journalDir: '.local',
@@ -89,23 +89,45 @@ async function defaultAsk(input, journal) {
 export function createExtractor(options = {}) {
   const o = { ...extractDefaults, ask: defaultAsk, log: () => {}, ...options };
 
+  // One reply, normalized and scored by verify(). Code only scores the model's answers; it adds nothing.
+  function score(out, packId, docs, docsById) {
+    const events = out.events.map((e) => normalizeEvent(e, packId, docsById));
+    const warnings = renumber(events, Array.isArray(out.warnings) ? out.warnings : [], packId);
+    const check = verify(docs, events);
+    return { battery: out.battery ?? null, events, warnings, verified: check.events.length, rejected: check.rejected.length };
+  }
+  // More verified events wins; then fewer rejected ones.
+  const better = (a, b) => !b || a.verified > b.verified || (a.verified === b.verified && a.rejected < b.rejected);
+
+  // Asks again while the reply has rejected events (or none at all), and keeps the best reply.
+  // At the deadline, the best reply so far is used instead of failing the paid job.
   async function extractPack(packId, docs, deadline) {
     mkdirSync(o.journalDir, { recursive: true, mode: 0o700 });
     const input = JSON.stringify({ documents: docs });
+    const docsById = new Map(docs.map((d) => [d.doc_id, d]));
+    let best;
     let lastError;
     for (let attempt = 1; attempt <= o.attempts; attempt++) {
       const left = deadline === undefined ? Infinity : deadline - Date.now();
-      if (left <= 0) throw Error(`Deadline reached before extracting pack ${packId}${lastError ? ` (last error: ${lastError.message})` : ''}`);
+      if (left <= 0) {
+        if (best) return best;
+        throw Error(`Deadline reached before extracting pack ${packId}${lastError ? ` (last error: ${lastError.message})` : ''}`);
+      }
       try {
         // A call never runs past the deadline: the paid draft must be delivered in time.
         const reply = await withTimeout(o.ask(input, join(o.journalDir, `extract-${packId}-session.json`)), Math.min(o.timeoutMs, left), `Model call for pack ${packId}`);
-        return parseModelJson(reply);
+        const result = score(parseModelJson(reply), packId, docs, docsById);
+        if (better(result, best)) best = result;
+        if (result.rejected === 0 && result.verified > 0) return result;
+        lastError = Error(result.events.length ? `${result.rejected} of ${result.events.length} events rejected` : 'no events');
       } catch (error) {
+        if (best && /timed out/.test(error.message) && deadline !== undefined && Date.now() >= deadline) return best;
         lastError = error;
-        o.log(`pack ${packId} attempt ${attempt} failed: ${error.message}`);
-        if (attempt < o.attempts) await sleep(Math.min(o.retryDelayMs, Math.max(0, (deadline ?? Infinity) - Date.now())));
       }
+      o.log(`pack ${packId} attempt ${attempt}: ${lastError.message}`);
+      if (attempt < o.attempts) await sleep(Math.min(o.retryDelayMs, Math.max(0, (deadline ?? Infinity) - Date.now())));
     }
+    if (best) return best;
     throw Error(`Extraction for pack ${packId} failed after ${o.attempts} attempts: ${lastError.message}`);
   }
 
@@ -116,11 +138,8 @@ export function createExtractor(options = {}) {
     const result = { packs: [], events: [], warnings: [] };
     for (const packId of packIds) {
       const docs = documents.filter((d) => d.pack_id === packId);
-      const docsById = new Map(docs.map((d) => [d.doc_id, d]));
-      const out = await extractPack(packId, docs, deadline);
-      const events = out.events.map((e) => normalizeEvent(e, packId, docsById));
-      const warnings = renumber(events, Array.isArray(out.warnings) ? out.warnings : [], packId);
-      result.packs.push({ pack_id: packId, battery: out.battery ?? null });
+      const { battery, events, warnings } = await extractPack(packId, docs, deadline);
+      result.packs.push({ pack_id: packId, battery });
       result.events.push(...events);
       result.warnings.push(...warnings.map((w) => ({ ...w, source: 'ai' })));
     }
