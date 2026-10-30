@@ -28,13 +28,14 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 | # | Problem | Owner | Next step |
 |---|---|---|---|
 | 10 | **No demo script, slides, rehearsal, or backup video yet.** Presentation rules (duration, whether the demo is live) are unknown. | Member 2 | Check the opening slides (`TBC26_Hackathon_Opening.pdf` in the Telegram Announcements topic) for the rules, then write the script. |
-| 11 | **No QR code image per ESS.** The review screen shows each ESS's passport card, but there is no QR code yet. | Member 4 | Member 3 part done (`e1b63e9`): each ESS passport is a transaction, its QR link is `https://preprod.cardanoscan.io/transaction/<passport tx>`, and `createCardanoSteps().passports(signedRecord)` returns them. Member 4 adds the QR image to the review screen. |
+| 11 | **No QR code image per ESS.** The review screen shows each ESS's passport card, but there is no QR code yet. | Member 4 | Member 3 part done (`e1b63e9`): each ESS passport is a transaction, its QR link is `https://preprod.cardanoscan.io/transaction/<passport tx>`, and the `/api/sign` response now carries them as `passports` (`ESS-1: {txHash, url}`). Member 4 adds the QR image to the review screen. |
 | 12 | **Article 77 wording** on linking to several original batteries is not checked. | Member 2 | Check the exact text before putting it on a slide. |
 
 ## Smaller items
 
 - **Questions for Masumi:** how the result hash should link to several event logs in one job, and whether the price can differ from the fixed 1 test USDM.
 - **Gemini free tier** returns 503 "high demand" errors at peak times (seen on newer models). Pick a backup model for demo day.
+- **Review screen accepts requests from any page** (Member 4): `/api/sign` checks no `Host` or `Origin` and parses any body as JSON. Once `CARDANO_WRITES_ENABLED=true`, a page the company visits could trigger a real sign and Preprod write for a paid draft (DNS rebinding or a text/plain POST). Accept only `Host: 127.0.0.1:<port>` or `localhost:<port>` and `Content-Type: application/json` before enabling writes.
 - **Keys shared in chat** (Blockfrost, Gemini): replace them after the demo.
 - **Vendor name:** buyers see the Coworker under the Vendor "Citation Escrow", reused from another project. Cosmetic.
 - **Three starter tests fail on Windows only** (Linux paths and file permissions). They test the starter's own code, not ours.

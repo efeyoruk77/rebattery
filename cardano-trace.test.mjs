@@ -5,17 +5,17 @@ import {filesOf} from './cardano-log.mjs';
 import {anchorFiles,anchorIndex,writeStageB,memoryJournal} from './cardano-writes.mjs';
 import {generateKey,signDraft} from './cardano-sign.mjs';
 import {trace,checkTrace} from './cardano-trace.mjs';
-const draftText=readFileSync('examples/demo-draft.json','utf8');
+const defaultDraft=readFileSync('examples/demo-draft.json','utf8'),draftText=defaultDraft;
 const draft=JSON.parse(draftText);
 // Full run on a fake chain; read returns metadata as it comes back from the chain (JSON round trip).
-async function run(){
+async function run(draftText=defaultDraft){const draft=JSON.parse(draftText);
  const txs=[];
  const chain={async prepare(entry){txs.push(JSON.parse(JSON.stringify(entry)));return {txHash:`tx${txs.length}`,signedTx:'x'}},async status(){return null},async send(){},async waitConfirmed(txHash){return {txHash,feeLovelace:'1'}}};
  const anchorJournal=memoryJournal();
  await anchorFiles(filesOf(draft),chain,anchorJournal);
  const signed=signDraft(draftText,{blockchainIdentifier:'m'.repeat(120),resultHash:'f'.repeat(64)},generateKey().privateKey);
  const out=await writeStageB(signed,draft,chain,{anchors:anchorIndex(anchorJournal.state),draftText});
- return {txs,signed,passports:draft.new_batteries.map(b=>out.logs[`passport:${b.battery_id}`].txHash),read:async h=>txs[Number(h.slice(2))-1]??null};
+ return {txs,signed,draftText,passports:draft.new_batteries.map(b=>out.logs[`passport:${b.battery_id}`].txHash),read:async h=>txs[Number(h.slice(2))-1]??null};
 }
 test('every ESS passport traces back to all its donor logs and file anchors, and matches the draft',async()=>{
  const {signed,passports,read}=await run();
@@ -40,4 +40,19 @@ test('trace check catches an edited draft, a broken back link, a missing anchor,
  const tampered=checkTrace(await trace(passports[0],read),draftText,signed);
  for(const p of [`${moved}: pack:A log does not send it to ESS-1`,'docs:packA-label: not anchored with its draft hash','ESS-1 passport: health differs from the draft'])assert.ok(tampered.includes(p),p);
  await assert.rejects(trace('tx2',read),/not a passport/);
+});
+test('trace has no false alarms for cells without module_id or a missing facility',async()=>{
+ const d=JSON.parse(draftText);
+ for(const b of d.new_batteries)for(const c of b.cells)delete c.module_id;
+ d.new_batteries[0].second_life_facility=null;
+ const r=await run(JSON.stringify(d,null,2));
+ for(const p of r.passports)assert.deepEqual(checkTrace(await trace(p,r.read),r.draftText,r.signed),[]);
+});
+test('trace catches a changed cell model and a signature that is not the company key',async()=>{
+ const {txs,signed,passports,read}=await run();
+ txs[4].entries[0].cell_model='OTHER';
+ const problems=checkTrace(await trace(passports[0],read),draftText,signed,{companyKey:'f'.repeat(64)});
+ assert.ok(problems.includes('ESS-1 ESS log: cell_model differs from the draft'));
+ assert.ok(problems.includes('signed record is not signed with the company key'));
+ assert.ok(!checkTrace(await trace(passports[1],read),draftText,signed,{companyKey:signed.signer_public_key}).length);
 });

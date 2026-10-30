@@ -54,7 +54,7 @@ export function cleanError(error,secret){
 }
 const present=obj=>Object.fromEntries(Object.entries(obj).filter(([,v])=>v!==undefined&&v!==null));
 export const packOf=id=>id.split('-')[0];
-const moduleOf=cellId=>cellId.split('-').slice(0,2).join('-');
+export const moduleOf=cellId=>cellId.split('-').slice(0,2).join('-');
 // Every uploaded file of a draft or job input, grouped the way battery/ingest.mjs stores them:
 // documents by doc_id, module tests ("test") and cell test batches ("cells") by module_id.
 export function filesOf(input){
@@ -63,6 +63,8 @@ export function filesOf(input){
   ...(tests.module_tests??[]).map(t=>({group:'test',id:t.module_id,pack:packOf(t.module_id),sha256:t.sha256})),
   ...(tests.cell_tests??[]).map(t=>({group:'cells',id:t.module_id,pack:packOf(t.module_id),sha256:t.sha256}))];
 }
+// Anchor transaction of a file: its draft anchor_tx, or an anchor journal entry for the same file id with the same hash.
+export const anchoredTx=(index,f)=>f.anchor_tx??(index[`${f.group}:${f.id}`]?.sha256===f.sha256?index[`${f.group}:${f.id}`].tx:undefined);
 // Stage A: anchor entries for every file, split so each stays well inside one transaction. A file listed twice is an error.
 export function anchorEntries(files,maxBytes=10000){
  const seen=new Set(),entries=[];let entry,size=0;
@@ -87,7 +89,7 @@ const batch=(log,index,prev,entries,signed)=>checked({v:1,log,index,...(prev?{pr
 // which module's cells went to which ESS, which modules were not taken apart, and which cells were not used.
 export function donorLogEntry(packId,draft,signed,{prev,index=0,anchorIndex={}}={}){
  const events=draft.events.filter(e=>e.pack_id===packId);
- const anchors=[...new Set(filesOf(draft).filter(f=>f.pack===packId).map(f=>f.anchor_tx??anchorIndex[f.sha256]).filter(Boolean))];
+ const anchors=[...new Set(filesOf(draft).filter(f=>f.pack===packId).map(f=>anchoredTx(anchorIndex,f)).filter(Boolean))];
  const to={};
  for(const b of draft.new_batteries||[]){
   const modules=[...new Set(b.cells.filter(c=>c.donor_pack===packId).map(c=>c.module_id??moduleOf(c.cell_id)))];
@@ -106,7 +108,7 @@ export function essEntry(battery,draft,signed,donorTx){
   if(!donorTx[log])throw new Error(`No donor log transaction for pack ${c.donor_pack}`);
   ((donors[log]??={tx:donorTx[log],modules:{}}).modules[c.module_id??moduleOf(c.cell_id)]??=[]).push(c.cell_id);
  }
- return batch(`battery:${battery.battery_id}`,0,null,[present({type:'assembled_from',cell_model:battery.cell_model,chemistry:battery.chemistry,count:battery.cells.length,donors,
+ return batch(`battery:${battery.battery_id}`,0,null,[present({type:'assembled_from',cell_model:battery.cell_model&&metadatum(battery.cell_model),chemistry:battery.chemistry&&metadatum(battery.chemistry),count:battery.cells.length,donors,
   health:battery.health&&metadatum(battery.health),facility:battery.second_life_facility&&metadatum(battery.second_life_facility)})],signed);
 }
 // Passport: what the ESS's QR code opens. Points at the ESS log and repeats what the QR card shows.

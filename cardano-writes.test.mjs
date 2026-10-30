@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {sha256} from './standard-hash.mjs';
 import {filesOf} from './cardano-log.mjs';
-import {anchorFiles,anchorIndex,writeStageB,writeNewBatteryLog,dryRun,memoryJournal} from './cardano-writes.mjs';
+import {anchorFiles,anchorIndex,writeStageB,writeNewBatteryLog,dryRun,memoryJournal,dropUnsent,priceRun} from './cardano-writes.mjs';
 import {generateKey,signDraft} from './cardano-sign.mjs';
 const draftText=readFileSync('examples/demo-draft.json','utf8');
 const draft=JSON.parse(draftText);
@@ -13,13 +13,14 @@ const signed=signDraft(draftText,masumi,key.privateKey);
 const ESS=draft.new_batteries.map(b=>b.battery_id);
 const STAGE_B=3+2*ESS.length;
 // Fake chain: tx<n> is the n-th transaction built. Each fault fires once.
-function fakeChain({failPrepareOn,failSendOn,landThenFailOn,failWaitOn}={}){
+function fakeChain({failPrepareOn,failSendOn,landThenFailOn,failWaitOn,dropOn}={}){
  const prepared=[],sent=[],landed=new Set();
  return {prepared,sent,
   async prepare(entry){if(prepared.length+1===failPrepareOn){failPrepareOn=null;throw new Error('UTxO Balance Insufficient')}prepared.push(JSON.parse(JSON.stringify(entry)));return {txHash:`tx${prepared.length}`,signedTx:`signed:tx${prepared.length}`,feeLovelace:'180000',sizeBytes:900}},
   async status(txHash){return landed.has(txHash)?'confirmed':null},
   async send(signedTx){const txHash=signedTx.slice('signed:'.length);sent.push(txHash);
    if(txHash===failSendOn){failSendOn=null;throw new Error('network down')}
+   if(txHash===dropOn){dropOn=null;return txHash}
    landed.add(txHash);
    if(txHash===landThenFailOn){landThenFailOn=null;throw new Error('response lost')}
    return txHash},
@@ -108,9 +109,60 @@ test('a journal is bound to one signed record, so signing again with other chang
 test('dry run prices every write and sends nothing',async()=>{
  const built=[];
  const chain=dryRun({async prepare(entry){built.push(entry);return {txHash:sha256(String(built.length)),signedTx:'unsent',feeLovelace:'200000',sizeBytes:1000}}});
- const anchors=Object.fromEntries(filesOf(draft).map(f=>[f.sha256,'a'.repeat(64)]));
+ const anchors=Object.fromEntries(filesOf(draft).map(f=>[`${f.group}:${f.id}`,{sha256:f.sha256,tx:'a'.repeat(64)}]));
  const out=await writeStageB(signed,draft,chain,{anchors});
  assert.equal(built.length,STAGE_B);
  assert.equal(out.totalFeeLovelace,String(200000*STAGE_B));
  assert.equal(built[3].entries[0].donors['pack:A'].tx,out.logs['pack:A'].txHash);
+});
+test('a sent transaction that the mempool dropped is sent again on the rerun',async()=>{
+ const chain=fakeChain({dropOn:'tx3'});const journal=memoryJournal();const anchors=await anchorAll(chain);
+ await assert.rejects(writeStageB(signed,draft,chain,{journal,anchors}),/never sent/);
+ assert.equal(journal.state.logs['pack:B'].stage,'submitted');
+ await writeStageB(signed,draft,chain,{journal,anchors});
+ assert.equal(chain.sent.filter(h=>h==='tx3').length,2);
+ assert.equal(chain.prepared.length,1+STAGE_B);
+});
+test('an invalid ESS entry stops the run before anything is sent',async()=>{
+ const chain=fakeChain();const anchors=await anchorAll(chain);
+ const bad=JSON.parse(draftText);bad.new_batteries[1].cells[0].donor_pack='Z';
+ await assert.rejects(writeStageB(signed,bad,chain,{anchors}),/No donor log transaction for pack Z/);
+ bad.new_batteries[1].cells[0].donor_pack='A';bad.new_batteries[1].health={note:'x'.repeat(20000)};
+ await assert.rejects(writeStageB(signed,bad,chain,{anchors}),/too large/);
+ assert.deepEqual(chain.sent,['tx1']);
+});
+test('a file only counts as anchored under its own id and hash, and anchoring again only adds new files',async()=>{
+ const chain=fakeChain();const journal=memoryJournal();
+ const [first,...others]=filesOf(draft);
+ await anchorFiles([{...first,id:'renamed'},...others],chain,journal);
+ await assert.rejects(writeStageB(signed,draft,chain,{anchors:anchorIndex(journal.state)}),new RegExp(`Not anchored yet: ${first.group}:${first.id}`));
+ const out=await anchorFiles(filesOf(draft),chain,journal);
+ assert.equal(out.transactions.length,1);
+ assert.deepEqual(Object.keys(chain.prepared[1][first.group]),[first.id]);
+ assert.ok(out.files.every(f=>f.anchor_tx));
+});
+test('the journal keeps the signed record, and a stuck unsent entry can be dropped only if the network does not know it',async()=>{
+ const chain=fakeChain({failSendOn:'tx2'});const journal=memoryJournal();const anchors=await anchorAll(chain);
+ await assert.rejects(writeStageB(signed,draft,chain,{journal,anchors}),/drop-unsent/);
+ assert.deepEqual(journal.state.signed_record,signed);
+ assert.equal(await dropUnsent(journal,'pack:A',chain),'tx2');
+ assert.equal('pack:A' in journal.state.logs,false);
+ await writeStageB(signed,draft,chain,{journal,anchors});
+ await assert.rejects(dropUnsent(journal,'pack:A',chain),/not waiting to be sent/);
+ journal.state.logs['pack:B']={...journal.state.logs['pack:B'],stage:'submitted'};
+ await assert.rejects(dropUnsent(journal,'pack:B',chain),/must not be replaced/);
+});
+test('a file changed after anchoring is not anchored, even under the same id',async()=>{
+ const chain=fakeChain();const journal=memoryJournal();
+ const [first,...others]=filesOf(draft);
+ await anchorFiles([{...first,sha256:'0'.repeat(64)},...others],chain,journal);
+ await assert.rejects(writeStageB(signed,draft,chain,{anchors:anchorIndex(journal.state)}),new RegExp(`Not anchored yet: ${first.group}:${first.id}`));
+});
+test('pricing a whole run anchors first, then prices every stage B write in order, and sends nothing',async()=>{
+ const built=[];
+ const all=await priceRun(draftText,{async prepare(entry){built.push(entry);return {txHash:sha256(String(built.length)),signedTx:'unsent',feeLovelace:'1000',sizeBytes:500}}},key.privateKey);
+ assert.deepEqual(all.map(([name])=>name),['anchor 1','pack:A','pack:B','pack:C',...ESS.flatMap(id=>[`battery:${id}`,`passport:${id}`])]);
+ assert.ok(all.every(([,tx])=>tx.feeLovelace==='1000'&&tx.sizeBytes===500));
+ assert.equal(built[3].masumi,'unpaid-test-run');
+ assert.deepEqual(built[1].entries[0].anchors,[all[0][1].txHash]);
 });

@@ -76,7 +76,7 @@ test('a job input at its limits is anchored in transactions that each fit',()=>{
  assert.ok(entries.length>1&&entries.every(e=>bytes(e)<=MAX_ENTRY_BYTES));
 });
 test('donor log: events root, file anchors, modules per ESS, and what was held back',()=>{
- const anchorIndex=Object.fromEntries(filesOf(draft).map(f=>[f.sha256,`anchor-${f.pack}`]));
+ const anchorIndex=Object.fromEntries(filesOf(draft).map(f=>[`${f.group}:${f.id}`,{sha256:f.sha256,tx:`anchor-${f.pack}`}]));
  const entry=donorLogEntry('A',draft,signed,{anchorIndex});
  const events=draft.events.filter(e=>e.pack_id==='A');
  assert.equal(entry.log,'pack:A');
