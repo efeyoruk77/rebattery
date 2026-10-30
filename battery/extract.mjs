@@ -78,33 +78,35 @@ async function defaultAsk(input, journal) {
 export function createExtractor(options = {}) {
   const o = { ...extractDefaults, ask: defaultAsk, log: () => {}, ...options };
 
-  async function extractPack(packId, docs) {
+  async function extractPack(packId, docs, deadline) {
     mkdirSync(o.journalDir, { recursive: true, mode: 0o700 });
     const input = JSON.stringify({ documents: docs });
     let lastError;
     for (let attempt = 1; attempt <= o.attempts; attempt++) {
-      if (o.deadline !== undefined && Date.now() >= o.deadline) throw Error(`Deadline reached before extracting pack ${packId}`);
+      const left = deadline === undefined ? Infinity : deadline - Date.now();
+      if (left <= 0) throw Error(`Deadline reached before extracting pack ${packId}${lastError ? ` (last error: ${lastError.message})` : ''}`);
       try {
-        const reply = await withTimeout(o.ask(input, join(o.journalDir, `extract-${packId}-session.json`)), o.timeoutMs, `Model call for pack ${packId}`);
+        // A call never runs past the deadline: the paid draft must be delivered in time.
+        const reply = await withTimeout(o.ask(input, join(o.journalDir, `extract-${packId}-session.json`)), Math.min(o.timeoutMs, left), `Model call for pack ${packId}`);
         return parseModelJson(reply);
       } catch (error) {
         lastError = error;
         o.log(`pack ${packId} attempt ${attempt} failed: ${error.message}`);
-        if (attempt < o.attempts) await sleep(o.retryDelayMs);
+        if (attempt < o.attempts) await sleep(Math.min(o.retryDelayMs, Math.max(0, (deadline ?? Infinity) - Date.now())));
       }
     }
     throw Error(`Extraction for pack ${packId} failed after ${o.attempts} attempts: ${lastError.message}`);
   }
 
-  // extractAll(documents) -> { packs: [{ pack_id, battery }], events, warnings }
+  // extractAll(documents, { deadline }) -> { packs: [{ pack_id, battery }], events, warnings }
   // warnings here are the model's hints (source "ai"); verify() makes the rule-based ones.
-  async function extractAll(documents) {
+  async function extractAll(documents, { deadline = o.deadline } = {}) {
     const packIds = [...new Set(documents.map((d) => d.pack_id))].sort();
     const result = { packs: [], events: [], warnings: [] };
     for (const packId of packIds) {
       const docs = documents.filter((d) => d.pack_id === packId);
       const docsById = new Map(docs.map((d) => [d.doc_id, d]));
-      const out = await extractPack(packId, docs);
+      const out = await extractPack(packId, docs, deadline);
       const events = out.events.map((e) => normalizeEvent(e, packId, docsById));
       const warnings = renumber(events, Array.isArray(out.warnings) ? out.warnings : [], packId);
       result.packs.push({ pack_id: packId, battery: out.battery ?? null });
@@ -114,7 +116,7 @@ export function createExtractor(options = {}) {
     return result;
   }
 
-  // The draft step: extract(documents) -> events
-  const extract = async (documents) => (await extractAll(documents)).events;
+  // extract(documents, { deadline }) -> events
+  const extract = async (documents, options) => (await extractAll(documents, options)).events;
   return { extract, extractAll };
 }

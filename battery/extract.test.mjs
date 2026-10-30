@@ -69,6 +69,15 @@ test('retries a failed, hanging, or broken model reply, then gives up with the l
   await assert.rejects(extractor(async () => 'nothing', { attempts: 2 }).extractAll(packA), /pack A failed after 2 attempts: Model reply has no JSON object/);
 });
 
+test('never calls the model past the deadline, and cuts a slow call off at the deadline', async () => {
+  let calls = 0;
+  await assert.rejects(extractor(async () => { calls++; return reply([]); }).extractAll(packA, { deadline: Date.now() - 1 }), /Deadline reached before extracting pack A/);
+  assert.equal(calls, 0);
+  const started = Date.now();
+  await assert.rejects(extractor(() => new Promise(() => {}), { attempts: 1, timeoutMs: 60_000 }).extractAll(packA, { deadline: Date.now() + 100 }), /timed out after 0.1s|pack A failed/);
+  assert.ok(Date.now() - started < 2000);
+});
+
 test('sends each pack separately with only its own documents', async () => {
   const all = ingest(readManifestFiles(join(demoDir, 'manifest.json'), demoDir));
   const seen = [];
