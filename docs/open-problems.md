@@ -11,8 +11,7 @@ When you fix one, move it to **Solved** at the bottom with the commit hash, and 
 | 1 | **Sokosumi access is `PENDING`** for Coworker "EV Battery History Recovery" in the TUM Workspace (access request `01a18e65-a2f3-776c-a880-da1e2e340986`). | No task can run in the TUM Workspace until it is `GRANTED`. | Member 4 / Sandro (Masumi) | Asked Sandro directly and booked a call. Re-check with `coworkers connect` (returns the same request, creates nothing). |
 | 2 | **No paid run yet.** The payment service runs and the agent is registered (see Solved), but no paid task has gone through escrow. | The demo needs real TxHashes for escrow lock, result hash, and payout. | Member 4 | Run one paid task once Sokosumi access is granted (#1), then check the seller's net receipt. |
 | 3 | **Buyers cannot upload files remotely yet.** For the demo this is solved: `node upload.mjs [batchDir]` stores a batch in `.local/uploads` and prints the job input, which goes into the Sokosumi task description. | A buyer outside our machine still has no upload path. | Member 4 | After the demo flow works: Sokosumi's task files API (`POST /v1/tasks/{id}/files`). |
-| 4 | **Member 3's branch uses the earlier format** (one new battery, per-pack cell test files). Main now has 5 ESS units and per-module test files. | It cannot be merged, so nothing can be written on-chain yet. | Member 3 | Read `test_files` from the draft, write one log and passport per ESS with `health` and `second_life_facility`, take held-back items from the top-level `held_back`. Details under Member 3 in [team-plan.md](team-plan.md). |
-| 5 | **First real on-chain write needs team approval**, and the metadata label is still a placeholder (`1984`). | Member 3 is waiting on both. | Whole team | Agree on the label, then approve one test write on Preprod. |
+| 5 | **First real on-chain write needs team approval**, and the metadata label is still a placeholder (`1984`). | Member 3 is waiting on both. | Whole team | Agree on the label, then approve one test write on Preprod. Member 3 is ready: a dry run of the full demo (1 anchor, 3 donor logs, 5 ESS logs, 5 passports) builds all 14 transactions for about 3.08 tADA, and the log wallet holds 5 tADA. |
 
 ## AI step (real model: Gemini `gemini-3.5-flash`)
 
@@ -29,7 +28,7 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 | # | Problem | Owner | Next step |
 |---|---|---|---|
 | 10 | **No demo script, slides, rehearsal, or backup video yet.** Presentation rules (duration, whether the demo is live) are unknown. | Member 2 | Check the opening slides (`TBC26_Hackathon_Opening.pdf` in the Telegram Announcements topic) for the rules, then write the script. |
-| 11 | **No QR code image per ESS.** The review screen shows each ESS's passport card, but there is no QR code yet. | Member 4 + Member 3 | Member 3 provides the passport URL or identifier; Member 4 adds the QR code to the review screen. |
+| 11 | **No QR code image per ESS.** The review screen shows each ESS's passport card, but there is no QR code yet. | Member 4 | Member 3 part done (`e1b63e9`): each ESS passport is a transaction, its QR link is `https://preprod.cardanoscan.io/transaction/<passport tx>`, and `createCardanoSteps().passports(signedRecord)` returns them. Member 4 adds the QR image to the review screen. |
 | 12 | **Article 77 wording** on linking to several original batteries is not checked. | Member 2 | Check the exact text before putting it on a slide. |
 
 ## Smaller items
@@ -42,6 +41,7 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 
 ## Solved
 
+- #4: Member 3's branch now uses the ESS format. It anchors every document and test file from `test_files`, writes one log and one passport per ESS with `health` and `second_life_facility`, and takes held-back modules and cells from the top-level `held_back` (`e1b63e9`, branch `member3/cardano-onchain`, PR #1 to merge). Nothing is on-chain until #5.
 - Masumi Payment Service 0.29.0 runs with its own fresh PostgreSQL database and wallets on Member 4's machine (no Docker). Selling wallet funded from the dispenser. Agent "EV Battery History Recovery" registered on Preprod: [tx 04dd6863…c8f2](https://preprod.cardanoscan.io/transaction/04dd6863747ada3997441e5b1d7fae6c18bee51d9b6b88d6736d8dcbd8d3c8f2), confirmed in block 5354711.
 - Tasks whose description is a job input now run stage A in the worker, even without payment, so the full flow can be tested in Sokosumi before payments are set up.
 
