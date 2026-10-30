@@ -1,92 +1,90 @@
 # Cardano mapping (Member 3)
 
-How the shared formats in [team-plan.md](team-plan.md) (Event, Cell test, New battery, Signed record) are written to Cardano Preprod. Implemented in [cardano-log.mjs](../cardano-log.mjs); task list and setup in [member3-tasks.md](member3-tasks.md).
+How the shared formats in [team-plan.md](team-plan.md) (Event, Module test, Cell test batch, New ESS, Held back, Signed record) are written to Cardano Preprod. Implemented in [cardano-log.mjs](../cardano-log.mjs); status and commands in [member3-tasks.md](member3-tasks.md).
 
 ## What the DPP standard gives us
 
 Source: cardano-dpp-standards, `DPP-Blueprint-Cardano-v0.1.md` (draft).
 
-- Event Log = append-only history. Full events stay **off-chain**; the chain holds a fingerprint (Merkle root or hash-chain head) plus a checkpoint number.
-- Its sample batch record has `batch_id`, `root`, `index`, `events`, `period`. The `recordEventBatch.js` and Aiken `event_log` code are marked "not production ready" skeletons: no event schema, no metadata label, no library.
-- The blueprint says to use a new integer metadata label and not 721. It recommends hash chaining with checkpoints for fewer than 100 events per checkpoint, which fits us.
-- Cost is about 0.25 ADA per batch.
+- Event Log = append-only history. Full events stay **off-chain**; the chain holds a fingerprint plus a checkpoint number.
+- The blueprint's code is a "not production ready" skeleton: no event schema, no metadata label, no library. It says to use a new integer metadata label, not 721, and recommends hash chaining for fewer than 100 events per checkpoint.
 
-So we follow the pattern, not ready-made code: plain transaction metadata, no validator. Library: Mesh SDK 1.9.1 with Blockfrost (the starter already uses Blockfrost for settlement checks).
+So we follow the pattern with plain transaction metadata and no validator. Library: Mesh SDK 1.9.1 with Blockfrost.
 
-## Our design
+## Design
 
-One **log** per donor pack (`pack:A`) and one per new battery (`battery:NB-1`). A log is a chain of transactions: a later batch carries `prev`, the transaction hash of the log's previous batch. The demo writes one batch per log.
+One **log** per donor pack (`pack:A`) and one per ESS (`battery:ESS-1`), plus one **passport** per ESS. A later batch of a log would carry `prev`, the transaction hash of the previous batch; the demo writes one batch per log.
 
-All entries sit under one metadata label (placeholder `1984`, team to decide; not 721). Cardano metadata holds only integers, text up to 64 bytes, lists, and maps; no null, booleans, or floats. A 64-hex hash fits in one string; longer values (signature, Masumi identifier) are written as a list of 64-char pieces.
+All entries use one metadata label (placeholder `1984`, team to decide). Metadata holds only integers, text up to 64 UTF-8 bytes, lists, and maps. Longer text (signature, Masumi identifier) is a list of pieces split between characters. Decimals such as `soh_pct: 86.5` are written as text (`"86.5"`), and `null` values are left out. Every entry is checked against these rules and a size limit before a transaction is built.
 
-### Stage A: anchor (before hiring)
+### Stage A: anchors
 
 ```json
-{ "v": 1, "type": "anchor", "docs": { "packA-invoice-2021-de": "<sha256>", "packA-cell-tests": "<sha256>" } }
+{ "v": 1, "type": "anchor",
+  "docs":  { "packA-invoice-2021-de": "<sha256>" },
+  "test":  { "A-M2": "<sha256 of the module test>" },
+  "cells": { "A-M2": "<sha256 of the cell test batch>" } }
 ```
 
-One transaction per upload batch, covering documents and cell test files. Its hash is the `anchor_tx` of every file in it.
+The groups match how `battery/ingest.mjs` stores uploads (`doc:`, `test:`, `cells:`), so a module test and the cell test batch of the same module never collide. Uploads that do not fit in one transaction are split into several (the job input allows 500 files). Stage B refuses to run until every file of the draft is anchored, because logs cannot change later.
 
-### Stage B: donor log batch (one transaction per donor pack)
+### Stage B: donor log (one transaction per pack)
 
 ```json
 {
   "v": 1, "log": "pack:A", "index": 0,
   "entries": [
     { "type": "events", "root": "<sha256 over the pack's verified events>", "count": 5, "anchors": ["<anchor tx>"] },
-    { "type": "disassembled", "to": { "NB-1": ["A-M1-C01", "A-M1-C02"] }, "held": ["A-M4-C01", "A-M2-C03"] }
+    { "type": "disassembled", "to": { "ESS-1": ["A-M1", "A-M3"] }, "not_taken_apart": ["A-M4"], "unused_cells": ["A-M2-C11"] }
   ],
-  "draft": "<sha256 of the paid draft text>",
-  "paid": "<Masumi result hash>",
-  "masumi": ["<blockchain identifier, 64-char pieces>"],
-  "signer": "<company Ed25519 public key>",
-  "sig": ["<company signature, 2 pieces>"]
+  "draft": "<sha256 of the paid draft text>", "paid": "<Masumi result hash>", "masumi": "<blockchain identifier, or pieces>",
+  "changes": "<sha256 of the changes text>", "signer": "<company Ed25519 public key>", "sig": ["<signature, 2 pieces>"]
 }
 ```
 
-`root` = sha256 over the sorted hashes of the pack's events (canonical JSON), so the events with their quotes, `module_ids`, and `cell_ids` stay off-chain. `anchors` comes from the draft's `anchor_tx`, or from the anchor journal when the draft has `null`. Reasons for held-back cells stay off-chain in the draft.
+`root` = sha256 over the sorted hashes of the pack's events in canonical JSON; the events with their quotes stay off-chain. `to` says which module's cells went to which ESS. `not_taken_apart` and `unused_cells` come from the draft's top-level `held_back` (`level: "module"` and `level: "cell"`); reasons stay off-chain.
 
-### Stage B: new-battery log batch
+### Stage B: ESS log and passport (two transactions per ESS)
 
 ```json
 {
-  "v": 1, "log": "battery:NB-1", "index": 0,
-  "entries": [{ "type": "assembled_from", "cell_model": "AC-NMC-66P", "chemistry": "NMC", "count": 81, "donors": {
-    "pack:A": { "tx": "<tx of pack:A batch>", "test_file": "<sha256 of packA-cell-tests>", "cells": ["A-M1-C01", "…"] }
-  } }],
-  "draft": "…", "paid": "…", "masumi": ["…"], "signer": "…", "sig": ["…"]
+  "v": 1, "log": "battery:ESS-1", "index": 0,
+  "entries": [{ "type": "assembled_from", "cell_model": "AC-NMC-66P", "chemistry": "NMC", "count": 48,
+    "donors": { "pack:A": { "tx": "<pack:A log tx>", "modules": { "A-M3": ["A-M3-C01", "A-M3-C02"] } } },
+    "health": { "soh_pct": "86.5", "cell_count": 48, "…": "…" },
+    "facility": { "id": "DSL-AUG-01", "name": "…", "site": "…" } }],
+  "draft": "…", "paid": "…", "masumi": "…", "changes": "…", "signer": "…", "sig": ["…"]
 }
 ```
 
-Cells are grouped per donor, so each donor transaction hash is written once. With 81 cells this transaction is about 2 KB of the 16 KB limit; about 1,670 cells would fit in one batch record (dry-run estimate).
-
-### Passport
-
 ```json
-{ "v": 1, "type": "passport", "battery": "NB-1", "log_tx": "<tx of the battery log>" }
+{ "v": 1, "type": "passport", "battery": "ESS-1", "log_tx": "<ESS log tx>", "health": { "…": "…" }, "facility": { "…": "…" } }
 ```
 
-Passport → battery log → `assembled_from` → each donor log → events root and anchored files. A cell can be followed in both directions: the battery log lists it under its donor, and the donor's `disassembled` entry sends it to the battery.
+The passport repeats `health` and `facility`, so the QR code shows the ESS card in one step. **QR code:** each passport's link is `https://preprod.cardanoscan.io/transaction/<passport tx>`. `npm run cardano -- stage-b` prints them, and `createCardanoSteps().passports(signedRecord)` returns them for the review screen.
+
+Passport → ESS log → each donor log → events root and anchors. A cell can be followed both ways: the ESS log lists it under its module and donor, and the donor's `disassembled` entry sends that module to the ESS.
 
 ## Signature
 
-[stage-b.mjs](../stage-b.mjs) builds the record `{draft_hash, masumi_result_hash, masumi_blockchain_identifier, changes}`, where `draft_hash` is the sha256 of the exact draft text that was paid for. Member 3's `sign(record)` returns `{signer_public_key, signature}`: Ed25519 over the sha256 of the canonical record including `signer_public_key`.
+[stage-b.mjs](../stage-b.mjs) builds `{draft_hash, masumi_result_hash, masumi_blockchain_identifier, changes}`, where `draft_hash` is the sha256 of the exact draft text that was paid for. Member 3's `sign(record)` returns `{signer_public_key, signature}`: Ed25519 over the sha256 of the canonical record including `signer_public_key`.
 
-Every stage B transaction repeats `draft`, `paid`, `masumi`, `signer`, and `sig`. The events roots and cell lists are recomputed from the signed draft, so the signature binds every on-chain batch to the draft without a second signing step. Verification: fetch the draft text, check `signature`, recompute the roots, compare with the chain (`npm run cardano -- trace`).
+Every stage B log repeats the signed fields. `changes` is free text that may hold personal data, so only its hash goes on-chain. To verify, you need the draft text and the signed record JSON (for the `changes` text). Check the signature, compare its fields with the chain, and recompute the roots and cell lists. `npm run cardano -- trace` does all of this.
 
 ## Mapping per format
 
 | Our format | On-chain | Off-chain |
 |---|---|---|
-| Document | `sha256` in an anchor transaction | Original file, Document JSON |
-| Cell test file | `sha256` in an anchor transaction, and as `test_file` in `assembled_from` | Signed test file, Cell test rows |
+| Document | sha256 under `docs` in an anchor | Original file, Document JSON |
+| Module test, cell test batch | sha256 under `test` and `cells` in an anchor | Signed test JSON |
 | Event | Inside its pack's `events` root | Full Event JSON with quotes |
-| New battery | `assembled_from` cells per donor; `disassembled` in each donor log | `rules`, `held_back` reasons |
-| Signed record | `draft`, `paid`, `masumi`, `signer`, `sig` in every stage B batch | Signed record JSON |
+| New ESS | `assembled_from` (cells per module and donor), `health`, `facility`; passport | `rules`, test values |
+| Held back | `not_taken_apart`, `unused_cells` in the donor log | Reasons |
+| Signed record | `draft`, `paid`, `masumi`, `changes` (hash), `signer`, `sig` in every log | `changes` text |
 
-Personal data never goes on-chain: only hashes, pack, cell, and battery IDs.
+Only hashes, IDs, health figures, and the facility name go on-chain. No personal data.
 
 ## Open points
 
-- Metadata label: pick one before the first write.
-- How the Masumi result hash should link to several logs in one job (ask the Masumi team, task 9). Current answer: `paid` and `masumi` are repeated in every batch of the job.
+- Metadata label: the team must pick it before the first write.
+- How the Masumi result hash should link to several logs in one job (question for Masumi). Current answer: `paid` and `masumi` are repeated in every log.

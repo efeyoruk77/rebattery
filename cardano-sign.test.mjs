@@ -23,7 +23,7 @@ test('signed record covers the exact draft text and any change breaks it',()=>{
  assert.equal(signed.signer_public_key,key.publicKey);
  assert.equal(verifySignedRecord(signed),true);
  assert.equal(verifySignedRecord(signed,draftText),true);
- assert.equal(verifySignedRecord(signed,draftText.replace('"NB-1"','"NB-2"')),false);
+ assert.equal(verifySignedRecord(signed,draftText.replace('"ESS-1"','"ESS-9"')),false);
  assert.equal(verifySignedRecord({...signed,changes:'edited'}),false);
  assert.equal(verifySignedRecord({...signed,signer_public_key:generateKey().publicKey}),false);
  assert.equal(verifySignedRecord({...signed,signature:'00'}),false);
