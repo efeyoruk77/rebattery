@@ -17,6 +17,7 @@ Each event follows the team's Event format:
 
 Rules for events:
 1. One event per fact a document states: production, first_registration, module_replacement, cell_replacement, software_update, fault, soh_measurement, accident, charging_profile, warranty_claim, remaining_capacity_estimate. Use no other type. Skip information that fits none of them.
+   Record what happened, not what did not: a check or inspection that found no fault is not a fault event. Skip it, unless it reports a measured health value (then use soh_measurement).
 2. quote: copy a part of exactly one line, character for character, in the original language. Do not translate, fix typos, join lines, or shorten with "...". Keep it short but enough to support the event.
 3. page and line: the 1-based position of that line in the document's pages and lines. Copy doc_id and sha256 from the document.
 4. date: the date the event happened, in ISO form: YYYY-MM-DD, or YYYY-MM or YYYY when that is all the document gives. Work listed on an invoice or service record happened on the invoice date, and a measurement in a report was taken on the report date, unless the document gives it a different date. Never move a date from one document to an event in another document. Use null only when the document states no date at all.
