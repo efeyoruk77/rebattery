@@ -103,6 +103,27 @@ test('group() only uses cells from modules cleared by screening', () => {
   assert.deepEqual(ids(r.held_back), ['A-M2']);
 });
 
+test('a cell named by an accident or open warning is held back alone; the rest of its module is used', () => {
+  const crash = { event_id: 'A-e9', pack_id: 'A', module_ids: [], cell_ids: ['A-M1-C2'], type: 'accident', date: '2023-02-07' };
+  const screened = screenModules(modules, [...known, crash], []);
+  assert.deepEqual(ids(screened.held_back), []);
+  assert.deepEqual(ids(screened.held_cells), ['A-M1-C2']);
+  const r = group(modules, [...cellsOf('A-M1', 5), ...cellsOf('A-M2', 4)], [...known, crash], [], rules);
+  assert.ok(r.new_batteries.flatMap((b) => b.cells).every((c) => c.cell_id !== 'A-M1-C2'));
+  assert.match(reasonFor(r.held_back, 'A-M1-C2'), /accident event A-e9; not used/);
+
+  const replaced = { event_id: 'A-e3', pack_id: 'A', module_ids: [], cell_ids: ['A-M2-C1'], type: 'cell_replacement', date: '2021-01-01' };
+  const warning = { type: 'inconsistency', rule: 'soh_after_replacement', events: ['A-e3'], message: '' };
+  const w = screenModules(modules, [...known, replaced], [warning]);
+  assert.deepEqual([ids(w.held_back), ids(w.held_cells)], [[], ['A-M2-C1']]);
+});
+
+test('a named cell inside a held-back module is covered by its module', () => {
+  const crash = { event_id: 'A-e9', pack_id: 'A', module_ids: ['A-M1'], cell_ids: ['A-M1-C2'], type: 'accident', date: '2023-02-07' };
+  const r = screenModules(modules, [...known, crash], []);
+  assert.deepEqual([ids(r.held_back), r.held_cells], [['A-M1'], []]);
+});
+
 // ---- signed test results ----
 
 const keys = () => {

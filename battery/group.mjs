@@ -14,10 +14,14 @@ const byId = (key) => (a, b) => a[key].localeCompare(b[key], 'en', { numeric: tr
 
 // ---- Step 1: modules ----
 
-// screenModules(moduleTests, events, warnings) -> { cleared: moduleTests, held_back: [{ id, level, reason }] }
+// screenModules(moduleTests, events, warnings) -> { cleared: moduleTests, held_back: [{ id, level, reason }], held_cells }
+// held_cells: cells that an accident or open warning names directly. Their module is still taken apart,
+// but those cells are never grouped. An event that names neither modules nor cells puts the whole pack in doubt.
 export function screenModules(moduleTests, events, warnings) {
   const holds = new Map();
+  const cellHolds = new Map();
   const add = (id, reason) => holds.set(id, [...(holds.get(id) ?? []), reason]);
+  const addCell = (id, reason) => cellHolds.set(id, [...(cellHolds.get(id) ?? []), reason]);
   const modulesOfPack = (pack) => moduleTests.filter((t) => packOf(t.module_id) === pack).map((t) => t.module_id);
   const eventsById = new Map(events.map((e) => [e.event_id, e]));
   const donorPacks = new Set(events.map((e) => e.pack_id));
@@ -25,16 +29,17 @@ export function screenModules(moduleTests, events, warnings) {
   for (const t of moduleTests) {
     if (!donorPacks.has(packOf(t.module_id))) add(t.module_id, `no traceable donor: no verified events for pack ${packOf(t.module_id)}`);
   }
-  // An accident names its modules, or (module_ids empty) puts the whole pack in doubt.
-  for (const a of events.filter((e) => e.type === 'accident')) {
-    for (const id of a.module_ids?.length ? a.module_ids : modulesOfPack(a.pack_id)) add(id, `accident event ${a.event_id}`);
-  }
-  // A warning holds back the modules its events name; if none names a module, the whole pack.
+  // Hold back what the events name: their modules, their cells, or (naming neither) every module of their packs.
+  const holdNamed = (linked, reason) => {
+    const modules = [...new Set(linked.flatMap((e) => e.module_ids ?? []))];
+    const cells = [...new Set(linked.flatMap((e) => e.cell_ids ?? []))];
+    for (const id of modules) add(id, reason);
+    for (const id of cells) addCell(id, reason);
+    if (!modules.length && !cells.length) for (const id of [...new Set(linked.map((e) => e.pack_id))].flatMap(modulesOfPack)) add(id, reason);
+  };
+  for (const a of events.filter((e) => e.type === 'accident')) holdNamed([a], `accident event ${a.event_id}`);
   for (const w of warnings) {
-    const linked = w.events.map((id) => eventsById.get(id)).filter(Boolean);
-    const named = [...new Set(linked.flatMap((e) => e.module_ids ?? []))];
-    const ids = named.length ? named : [...new Set(linked.map((e) => e.pack_id))].flatMap(modulesOfPack);
-    for (const id of ids) add(id, `open warning ${w.rule} (${w.events.join(', ')})`);
+    holdNamed(w.events.map((id) => eventsById.get(id)).filter(Boolean), `open warning ${w.rule} (${w.events.join(', ')})`);
   }
 
   const sorted = [...moduleTests].sort(byId('module_id'));
@@ -42,6 +47,9 @@ export function screenModules(moduleTests, events, warnings) {
     cleared: sorted.filter((t) => !holds.has(t.module_id)),
     held_back: sorted.filter((t) => holds.has(t.module_id))
       .map((t) => ({ id: t.module_id, level: 'module', reason: `${holds.get(t.module_id).join('; ')}; not taken apart` })),
+    // A cell inside a held-back module is already covered by its module.
+    held_cells: [...cellHolds.keys()].filter((id) => !holds.has(id.replace(/-C\d+$/, ''))).sort((a, b) => a.localeCompare(b, 'en', { numeric: true }))
+      .map((id) => ({ id, level: 'cell', reason: `${cellHolds.get(id).join('; ')}; not used` })),
   };
 }
 
@@ -142,6 +150,8 @@ export function groupCells(cells, rules = defaults) {
 // against the cleared modules. Pass screenModules' result via `screened` to avoid screening twice.
 export function group(moduleTests, cells, events, warnings, rules = defaults, screened = screenModules(moduleTests, events, warnings)) {
   const cleared = new Set(screened.cleared.map((m) => m.module_id));
-  const grouped = groupCells(cells.filter((c) => cleared.has(c.module_id)), rules);
-  return { new_batteries: grouped.new_batteries, held_back: [...screened.held_back, ...grouped.held_back] };
+  const heldCells = screened.held_cells ?? [];
+  const named = new Set(heldCells.map((h) => h.id));
+  const grouped = groupCells(cells.filter((c) => cleared.has(c.module_id) && !named.has(c.cell_id)), rules);
+  return { new_batteries: grouped.new_batteries, held_back: [...screened.held_back, ...heldCells, ...grouped.held_back] };
 }
