@@ -34,11 +34,22 @@ export function locateQuote(source, doc) {
   return hits.length === 1 ? { ...source, page: hits[0][0], line: hits[0][1] } : source;
 }
 
+// IDs in the form the test results use: module numbers unpadded (A-M4), cell numbers two digits (A-M3-C07).
+// The model may write A-M04 or a-m3-c7; without this, a named cell would not match its test result and would not be held back.
+// Anything that is not a module or cell ID is left as it is, so verify() rejects it.
+export function canonicalId(id) {
+  const m = typeof id === 'string' ? /^([A-Za-z0-9]+)-M(\d+)(?:-C(\d+))?$/i.exec(id.trim()) : null;
+  if (!m) return id;
+  const module = `${m[1].toUpperCase()}-M${Number(m[2])}`;
+  return m[3] === undefined ? module : `${module}-C${String(Number(m[3])).padStart(2, '0')}`;
+}
+const canonicalIds = (ids) => [...new Set(ids.map(canonicalId))];
+
 function normalizeEvent(event, packId, docsById) {
   const e = { ...event, pack_id: packId };
-  e.module_ids = Array.isArray(e.module_ids) ? e.module_ids : e.module_id ? [e.module_id] : [];
+  e.module_ids = canonicalIds(Array.isArray(e.module_ids) ? e.module_ids : e.module_id ? [e.module_id] : []);
   delete e.module_id;
-  e.cell_ids = Array.isArray(e.cell_ids) ? e.cell_ids : [];
+  e.cell_ids = canonicalIds(Array.isArray(e.cell_ids) ? e.cell_ids : []);
   e.basis = Array.isArray(e.basis) ? e.basis : [];
   e.fields = e.fields && typeof e.fields === 'object' ? e.fields : {};
   // Only code may mark an event signed, from a verified signature.

@@ -4,7 +4,8 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createExtractor, parseModelJson } from './extract.mjs';
+import { createExtractor, parseModelJson, canonicalId } from './extract.mjs';
+import { screenModules, group } from './group.mjs';
 import { ingest, readManifestFiles } from './ingest.mjs';
 import { verify } from './verify.mjs';
 
@@ -52,6 +53,25 @@ test('renumbers events per pack and keeps basis and warning links', async () => 
   assert.deepEqual(out.warnings[0].events, ['A-e1', 'A-e2']);
   assert.equal(out.warnings[0].source, 'ai');
   assert.deepEqual(out.packs, [{ pack_id: 'A', battery: { chemistry: 'NMC' } }]);
+});
+
+test('writes module and cell IDs the way the test results do', () => {
+  assert.deepEqual(['A-M4', 'A-M04', 'a-m4', ' A-M4 '].map(canonicalId), ['A-M4', 'A-M4', 'A-M4', 'A-M4']);
+  assert.deepEqual(['A-M3-C7', 'A-M3-C07', 'a-m03-c7', 'A-M3-C123'].map(canonicalId), ['A-M3-C07', 'A-M3-C07', 'A-M3-C07', 'A-M3-C123']);
+  assert.deepEqual(['M4', 'A-4', 'A-M4-X1', 7].map(canonicalId), ['M4', 'A-4', 'A-M4-X1', 7]);
+});
+
+test('a cell named as C7 is still held back as A-M1-C07', async () => {
+  const cellEvent = replacement({ type: 'accident', module_ids: [], cell_ids: ['a-m1-c7', 'A-M1-C07'] });
+  const { events } = await extractor(async () => reply([cellEvent])).extractAll(packA);
+  assert.deepEqual(events[0].cell_ids, ['A-M1-C07']);
+  const cell = (n) => ({ cell_id: `A-M1-C${String(n).padStart(2, '0')}`, module_id: 'A-M1', cell_model: 'X1', chemistry: 'NMC',
+    nominal_capacity_ah: 66, capacity_ah: 58.5, internal_resistance_mohm: 0.85, tested_on: '2026-10-29', facility: { id: 'F1', name: 'F' } });
+  const modules = [{ module_id: 'A-M1', cell_model: 'X1', chemistry: 'NMC', capacity_ah: 58.5, internal_resistance_mohm: 1.43 }];
+  const r = group(modules, [1, 2, 3, 4, 5, 6, 7, 8, 9].map(cell), events, [], { capacity_band_pct: 2, resistance_band_pct: 10, cells_per_ess: 4 },
+    screenModules(modules, events, []));
+  assert.ok(r.held_back.some((h) => h.id === 'A-M1-C07' && h.level === 'cell'));
+  assert.ok(r.new_batteries.flatMap((b) => b.cells).every((c) => c.cell_id !== 'A-M1-C07'));
 });
 
 test('accepts replies wrapped in code fences or text', () => {
