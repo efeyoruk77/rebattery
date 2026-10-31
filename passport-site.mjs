@@ -9,7 +9,8 @@
 import {existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync, rmSync} from 'node:fs';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
-import {listDrafts, passportDrafts, passportQrs} from './review.mjs';
+import QRCode from 'qrcode';
+import {listDrafts, passportDrafts, passportQrs, signedRecordFor} from './review.mjs';
 import {collectStatus} from './status.mjs';
 import {passportView, chainReader, TX} from './passport.mjs';
 
@@ -77,11 +78,11 @@ function indexPage(entries, checkedAt) {
 <style>:root{--bg:#fbfbfa;--panel:#fff;--ink:#0b0b0c;--muted:#6f6f78;--line:#e6e6e3}
 @media (prefers-color-scheme:dark){:root{--bg:#08080a;--panel:#111114;--ink:#f5f5f4;--muted:#a1a1aa;--line:#26262b}}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}main{max-width:720px;margin:0 auto;padding:24px 16px}
-a.card{display:flex;justify-content:space-between;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:10px 0;text-decoration:none;color:inherit}
-.muted{color:var(--muted)}h1{margin:0 0 6px}.chip{font-size:12px;border-radius:999px;padding:2px 8px;background:var(--line);margin-left:6px}
+a.card{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:10px 0;text-decoration:none;color:inherit}
+.muted{color:var(--muted)}h1{margin:0 0 6px}.card .qr{flex:none;width:88px;height:88px;background:#fff;border-radius:10px;padding:4px}.card .qr svg{width:100%;height:100%;display:block}.card .who{display:flex;flex-direction:column;gap:2px;flex:1}.chip{font-size:12px;border-radius:999px;padding:2px 8px;background:var(--line);margin-left:6px}
 .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}.top a{color:inherit;font-size:14px;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--panel)}</style></head><body><main>
 <div class="top"><h1>⚡ Battery passports</h1><a href="./">Review screen →</a></div><p class="muted">Second-life energy storage units built from used EV battery packs. Each passport is recorded on Cardano Preprod. Checked against the chain on ${esc(checkedAt.slice(0, 10))}. Scan a unit’s QR code, or open one below to follow its cells back to every donor pack and source document.</p>
-${entries.map(e => `<a class="card" href="passport/${e.tx}/"><b>${esc(e.ess)}</b><span class="muted">${esc(e.health ?? '')}${e.testRun ? '<span class="chip">test run</span>' : ''} →</span></a>`).join('\n')}
+${entries.map(e => `<a class="card" href="passport/${e.tx}/"><span class="who"><b>${esc(e.ess)}</b><span class="muted">${esc(e.health ?? '')}${e.testRun ? '<span class="chip">test run</span>' : ''}</span><span class="muted" style="font-size:13px">Open passport →</span></span>${e.qr ? `<span class="qr" title="What the QR code on the unit opens">${e.qr}</span>` : ''}</a>`).join('\n')}
 </main></body></html>`;
 }
 
@@ -89,7 +90,7 @@ export async function buildSite({out = 'site', root = '.', read = chainReader(),
  const template = readFileSync(`${root}/passport.html`, 'utf8');
  if (!template.includes('</head>')) throw Error('passport.html changed: cannot find where to embed the data');
  const drafts = listDrafts(root), candidates = passportDrafts(root);
- const signedFor = id => readJson(`${root}/.local/signed/${id}.json`)?.signedRecord ?? null;
+ const signedFor = id => signedRecordFor(id, root);
  const checkedAt = new Date().toISOString();
  const hashes = demoHashes(root);
  rmSync(out, {recursive: true, force: true});
@@ -107,7 +108,10 @@ export async function buildSite({out = 'site', root = '.', read = chainReader(),
   view.checkedAt = checkedAt;
   mkdirSync(join(out, 'passport', p.tx), {recursive: true});
   writeFileSync(join(out, 'passport', p.tx, 'index.html'), staticPage(template, view));
-  entries.push({ess: view.ess.battery_id, tx: p.tx, health: view.ess.health?.soh_pct != null ? `${view.ess.health.soh_pct}% health` : '', testRun: view.payment.testRun});
+  // The code the unit carries: this site's passport page when PASSPORT_BASE_URL is an https address, else Cardanoscan.
+  const base = /^https:\/\/[^\s/?#]+(\/[^\s?#]*)?$/.test(process.env.PASSPORT_BASE_URL ?? '') ? process.env.PASSPORT_BASE_URL.replace(/\/+$/, '') : null;
+  const qr = await QRCode.toString(base ? `${base}/passport/${p.tx}/` : `https://preprod.cardanoscan.io/transaction/${p.tx}`, {type: 'svg', margin: 1, errorCorrectionLevel: 'M'});
+  entries.push({qr, ess: view.ess.battery_id, tx: p.tx, health: view.ess.health?.soh_pct != null ? `${view.ess.health.soh_pct}% health` : '', testRun: view.payment.testRun});
   log(`${view.ess.battery_id}: passport/${p.tx}/`);
  }
  writeFileSync(join(out, 'passports.html'), indexPage(entries, checkedAt));

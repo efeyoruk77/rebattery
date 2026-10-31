@@ -69,9 +69,10 @@ export async function passportQrs(id, root = '.', base = passportBase()) {
  return out;
 }
 
-// The demo draft exactly as it was written to Cardano in the test run of Oct 31 (from commit eda0ec6). The demo draft
-// has changed since (pack model, serial number, VIN), so its events no longer match the passports on-chain.
-// Passports match against this copy; it is not listed on the review screen. Never regenerate it.
+// The demo draft exactly as it was signed and written to Cardano in the test run of Oct 31 (the bytes its on-chain
+// draft_hash covers). The demo draft has changed since (pack model, serial number, VIN), so it no longer matches the
+// passports on-chain. Passports match against this copy; it is not listed on the review screen. Never regenerate it.
+// Its signed record, rebuilt from the on-chain logs, is examples/demo-onchain-signed.json.
 const ONCHAIN_DEMO = ['demo-onchain', 'examples/demo-onchain-draft.json', 'Demo: 3 NMC packs, as written to Cardano in the test run (invented data, not paid)'];
 
 // The drafts a passport may take its history from: every listed draft, plus the on-chain demo copy.
@@ -82,8 +83,19 @@ export function passportDrafts(root = '.') {
  return drafts;
 }
 
+// The signed record of a draft: from signing on this machine, or for the on-chain demo copy, the test run's record.
+export function signedRecordFor(id, root = '.') {
+ if (id === ONCHAIN_DEMO[0]) {
+  const r = readJson(`${root}/examples/demo-onchain-signed.json`);
+  if (!r) return null;
+  const {note, ...record} = r; // the note is not part of what was signed
+  return record;
+ }
+ return readJson(`${root}/.local/signed/${id}.json`)?.signedRecord ?? null;
+}
+
 // Passport views, read from the chain at most once per transaction every five minutes.
-const signedFor = id => readJson(`.local/signed/${id}.json`)?.signedRecord ?? null;
+const signedFor = id => signedRecordFor(id);
 const passportCache = new Map();
 function cachedPassport(tx, read = chainReader()) {
  const hit = passportCache.get(tx);

@@ -62,6 +62,16 @@ test('passports can match the demo draft exactly as it was written to Cardano',a
  const {listDrafts,passportDrafts}=await import('./review.mjs');
  const copy=passportDrafts().find(d=>d.id==='demo-onchain');
  assert.ok(copy,'examples/demo-onchain-draft.json is offered to passports');
- assert.equal(createHash('sha256').update(copy.draftText).digest('hex'),'db1219c7f960fc2fc64a34a44a41b403b786d7a7eb2fe584faf5204cb7c9326c','the on-chain copy must never be regenerated');
+ assert.equal(createHash('sha256').update(copy.draftText).digest('hex'),'1aede4c49485675ddc8fd69afe3a0b88d8058f7ea7c6817e363b40bf2b37ff2a','the on-chain copy must never be regenerated: its bytes are what the test run signed');
  assert.ok(!listDrafts().some(d=>d.id==='demo-onchain'),'the copy is not listed on the review screen');
+});
+
+// Bug: the test-run passports showed "Company signature not checked" because its signed record was not in the repo.
+test('the test-run signed record verifies against the on-chain demo copy',async()=>{
+ const {verifySignedRecord}=await import('./cardano-sign.mjs');
+ const {passportDrafts,signedRecordFor}=await import('./review.mjs');
+ const copy=passportDrafts().find(d=>d.id==='demo-onchain');
+ const signed=signedRecordFor('demo-onchain');
+ assert.equal(signed.note,undefined,'the note is stripped before checking');
+ assert.ok(verifySignedRecord(signed,copy.draftText));
 });

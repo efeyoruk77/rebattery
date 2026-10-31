@@ -1,0 +1,9 @@
+{
+ "note": "Signed record of the unpaid test run of Oct 31, rebuilt from the on-chain logs (the changes text \"none\" matches its on-chain hash). It signs examples/demo-onchain-draft.json.",
+ "draft_hash": "1aede4c49485675ddc8fd69afe3a0b88d8058f7ea7c6817e363b40bf2b37ff2a",
+ "masumi_result_hash": "1aede4c49485675ddc8fd69afe3a0b88d8058f7ea7c6817e363b40bf2b37ff2a",
+ "masumi_blockchain_identifier": "unpaid-test-run",
+ "changes": "none",
+ "signer_public_key": "f17dde2f92159eb006ab7f595c8c41b05aa41af5d9c9ca8868c428ec7282fb5c",
+ "signature": "3080887e4bebf607551edc82510e5231fc1ed9890333a3fe74f41b75a7d99ad24053f0a178dfd5689ea349d54c5d7a610d080c651205c1d87ba94994f79df202"
+}
