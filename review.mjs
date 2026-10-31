@@ -130,6 +130,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     try { return respond(res, 200, await cachedPassport(tx)); }
     catch (e) { return respond(res, /is not a passport entry|is not the/.test(e.message) ? 404 : 502, {error: e.message.slice(0, 300)}); }
    }
+   if (req.method === 'GET' && url.pathname === '/logo.jpg') return respond(res, 200, readFileSync('logo.jpg'), 'image/jpeg');
    if (req.method === 'GET' && url.pathname === '/status') return respond(res, 200, readFileSync('status.html', 'utf8'), 'text/html; charset=utf-8');
    if (req.method === 'GET' && url.pathname === '/api/status') return respond(res, 200, await collectStatus());
    if (req.method === 'GET' && url.pathname === '/api/drafts') return respond(res, 200, listDrafts().map(({id, label, paid}) => ({id, label, paid: Boolean(paid)})));

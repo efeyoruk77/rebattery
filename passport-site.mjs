@@ -6,7 +6,7 @@
 // Then set PASSPORT_BASE_URL in .env to the site's https address, so the review screen's QR codes open it.
 // Each page holds a copy of what the review server's /passport/<tx> page shows, checked against the chain
 // when this script runs. Publish only drafts whose content may be public (the demo data is invented).
-import {existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync, rmSync} from 'node:fs';
+import {existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync, rmSync, copyFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import QRCode from 'qrcode';
@@ -76,14 +76,14 @@ export function staticPage(template, view) {
 }
 
 function indexPage(entries, checkedAt) {
- return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Afterlife · Battery Passports</title>
+ return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Afterlife · Battery Passports</title><link rel="icon" href="logo.jpg">
 <style>:root{--bg:#fbfbfa;--panel:#fff;--ink:#0b0b0c;--muted:#6f6f78;--line:#e6e6e3}
 @media (prefers-color-scheme:dark){:root{--bg:#08080a;--panel:#111114;--ink:#f5f5f4;--muted:#a1a1aa;--line:#26262b}}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}main{max-width:720px;margin:0 auto;padding:24px 16px}
 a.card{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:10px 0;text-decoration:none;color:inherit}
 .muted{color:var(--muted)}h1{margin:0 0 6px}.card .qr{flex:none;width:88px;height:88px;background:#fff;border-radius:10px;padding:4px}.card .qr svg{width:100%;height:100%;display:block}.card .who{display:flex;flex-direction:column;gap:2px;flex:1}.chip{font-size:12px;border-radius:999px;padding:2px 8px;background:var(--line);margin-left:6px}
 .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}.top a{color:inherit;font-size:14px;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--panel)}</style></head><body><main>
-<div class="top"><h1>⚡ Afterlife · Battery passports</h1><a href="./">Review screen →</a></div><p class="muted">Second-life energy storage units built from used EV battery packs. Each passport is recorded on Cardano Preprod. Checked against the chain on ${esc(checkedAt.slice(0, 10))}. Scan a unit’s QR code, or open one below to follow its cells back to every donor pack and source document.</p>
+<div class="top"><h1><img src="logo.jpg" alt="" aria-hidden="true" style="width:32px;height:32px;border-radius:9px;vertical-align:-6px;margin-right:8px">Afterlife · Battery passports</h1><a href="./">Review screen →</a></div><p class="muted">Second-life energy storage units built from used EV battery packs. Each passport is recorded on Cardano Preprod. Checked against the chain on ${esc(checkedAt.slice(0, 10))}. Scan a unit’s QR code, or open one below to follow its cells back to every donor pack and source document.</p>
 ${entries.map(e => `<a class="card" href="passport/${e.tx}/"><span class="who"><b>${esc(e.ess)}</b><span class="muted">${esc(e.health ?? '')}${e.testRun ? '<span class="chip">test run</span>' : ''}</span><span class="muted" style="font-size:13px">Open passport →</span></span>${e.qr ? `<span class="qr" title="What the QR code on the unit opens">${e.qr}</span>` : ''}</a>`).join('\n')}
 </main></body></html>`;
 }
@@ -133,6 +133,7 @@ export async function buildSite({out = 'site', root = '.', read = chainReader(),
 </body>`));
  log(`Review screen: ${published.length} drafts (${drafts.length - published.length} not demo data, left out)`);
  writeFileSync(join(out, '.nojekyll'), '');
+ if (existsSync(`${root}/logo.jpg`)) copyFileSync(`${root}/logo.jpg`, join(out, 'logo.jpg'));
  return entries;
 }
 
