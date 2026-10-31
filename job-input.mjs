@@ -1,4 +1,6 @@
 // Job input: the buyer lists uploaded files by ID and SHA-256 instead of sending them.
+// A buyer outside the agent's machine may instead give each file a public https `url` (remote-files.mjs downloads it
+// and keeps it only if its SHA-256 matches). A linked document also states its pack_id, kind, and language.
 // The Masumi input hash covers this text, so it fixes exactly which files were submitted.
 // The lists are what battery/ingest.mjs upload functions return:
 //   documents: uploadDocuments, module_tests: uploadModuleTests, cell_tests: uploadCellTests (one batch per module taken apart).
@@ -18,10 +20,16 @@ function list(value, max, where) {
  if (!Array.isArray(value) || value.length > max) throw Error(`${where} must be a list of at most ${max}`);
  return value;
 }
-function checkEntries(items, idKey, idPattern, where, check = () => {}) {
+const URL_MAX = 500;
+function checkLink(f, where, id) {
+ if (f.url === undefined) return;
+ if (typeof f.url !== 'string' || f.url.length > URL_MAX || !/^https:\/\/[^\s]+$/.test(f.url)) throw Error(`${where} ${id} url must be an https link of at most ${URL_MAX} characters`);
+}
+function checkEntries(items, idKey, idPattern, where, check = () => {}, extraKeys = []) {
  const seen = new Set();
  for (const f of items) {
-  onlyKeys(f, [idKey, 'sha256'], where);
+  onlyKeys(f, [idKey, 'sha256', 'url', ...extraKeys], where);
+  checkLink(f, where, f[idKey]);
   if (!idPattern.test(f[idKey] ?? '')) throw Error(`${where} ${idKey} is invalid`);
   if (!SHA.test(f.sha256 ?? '')) throw Error(`${where} ${f[idKey]} needs a lowercase SHA-256`);
   if (seen.has(f[idKey])) throw Error(`${where} repeats ${f[idKey]}`);
@@ -47,7 +55,13 @@ export function parseJobInput(text) {
  // Each document's pack is stored with the upload; loadJobInputs checks it is listed in packs.
  const documents = list(job.documents, LIMITS.documents, 'documents');
  if (!documents.length) throw Error('documents must list at least one document');
- checkEntries(documents, 'doc_id', DOC, 'Document');
+ checkEntries(documents, 'doc_id', DOC, 'Document', f => {
+  const meta = ['pack_id', 'kind', 'language'].filter(k => f[k] !== undefined);
+  if (!f.url) { if (meta.length) throw Error(`Document ${f.doc_id} gives ${meta[0]} without a url; uploaded documents keep theirs`); return; }
+  if (!PACK.test(f.pack_id ?? '') || !packs.includes(f.pack_id)) throw Error(`Linked document ${f.doc_id} needs a pack_id listed in packs`);
+  if (!/^[a-z_]{1,40}$/.test(f.kind ?? '')) throw Error(`Linked document ${f.doc_id} needs a kind such as "service_invoice"`);
+  if (!/^[a-z]{2}$/.test(f.language ?? '')) throw Error(`Linked document ${f.doc_id} needs a two-letter language such as "de"`);
+ }, ['pack_id', 'kind', 'language']);
 
  const inListedPack = where => f => { if (!packs.includes(MODULE.exec(f.module_id)[1])) throw Error(`${where} ${f.module_id} belongs to an unlisted pack`); };
  const moduleTests = list(job.module_tests ?? [], LIMITS.module_tests, 'module_tests');

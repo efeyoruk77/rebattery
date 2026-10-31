@@ -3,6 +3,7 @@
 import {readFileSync, writeFileSync} from 'node:fs';
 import {parseJobInput} from './job-input.mjs';
 import {loadJobInputs} from './battery/ingest.mjs';
+import {fetchRemoteFiles} from './remote-files.mjs';
 import {createExtractor, createExplainer} from './battery/extract.mjs';
 import {verify} from './battery/verify.mjs';
 import {checkModuleTests, checkCellTests} from './battery/tests.mjs';
@@ -17,8 +18,9 @@ export const defaultConfig = () => ({
 
 export function connectedSteps({storeDir, testerPublicKeyPath} = defaultConfig()) {
  return {
-  // (job) -> {documents, moduleTests, cellTests}. Stops on a missing file or a hash that differs from the job input.
-  ingest: async job => loadJobInputs(job, storeDir),
+  // (job) -> {documents, moduleTests, cellTests}. Downloads linked files first. Stops on a missing file or a hash
+  // that differs from the job input.
+  ingest: async job => { await fetchRemoteFiles(job, storeDir); return loadJobInputs(job, storeDir); },
   // (documents, {deadline}) -> events. AI extraction through the local Eve agent, one model call per pack.
   extract: async (documents, {deadline} = {}) => createExtractor({deadline}).extract(documents),
   // (documents, events) -> {events, rejected, warnings}

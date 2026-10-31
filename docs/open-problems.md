@@ -8,8 +8,6 @@ When you fix one, move it to **Solved** at the bottom with the commit hash, and 
 
 | # | Problem | Why it matters | Owner | Next step |
 |---|---|---|---|---|
-| 3 | **Buyers cannot upload files remotely yet.** For the demo this is solved: the review screen's **New job** page (or `node upload.mjs [batchDir]`) stores a batch in `.local/uploads` and gives the job input, which goes into the Sokosumi task description. The upload only accepts requests from our own machine. | A second-life company outside our machine can create the task but cannot send us its documents. | Member 4 | After the demo: Sokosumi's task files API (`POST /v1/tasks/{id}/files`). |
-| 13 | **Only the TUM Workspace can hire the Coworker.** It is connected only there, it is not on the public Sokosumi marketplace (searched Oct 31), and the worker accepts tasks from one Workspace only (`SOKOSUMI_ORGANIZATION_ID`). Companies with their own Masumi wallet can already hire it directly through the Masumi API. | Real second-life companies outside the hackathon cannot hire it on Sokosumi. | Member 4 | For the demo, a teammate on their own account plays the company. After: connect the Coworker to other Workspaces (`sokosumi coworkers connect`) and let the worker accept several; ask Masumi how to list it on the marketplace (publishing needs team approval). |
 
 ## AI step (real model: Gemini `gemini-3.5-flash`)
 
@@ -34,10 +32,13 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 - **Keys shared in chat** (Blockfrost, Gemini): replace them after the demo.
 - **Vendor name:** buyers see the Coworker under the Vendor "Citation Escrow", reused from another project. Cosmetic.
 - **Existing paid drafts show no pack model, serial number, or VIN.** They were made before the model was asked for these (`abf5b11`) and cannot change, since their hash is on-chain. The next run shows them. Restart `npm start` after pulling.
-- **Pack identity fields are not quote-checked.** Model, serial number, and VIN sit on a different line from the event's quote, so code does not check them word for word (the hand-made demo drafts work the same way). Fix if needed: give each its own quote. Owner: Member 1.
 - **Never regenerate `examples/demo-onchain-draft.json` or `examples/demo-onchain-signed.json`.** They are the exact draft and signed record of the Oct 31 test run; the passports check against them. A test pins the draft's hash.
 
 ## Solved
+
+- #3: outside companies can send their files (Oct 31): a job input entry may give a public https `url` with its SHA-256. The agent downloads it before asking for payment and keeps it only if the hash matches; private hosts, redirects, and large files are refused. Live check: two demo files downloaded from GitHub and loaded. ([remote-files.mjs](../remote-files.mjs)) Sokosumi's own task attachments are not used: its CLI and docs have no endpoint for them yet.
+- #13 (code part): one worker serves several Workspaces: `SOKOSUMI_ORGANIZATION_ID` and `SOKOSUMI_ORGANIZATION_SLUG` take comma-separated lists, and each task runs in its own Workspace. Still to do per company: `sokosumi coworkers connect` to its Workspace (their admin approves). The public marketplace listing is a Masumi/Sokosumi question, not code.
+- Pack identity values are checked: model, serial number, chemistry, manufacturer, and VIN must appear word for word in the event's source document, or the field is removed and listed as a rejected claim.
 
 - Public passports hid every history (Oct 31): `examples/demo-draft.json` gained pack model, serial number, and VIN (`6d9648a`) after the test run was written, so no draft matched the chain. Passports now match against `examples/demo-onchain-draft.json`, the exact bytes that run signed (its hash equals the on-chain `draft_hash`). (`53885d4`, `9fb1d64`)
 - Company signature not checked on the passports: the test run's signed record is rebuilt from the on-chain logs (`examples/demo-onchain-signed.json`). All 5 passports pass all four checks, including the signature on every log. (`9fb1d64`)

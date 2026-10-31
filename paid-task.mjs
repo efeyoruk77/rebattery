@@ -1,5 +1,7 @@
 import {createHash,randomBytes} from 'node:crypto';
 import {parseJobInput} from './job-input.mjs';
+import {fetchRemoteFiles} from './remote-files.mjs';
+import {defaultConfig} from './draft.mjs';
 import {readFileSync,existsSync,writeFileSync} from 'node:fs';
 import {parseEnv} from 'node:util';
 import {verifySettlement} from './settlement.mjs';
@@ -55,8 +57,8 @@ export async function createPaidAdapter({save,answer,core:providedCore,mps:provi
   let p=state.paid??{};const r=registration();
   if(!p.stage){
    if(!state.input?.trim())throw new Error('Paid Task requires authoritative started input');
-   // Ask for money only for work the agent can do: a valid job input.
-   parseJobInput(state.input);
+   // Ask for money only for work the agent can do: a valid job input whose linked files download and match.
+   await fetchRemoteFiles(parseJobInput(state.input), defaultConfig().storeDir);
    const nonce=randomBytes(10).toString('hex');const now=Date.now();
    const body={network:'Preprod',agentIdentifier:r.agentIdentifier,paymentSourceType:'Web3CardanoV2',supportedPaymentSourceIndex:r.supportedPaymentSourceIndex,
     inputHash:taskHash(state.input),identifierFromPurchaser:nonce,RequestedFunds:[{amount:'1000000',unit:USDM}],

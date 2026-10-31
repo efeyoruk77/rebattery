@@ -132,6 +132,18 @@ Rebuild it with `node --env-file-if-exists=.env passport-site.mjs`, then push `s
 
 To hire the agent: on **New job**, use the demo batch and copy the job input. Then, in the TUM Sokosumi Workspace, create a task with the Coworker **EV Battery History Recovery**, paste the job input as the description, and pay.
 
+**A company outside our machine** links its files instead of uploading them. Host each file at a public `https` address and list it with its SHA-256. A linked document also gives its pack, kind, and language:
+
+```json
+{"packs": ["A"],
+ "documents": [{"doc_id": "packA-invoice-2021-de", "sha256": "<sha256 of the file>", "url": "https://example.com/invoice.txt",
+                "pack_id": "A", "kind": "service_invoice", "language": "de"}],
+ "module_tests": [{"module_id": "A-M2", "sha256": "<sha256>", "url": "https://example.com/A-M2-test.json"}],
+ "cell_tests": [{"module_id": "A-M2", "sha256": "<sha256>", "url": "https://example.com/A-M2-cells.json"}]}
+```
+
+The agent downloads every linked file before it asks for payment and keeps a file only if its hash matches, so a changed or missing file stops the job before anyone pays. Only public https hosts are accepted (no redirects, at most 5 MB per file and 20 MB per job). See [remote-files.mjs](remote-files.mjs).
+
 ## How the agent is built
 
 | Part | Files |
@@ -152,7 +164,7 @@ Shared data formats: [docs/team-plan.md](docs/team-plan.md). Code conventions: [
 
 - **The system proves what a document says, not that the document is true.** Documents signed by the service shop or manufacturer lower this risk.
 - **A person must sign.** The company reviews the draft and signs it with its own key before anything about the batteries is written on-chain.
-- **Uploads only work on the operator's machine.** An outside company cannot upload files yet; the job input points to files stored on the machine that runs the agent.
+- **Documents are text files.** PDFs and photos need a reviewed text transcript first. Outside companies send files as public https links checked by hash; Sokosumi's own file attachments are not used yet.
 - **The demo data is invented.** Grouping limits are placeholders; real limits depend on the cell model.
 - **Legal acceptance is open.** The regulation does not say whether a rebuilt history may replace a missing original passport. The demo QR codes are not yet ISO/IEC 15459 identifiers.
 - **AI limits** (input size, model quota, the 20-minute job deadline) can shorten the explanation for large batches. The grouping itself is decided by code and is always complete.
