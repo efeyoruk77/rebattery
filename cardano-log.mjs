@@ -1,6 +1,6 @@
 import {sha256} from './standard-hash.mjs';
-// Project metadata label. The DPP blueprint says: pick a new integer label, never 721. Team decides the final value.
-export const LABEL=1984;
+// Project metadata label, after Regulation (EU) 2023/1542. Not in the CIP-10 registry and unused on Preprod (checked Oct 31); never 721.
+export const LABEL=1542;
 export const explorerUrl=txHash=>`https://preprod.cardanoscan.io/transaction/${txHash}`;
 // Canonical JSON: sorted keys, no whitespace, undefined dropped. Same object always hashes the same.
 // Kept apart from battery/canonical.mjs so on-chain roots stay reproducible whatever happens to that file.
