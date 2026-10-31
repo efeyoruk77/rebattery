@@ -245,6 +245,10 @@ const sentence = s => s.charAt(0).toUpperCase() + s.slice(1);
 // The model's plain-language explanation of the grouping (draft.explanation). Code made the decision; this only explains it.
 const aiNote = text => text ? `<p class="ai"><span class="who">AI explanation · check against the rules and events</span>${esc(text)}</p>` : '';
 const explanation = () => current.draft.explanation || {ess: {}, modules: {}, cells: []};
+// AI limits (input size, model quota, the job's time limit) can shorten or skip the explanation for large batches.
+const aiLimitNote = () => current.draft.explanation
+ ? '<p class="muted">AI restrictions may limit the explanation for large batch requests. The grouping itself is decided by code and is always complete.</p>'
+ : '<div class="note warn">This draft has no AI explanation. AI restrictions (input size, model quota, and the job\'s time limit) may limit or skip the explanation for large batch requests. The grouping, held-back items, and their reasons are decided by code and are complete.</div>';
 const reasonItems = reason => String(reason).split(/;(?!\s*an ESS needs)\s*/).filter(p => p && p !== 'not taken apart').map(p => sentence(placeName(p
  .replace(/^accident event (\S+)/, 'accident recorded (event $1)')
  .replace(/^open warning (\w+)/, (_, rule) => `open warning: ${ruleNames[rule] || label(rule)}`)
@@ -405,6 +409,7 @@ function essGallery() {
  return `
  <h1>ESS passports</h1>
  <p class="lead">Each new energy storage unit gets a passport. Its QR code shows the unit's second-life health, the facility that made it, and links back to every donor pack. The coloured bar shows which packs its cells came from.</p>
+ ${aiLimitNote()}
  <div class="gallery">${ess.map(card).join('') || '<p class="muted">No ESS proposed.</p>'}</div>`;
 }
 
@@ -465,6 +470,7 @@ function held() {
  return `
  <h1>Held back</h1>
  <p class="lead">What the code refused to use, and why. Nothing here is deleted: every decision is recorded with its reason so a buyer can check it later.</p>
+ ${aiLimitNote()}
  ${d.rejected.length ? `<p class="sub">Claims rejected by verification</p><div class="held-grid">${d.rejected.map(x => `<div class="held-card"><div class="name">Claim ${esc(x.event_id)}${/^[A-Z]-/.test(x.event_id || '') ? ` <span class="muted">· Pack ${esc(x.event_id[0])}</span>` : ''}</div><span class="tag">Rejected</span>${items(x.reason)}</div>`).join('')}</div>` : ''}
  ${mods.length ? `<p class="sub">Modules not taken apart</p><div class="held-grid">${mods.map(h => `<div class="held-card"><div class="name">${esc(placeName(h.id))}</div><span class="tag">Not taken apart</span>${items(h.reason)}${aiNote(explanation().modules?.[h.id])}</div>`).join('')}</div>` : ''}
  ${cells.length ? `<p class="sub">Cells not used</p><div class="held-grid">${groupBy(cells, h => h.reason).map(([reason, hs]) => `<div class="held-card">
@@ -505,6 +511,7 @@ function help() {
  const faq = [
   ['Does the AI decide which cells are used?', 'No. The AI only extracts what documents say. Deterministic code verifies the quotes and groups the cells; a person signs the result.'],
   ['Why is a module held back when only one event mentions it?', 'Grouping is conservative: an accident or an open warning on a module keeps all of its cells out until a person reviews it.'],
+  ['Why is the AI explanation short or missing?', 'AI restrictions may limit the explanation for large batch requests: the model accepts only so much input, its quota can run out, and a paid job must finish within its time limit. The draft is still delivered, and the grouping, held-back items, and their reasons are always complete because code decides them.'],
   ['Why is there no QR code on the demo draft?', 'QR codes appear only after a paid draft is signed and its passports are written on-chain. The demo shows a placeholder instead of a fake code.'],
   ['Can I trust the documents themselves?', 'The system proves what a document says, not that the document is true. Signed documents from service shops reduce this risk.'],
  ];
