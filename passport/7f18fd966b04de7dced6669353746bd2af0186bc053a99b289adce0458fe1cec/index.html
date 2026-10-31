@@ -16,6 +16,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-ap
 a{color:inherit}
 main{max-width:860px;margin:0 auto;padding:20px 16px 48px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:700;margin-bottom:20px}
+img.logo{display:block;object-fit:cover;background:none}
 .logo{width:28px;height:28px;border-radius:8px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:14px}
 h1{font-size:clamp(28px,7vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 6px}
 h2{font-size:19px;margin:0 0 10px;letter-spacing:-.01em}
@@ -75,7 +76,9 @@ const colors = ['var(--pa)', 'var(--pb)', 'var(--pc)'];
 const fields = f => Object.entries(f || {}).filter(([k]) => k !== 'uncertainty').map(([k, v]) => `${words(k)}: ${Array.isArray(v) ? v.join(', ') : v}${/_pct$/.test(k) ? '%' : ''}`).join(' · ');
 // On the public site the data is embedded in the page; there is no "this machine".
 const STATIC = Boolean(window.PASSPORT_DATA);
-const brand = () => `<div class="brand"><span><span class="logo">⚡</span>Afterlife · Battery passport</span>${STATIC ? '<nav class="nav"><a href="../../passports.html">All passports</a><a href="../../">Review screen</a></nav>' : ''}</div>`;
+const LOGO = STATIC ? '../../logo.jpg' : '/logo.jpg';
+document.head.insertAdjacentHTML('beforeend', `<link rel="icon" href="${LOGO}">`);
+const brand = () => `<div class="brand"><span><img class="logo" src="${LOGO}" alt="" aria-hidden="true">Afterlife · Battery passport</span>${STATIC ? '<nav class="nav"><a href="../../passports.html">All passports</a><a href="../../">Review screen</a></nav>' : ''}</div>`;
 const markOf = ok => ok === true ? '<span class="mark ok">✓</span>' : ok === false ? '<span class="mark no">✗</span>' : '<span class="mark na">–</span>';
 
 function donor(d, i) {
