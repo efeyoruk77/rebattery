@@ -94,8 +94,10 @@ npm run cardano -- sign-test examples/demo-draft.json       # test run without p
 npm run cardano -- sign <draft> masumi.json                 # paid run: {blockchainIdentifier, resultHash, nonce} or hashScheme "task"; checked like stage-b.mjs
 npm run cardano -- stage-b examples/demo-draft.json         # 3 donor logs, then per ESS its log and passport; prints the QR links
 npm run cardano -- stage-b examples/demo-draft.json resume  # finish a run with the signed record kept in its journal
-npm run cardano -- trace <passport tx> examples/demo-draft.json  # follows one ESS back to its documents, checks everything, and that the company key signed
+npm run cardano -- trace <passport tx> <draft>              # follows one ESS back to its documents, checks everything, and that the company key signed
 npm run cardano -- read <txHash>
 ```
+
+To trace the Oct 31 test-run passports, use `examples/demo-onchain-draft.json`, the demo draft exactly as it was written on-chain. `examples/demo-draft.json` has changed since (pack model, serial number, VIN), so it no longer matches those records. Never regenerate the on-chain copy.
 
 `stage-b` and `trace` also accept the signed record the review screen saves under `.local/signed/`.
