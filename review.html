@@ -93,18 +93,89 @@ h2{font-size:22px;letter-spacing:-.02em;margin:0}
 .back{display:inline-flex;gap:6px;align-items:center;color:var(--muted);text-decoration:none;font-size:14px;margin-bottom:18px;transition:transform .2s}
 .back:hover{color:var(--ink);transform:translateX(-4px)}
 
-/* Overview hero */
-.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:32px;align-items:center}
-@media (max-width:820px){.hero{grid-template-columns:1fr}}
+/* Overview */
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:color-mix(in srgb,var(--panel) 70%,transparent);border:1px solid var(--line);border-radius:999px;padding:5px 12px;margin-bottom:18px}
+.eyebrow .live{width:7px;height:7px}
 .gradient{background:linear-gradient(100deg,var(--pa),var(--pb) 50%,var(--pc));-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:shine 8s ease-in-out infinite alternate}
 @keyframes shine{to{background-position:100% 0}}
-.battery-art{display:flex;flex-direction:column;align-items:center;gap:8px}
-.battery-art svg{width:min(260px,70vw);height:auto;overflow:visible;transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
-.battery-art:hover svg{transform:rotate(-4deg) scale(1.05)}
+.ov-hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;align-items:stretch}
+@media (max-width:880px){.ov-hero{grid-template-columns:1fr}}
+.ov-hero h1{font-size:clamp(32px,5vw,58px)}
+.ov-hero .arrow{color:var(--muted);font-weight:400}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.cta .btn{text-decoration:none;display:inline-flex;gap:8px;align-items:center}
+.cta .btn span{transition:transform .2s}
+.cta .btn:hover span{transform:translateX(4px)}
+.glass{background:color-mix(in srgb,var(--panel) 82%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:24px}
+.health{padding:22px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.health-top{display:flex;gap:18px;align-items:center}
+.health-top svg{width:84px;flex:0 0 84px;height:auto;overflow:visible;transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.health:hover .health-top svg{transform:rotate(-6deg) scale(1.06)}
 .wave{animation:wave 4s linear infinite}
-.wave.two{animation-duration:6.5s;opacity:.55}
+.wave.two{animation-duration:6.5s;opacity:.5}
 @keyframes wave{to{transform:translateX(-200px)}}
-.battery-art .cap{font-size:13px;color:var(--muted);text-align:center}
+.health-num b{display:block;font-size:44px;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.health-num span{color:var(--muted);font-size:13px}
+.bars{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:10px;align-items:end;height:120px;padding:0 2px;border-bottom:1px dashed var(--line);position:relative}
+.bars a{display:flex;flex-direction:column;justify-content:flex-end;height:100%;text-decoration:none}
+.bars i{display:block;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,var(--good),color-mix(in srgb,var(--good) 45%,transparent));transform-origin:bottom;animation:grow .8s cubic-bezier(.2,.8,.2,1) backwards;transition:filter .2s,transform .2s}
+.bars a:hover i{filter:brightness(1.15);transform:scaleX(1.12)}
+@keyframes grow{from{transform:scaleY(0)}}
+.bar-labels{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:10px;font-size:11px;color:var(--muted);text-align:center;margin-top:6px}
+.axis{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr));gap:12px;margin-top:28px}
+.kpi{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;text-decoration:none;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s}
+.kpi:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.kpi .ic{flex:0 0 38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--soft);color:var(--ink)}
+.kpi .ic.warn{background:var(--warn-bg);color:var(--warn)}
+.kpi .ic.bad{background:var(--bad-bg);color:var(--bad)}
+.kpi .ic.good{background:color-mix(in srgb,var(--good) 14%,transparent);color:var(--good)}
+.kpi b{display:block;font-size:28px;line-height:1.1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.kpi .l{display:block;font-size:14px;font-weight:600;margin-top:2px}
+.kpi .s{display:block;font-size:12px;color:var(--muted)}
+.ic svg{width:20px;height:20px}
+
+.pipeline{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;position:relative}
+@media (max-width:880px){.pipeline{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 0}}
+.pstep{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:0 8px;text-decoration:none}
+.pstep::before{content:"";position:absolute;top:22px;left:-50%;width:100%;height:2px;background:var(--line);z-index:-1}
+.pstep:first-child::before{display:none}
+.pstep.done::before{background:linear-gradient(90deg,var(--good),var(--good))}
+@media (max-width:880px){.pstep::before{display:none}}
+.pstep .ic{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--panel);border:2px solid var(--line);color:var(--muted);position:relative;transition:transform .3s cubic-bezier(.34,1.56,.64,1),border-color .2s,color .2s}
+.pstep.done .ic{border-color:var(--good);color:var(--good)}
+.pstep.wait .ic{border-color:var(--warn);color:var(--warn);border-style:dashed}
+.pstep.done .ic::after{content:"✓";position:absolute;right:-4px;bottom:-4px;width:18px;height:18px;border-radius:50%;background:var(--good);color:var(--bg);font-size:11px;font-weight:700;display:grid;place-items:center}
+.pstep:hover .ic{transform:translateY(-4px) scale(1.12)}
+.pstep b{font-size:14px}
+.pstep .st{font-size:12px;color:var(--muted)}
+.pstep.wait .st{color:var(--warn)}
+
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:880px){.two{grid-template-columns:1fr}}
+.panel{padding:20px}
+.panel h2{font-size:18px;margin-bottom:4px}
+.panel .sub2{color:var(--muted);font-size:13px;margin:0 0 14px}
+.prow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;align-items:center;padding:12px 0;border-top:1px solid var(--line);text-decoration:none}
+.prow:first-of-type{border-top:0}
+.prow .who{font-weight:600;display:flex;align-items:center;gap:8px;grid-row:span 2}
+.prow .who .dot{width:12px;height:12px}
+.stack{display:flex;height:10px;border-radius:999px;overflow:hidden;background:var(--soft)}
+.stack i{display:block;height:100%;transition:filter .2s}
+.stack i.held{background:repeating-linear-gradient(45deg,var(--bad) 0 4px,color-mix(in srgb,var(--bad) 50%,transparent) 4px 8px)}
+.prow:hover .stack i{filter:brightness(1.12)}
+.prow .nums{font-size:12px;color:var(--muted)}
+.att{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:14px;text-decoration:none;transition:background .2s,transform .2s}
+.att:hover{background:var(--soft);transform:translateX(4px)}
+.att .ic{flex:0 0 32px;height:32px;border-radius:10px;display:grid;place-items:center}
+.att .ic svg{width:17px;height:17px}
+.att .ic.warn{background:var(--warn-bg);color:var(--warn)}
+.att .ic.bad{background:var(--bad-bg);color:var(--bad)}
+.att b{display:block;font-size:14px}
+.att span{font-size:13px;color:var(--muted)}
+.att .go{margin-left:auto;color:var(--muted);align-self:center;transition:transform .2s}
+.att:hover .go{transform:translateX(3px);color:var(--ink)}
 
 /* Stats */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
@@ -112,18 +183,6 @@ h2{font-size:22px;letter-spacing:-.02em;margin:0}
 .stat:hover{transform:translateY(-4px) scale(1.03);box-shadow:var(--shadow)}
 .stat b{display:block;font-size:32px;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .stat span{color:var(--muted);font-size:13px}
-
-/* Process flow */
-.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;counter-reset:step}
-.step{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;text-decoration:none;overflow:hidden;transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s,border-color .3s}
-.step::before{counter-increment:step;content:counter(step,decimal-leading-zero);font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.06em}
-.step .ico{font-size:26px;display:block;margin:6px 0 4px;transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
-.step b{display:block}
-.step p{margin:4px 0 0;color:var(--muted);font-size:13px;max-height:0;opacity:0;transition:max-height .35s,opacity .35s}
-.step:hover{transform:translateY(-6px) rotate(-.6deg);box-shadow:var(--shadow);border-color:var(--ink)}
-.step:hover .ico{transform:scale(1.35) rotate(-10deg)}
-.step:hover p,.step:focus-visible p{max-height:120px;opacity:1}
-@media (hover:none){.step p{max-height:none;opacity:1}}
 
 /* Notes and red cards */
 .note{display:block;padding:12px 14px;border-radius:14px;margin-bottom:8px;font-size:14px;text-decoration:none;transition:transform .2s}
@@ -365,57 +424,109 @@ document.addEventListener('keydown', e => {
 
 // ---------- Pages ----------
 
+// Line icons (24px grid, stroke = currentColor), so the overview does not depend on emoji fonts.
+const icon = name => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${{
+ doc: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+ check: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11l2 2 4-4"/>',
+ alert: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+ layers: '<path d="m12 2 9 5-9 5-9-5z"/><path d="m3 12 9 5 9-5M3 17l9 5 9-5"/>',
+ battery: '<rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 11v2M6 10v4M10 10v4M14 10v4"/>',
+ sign: '<path d="M3 21h18M15.5 4.5l4 4L9 19H5v-4z"/>',
+ x: '<circle cx="12" cy="12" r="9"/><path d="m15 9-6 6M9 9l6 6"/>',
+ ban: '<circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/>',
+ recycle: '<path d="M7 19H4.8a1.8 1.8 0 0 1-1.6-2.7L7 10M10.6 5.3 12 3l3.8 6.6M17 19h2.2a1.8 1.8 0 0 0 1.6-2.7L19 13"/><path d="m14 16-3 3 3 3M8.3 6.9 7 10l-3-1M16.7 13.3 19 13l1 3"/>',
+}[name] || ''}</svg>`;
+
 function overview() {
  const d = current.draft, ess = d.new_batteries || [], held = d.held_back || [];
- const used = ess.reduce((n, b) => n + b.cells.length, 0);
- const avg = ess.length ? ess.reduce((n, b) => n + (Number(b.health?.soh_pct) || 0), 0) / ess.length : 0;
- const fill = Math.max(0, Math.min(100, avg));
- const level = 220 - fill * 1.8; // y of the liquid surface inside the battery drawing
+ const heldMods = held.filter(h => h.level === 'module'), heldCells = held.filter(h => h.level === 'cell');
+ const used = ess.reduce((n, b) => n + b.cells.length, 0), tested = used + heldCells.length;
+ const reuse = tested ? Math.round(used / tested * 100) : 0;
+ const sohs = ess.map(b => Number(b.health?.soh_pct)).filter(Number.isFinite);
+ const avg = sohs.length ? sohs.reduce((a, b) => a + b, 0) / sohs.length : 0;
+ const modulesTested = (d.test_files?.module_tests || []).length;
+ const signed = Object.keys(current.passports || {}).length > 0;
+ const documented = d.events.filter(e => e.confidence !== 'estimated').length;
+
+ // Battery drawing: liquid level follows the average health.
+ const level = 220 - Math.max(0, Math.min(100, avg)) * 1.8;
  const wave = y => `M0 ${y} q25 -9 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 V230 H0 Z`;
+ // Bars use an 80-100% axis so small differences stay visible; the axis is labelled.
+ const lo = 80, bar = v => Math.max(4, (v - lo) / (100 - lo) * 100);
+
+ const kpi = (href, ic, cls, n, l, s, unit = '') => `<a class="kpi glass" href="${href}"><span class="ic ${cls}">${icon(ic)}</span><span><b data-count="${esc(n)}" data-unit="${esc(unit)}">${esc(n)}${esc(unit)}</b><span class="l">${esc(l)}</span><span class="s">${esc(s)}</span></span></a>`;
+
  const steps = [
-  ['📄', 'Documents', 'Invoices, registrations and reports are uploaded and fingerprinted (SHA-256).', 'histories'],
-  ['🔍', 'Verify', 'Code checks every quote word for word at its page and line. Missing quotes are rejected.', 'held'],
-  ['⚠️', 'Warnings', 'Rules look for contradictions, like a high health value right after a module replacement.', 'histories'],
-  ['🧩', 'Screen modules', 'Modules with an accident or open warning are not taken apart.', 'held'],
-  ['🔋', 'Group cells', 'Matching cells are combined into new ESS units. Health follows the weakest cell.', 'ess'],
-  ['⛓️', 'Sign & publish', 'A person signs; event logs and QR passports go on Cardano.', 'sign'],
+  ['doc', 'Documents', `${d.documents.length} files hashed`, 'done', 'Invoices, registrations and reports are uploaded and fingerprinted (SHA-256).', 'histories'],
+  ['check', 'Verify', `${d.events.length} kept, ${d.rejected.length} rejected`, 'done', 'Code checks every quote word for word at its page and line.', 'held'],
+  ['alert', 'Warnings', `${d.warnings.length} found`, 'done', 'Rules look for contradictions between events.', 'histories'],
+  ['layers', 'Screen modules', `${heldMods.length} held back`, 'done', 'Modules with an accident or open warning are not taken apart.', 'held'],
+  ['battery', 'Group cells', `${ess.length} ESS units`, 'done', 'Matching cells are combined into new ESS units.', 'ess'],
+  ['sign', 'Sign & publish', signed ? 'Published on Cardano' : current.paid ? 'Ready to sign' : 'Demo: not signable', signed ? 'done' : 'wait', 'A person signs; event logs and QR passports go on Cardano.', 'sign'],
  ];
+
+ const packRows = d.packs.map(p => {
+  const u = ess.reduce((n, b) => n + b.cells.filter(c => (c.donor_pack || packOf(c.module_id)) === p).length, 0);
+  const hc = heldCells.filter(h => packOf(h.id) === p).length;
+  const hm = heldMods.filter(h => packOf(h.id) === p).length;
+  const ev = d.events.filter(e => e.pack_id === p).length;
+  const total = u + hc || 1;
+  return `<a class="prow" href="#/histories"><span class="who"><span class="dot" style="background:${packColor(p)}"></span>Pack ${esc(p)}</span>
+   <span class="stack" data-tip="${esc(u)} cells used · ${esc(hc)} cells not used"><i style="width:${(u / total * 100).toFixed(1)}%;background:${packColor(p)}"></i><i class="held" style="width:${(hc / total * 100).toFixed(1)}%"></i></span>
+   <span class="nums">${esc(u)} cells used · ${esc(hc)} not used · ${esc(hm)} module${hm === 1 ? '' : 's'} held back · ${esc(ev)} events</span></a>`;
+ }).join('');
+
+ const attention = [
+  ...d.warnings.map(w => ['warn', 'alert', 'Warning', placeName(w.message), '#/histories']),
+  ...d.rejected.map(x => ['bad', 'x', `Claim ${x.event_id} rejected`, reasonItems(x.reason).join('. '), '#/held']),
+  ...heldMods.map(h => ['bad', 'ban', `${placeName(h.id)} not taken apart`, reasonItems(h.reason).join('. '), '#/held']),
+ ];
+
  return `
- <section class="hero">
+ <section class="ov-hero">
   <div>
-   <h1><span class="gradient">${esc(d.packs.length)} old packs</span><br>became ${esc(ess.length)} new batteries</h1>
-   <p class="lead">Every fact here is quoted from a source document and checked by code. The AI is a clerk, not a witness: it reports what the documents say. Rules decide which cells go together.</p>
-   <div class="stats">
-    <a class="stat" href="#/histories"><b data-count="${esc(d.events.length)}">${esc(d.events.length)}</b><span>verified events</span></a>
-    <a class="stat" href="#/histories"><b data-count="${esc(d.warnings.length)}">${esc(d.warnings.length)}</b><span>warnings</span></a>
-    <a class="stat" href="#/held"><b data-count="${esc(d.rejected.length)}">${esc(d.rejected.length)}</b><span>rejected claims</span></a>
-    <a class="stat" href="#/ess"><b data-count="${esc(used)}">${esc(used)}</b><span>cells reused</span></a>
+   <span class="eyebrow"><span class="live ${signed ? 'ok' : current.paid ? 'part' : ''}"></span>${signed ? 'Signed draft' : current.paid ? 'Paid draft · ready to sign' : 'Demo draft · invented data'}</span>
+   <h1>${esc(d.packs.length)} donor packs <span class="arrow">→</span><br><span class="gradient">${esc(ess.length)} new ESS units</span></h1>
+   <p class="lead">Every fact is quoted from a source document and checked by code. The AI is a clerk, not a witness; deterministic rules decide which cells go together, and a person signs the result.</p>
+   <div class="cta"><a class="btn" href="#/ess">View ESS passports <span aria-hidden="true">→</span></a><a class="pill" href="#/histories">Donor histories</a></div>
+  </div>
+  <div class="glass health">
+   <div class="health-top">
+    <svg viewBox="0 0 200 250" role="img" aria-label="Average second-life health ${esc(avg.toFixed(1))}%">
+     <defs><clipPath id="body"><rect x="20" y="30" width="160" height="200" rx="30"/></clipPath>
+      <linearGradient id="liquid" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--pa)"/><stop offset=".5" stop-color="var(--pb)"/><stop offset="1" stop-color="var(--pc)"/></linearGradient></defs>
+     <rect x="72" y="10" width="56" height="26" rx="9" fill="var(--ink)"/>
+     <rect x="20" y="30" width="160" height="200" rx="30" fill="var(--soft)"/>
+     <g clip-path="url(#body)"><path class="wave two" d="${wave(level + 4)}" fill="url(#liquid)"/><path class="wave" d="${wave(level)}" fill="url(#liquid)"/></g>
+     <rect x="20" y="30" width="160" height="200" rx="30" fill="none" stroke="var(--ink)" stroke-width="10"/>
+    </svg>
+    <div class="health-num"><b>${esc(avg.toFixed(1))}%</b><span>average second-life health${sohs.length ? ` · range ${esc(Math.min(...sohs))}–${esc(Math.max(...sohs))}%` : ''}</span></div>
    </div>
-  </div>
-  <div class="battery-art" aria-label="Average second-life health ${esc(avg.toFixed(1))}%">
-   <svg viewBox="0 0 200 250" role="img">
-    <defs>
-     <clipPath id="body"><rect x="20" y="30" width="160" height="200" rx="26"/></clipPath>
-     <linearGradient id="liquid" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--pa)"/><stop offset=".5" stop-color="var(--pb)"/><stop offset="1" stop-color="var(--pc)"/></linearGradient>
-    </defs>
-    <rect x="70" y="12" width="60" height="24" rx="8" fill="var(--ink)"/>
-    <rect x="20" y="30" width="160" height="200" rx="26" fill="var(--soft)"/>
-    <g clip-path="url(#body)">
-     <path class="wave two" d="${wave(level + 4)}" fill="url(#liquid)" transform="translate(0 0)"/>
-     <path class="wave" d="${wave(level)}" fill="url(#liquid)"/>
-    </g>
-    <rect x="20" y="30" width="160" height="200" rx="26" fill="none" stroke="var(--ink)" stroke-width="6"/>
-    <text x="100" y="140" text-anchor="middle" font-size="40" font-weight="800" fill="var(--ink)" style="paint-order:stroke;stroke:var(--bg);stroke-width:6px">${esc(avg.toFixed(1))}%</text>
-   </svg>
-   <div class="cap">average second-life health of the new ESS units</div>
+   ${ess.length ? `<div>
+    <div class="axis"><span>Health per ESS</span><span>axis 80–100%</span></div>
+    <div class="bars">${ess.map((b, i) => `<a href="#/ess/${encodeURIComponent(b.battery_id)}" data-tip="${esc(b.battery_id)}: ${esc(b.health?.soh_pct)}% · ${esc(b.cells.length)} cells"><i style="height:${bar(Number(b.health?.soh_pct) || lo).toFixed(1)}%;animation-delay:${reduceMotion ? 0 : i * 90}ms"></i></a>`).join('')}</div>
+    <div class="bar-labels">${ess.map(b => `<span>${esc(b.battery_id)}</span>`).join('')}</div>
+   </div>` : ''}
   </div>
  </section>
- <section class="sec"><div class="sec-head"><div><h2>How it works</h2><p>Hover a step to read it, click to jump to that page.</p></div></div>
-  <div class="flow">${steps.map(([ico, t, p, to]) => `<a class="step" href="#/${to}"><span class="ico">${ico}</span><b>${esc(t)}</b><p>${esc(p)}</p></a>`).join('')}</div>
+
+ <section class="kpis">
+  ${kpi('#/histories', 'doc', '', d.events.length, 'verified events', `${documented} quoted from documents`)}
+  ${kpi('#/ess', 'recycle', 'good', reuse, 'cells reused', `${used} of ${tested} tested cells, in ${ess.length} ESS units`, '%')}
+  ${kpi('#/histories', 'alert', 'warn', d.warnings.length, 'warnings', 'contradictions between events')}
+  ${kpi('#/held', 'x', 'bad', d.rejected.length, 'rejected claims', 'quote not found in document')}
+  ${kpi('#/held', 'ban', 'bad', heldMods.length, 'modules held back', modulesTested ? `${modulesTested - heldMods.length} of ${modulesTested} taken apart` : 'not taken apart')}
  </section>
- ${d.warnings.length ? `<section class="sec"><div class="sec-head"><h2>Warnings</h2></div>${d.warnings.map(w => `<a class="note warn" href="#/histories">${esc(placeName(w.message))} <span class="muted">(${esc(w.events.join(', '))})</span></a>`).join('')}</section>` : ''}
- <section class="sec"><div class="sec-head"><div><h2>Modules held back</h2><p>${esc(held.filter(h => h.level === 'module').length)} modules were not taken apart.</p></div><a class="pill" href="#/held">See all</a></div>
-  <div class="tags">${held.filter(h => h.level === 'module').map(h => `<span class="chip" data-tip="${esc(reasonItems(h.reason).join(' · '))}">${esc(placeName(h.id))}</span>`).join('')}</div>
+
+ <section class="sec"><div class="sec-head"><div><h2>Pipeline</h2><p>Hover a step for details, click to open its page.</p></div></div>
+  <div class="pipeline">${steps.map(([ic, t, st, state, tipText, to]) => `<a class="pstep ${state}" href="#/${to}" data-tip="${esc(tipText)}"><span class="ic">${icon(ic)}</span><b>${esc(t)}</b><span class="st">${esc(st)}</span></a>`).join('')}</div>
+ </section>
+
+ <section class="sec two">
+  <div class="glass panel"><h2>Donor packs</h2><p class="sub2">Where the reused cells came from. Striped: tested but not used.</p>${packRows}</div>
+  <div class="glass panel"><h2>Needs attention</h2><p class="sub2">${esc(attention.length)} item${attention.length === 1 ? '' : 's'} to review before signing.</p>
+   ${attention.map(([cls, ic, title, text, href]) => `<a class="att" href="${href}"><span class="ic ${cls}">${icon(ic)}</span><span><b>${esc(title)}</b><span>${esc(text)}</span></span><span class="go" aria-hidden="true">→</span></a>`).join('') || '<p class="muted">Nothing to review.</p>'}
+  </div>
  </section>`;
 }
 
@@ -646,7 +757,7 @@ function wire() {
  if (!reduceMotion) for (const el of app.querySelectorAll('[data-count]')) {
   const end = Number(el.dataset.count); if (!Number.isFinite(end) || end < 2) continue;
   const t0 = performance.now(), dur = 900;
-  const tick = t => { const k = Math.min(1, (t - t0) / dur); el.textContent = Math.round(end * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(tick); };
+  const tick = t => { const k = Math.min(1, (t - t0) / dur); el.textContent = Math.round(end * (1 - Math.pow(1 - k, 3))) + (el.dataset.unit || ''); if (k < 1) requestAnimationFrame(tick); };
   requestAnimationFrame(tick);
  }
 
