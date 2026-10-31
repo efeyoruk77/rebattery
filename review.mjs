@@ -19,6 +19,9 @@ const DEMO = 'examples/demo-draft.json';
 const readJson = path => { try { return JSON.parse(readFileSync(path, 'utf8')); } catch { return null; } };
 const files = dir => existsSync(dir) ? readdirSync(dir).filter(f => /^[0-9a-f-]{36}\.json$/.test(f)) : [];
 
+// Readable draft names: when the paid job was requested, in local time.
+const when = t => t ? new Date(t).toLocaleString('en-GB', {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'}) : 'time unknown';
+
 export function listDrafts(root = '.') {
  const drafts = [];
  if (existsSync(`${root}/${DEMO}`)) drafts.push({id: 'demo', label: 'Demo draft (invented data, not paid)', draftText: readFileSync(`${root}/${DEMO}`, 'utf8'), paid: null});
@@ -27,12 +30,12 @@ export function listDrafts(root = '.') {
  // Masumi standard API jobs (agent-api.mjs).
  for (const f of files(`${root}/.local/standard-jobs`)) {
   const j = readJson(`${root}/.local/standard-jobs/${f}`);
-  if (j?.status === 'completed' && j.result) drafts.push({id: `job-${j.id}`, label: `Masumi job ${j.id}`, draftText: j.result, paid: {nonce: j.nonce, resultHash: j.resultHash, blockchainIdentifier: j.payment?.blockchainIdentifier}});
+  if (j?.status === 'completed' && j.result) drafts.push({id: `job-${j.id}`, label: `Paid job via Masumi · ${when(j.payment?.createdAt)}`, draftText: j.result, paid: {nonce: j.nonce, resultHash: j.resultHash, blockchainIdentifier: j.payment?.blockchainIdentifier}});
  }
  // Sokosumi paid tasks (worker.mjs + paid-task.mjs).
  for (const f of files(`${root}/.local`)) {
   const p = readJson(`${root}/.local/${f}`)?.paid;
-  if (p?.result && ['awaiting-withdrawal', 'settled'].includes(p.stage)) drafts.push({id: `task-${f.slice(0, -5)}`, label: `Sokosumi task ${f.slice(0, -5)}`, draftText: p.result, paid: {hashScheme: 'task', resultHash: p.resultHash, blockchainIdentifier: p.payment?.blockchainIdentifier}});
+  if (p?.result && ['awaiting-withdrawal', 'settled'].includes(p.stage)) drafts.push({id: `task-${f.slice(0, -5)}`, label: `Paid job via Sokosumi · ${when(p.payment?.createdAt)}`, draftText: p.result, paid: {hashScheme: 'task', resultHash: p.resultHash, blockchainIdentifier: p.payment?.blockchainIdentifier}});
  }
  return drafts;
 }
@@ -55,7 +58,7 @@ export async function passportQrs(id, root = '.', base = passportBase()) {
  const out = {};
  for (const [ess, p] of Object.entries(passports)) {
   if (!PASSPORT_URL.test(p?.url ?? '')) continue;
-  const url = base ? `${base}/passport/${p.txHash}` : p.url;
+  const url = base ? `${base}/passport/${p.txHash}/` : p.url;
   out[ess] = {txHash: p.txHash, url, explorer: p.url, testRun, svg: await QRCode.toString(url, {type: 'svg', margin: 1, errorCorrectionLevel: 'M'})};
  }
  return out;
