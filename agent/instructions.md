@@ -22,6 +22,7 @@ Rules for events:
 3. page and line: the 1-based position of that line in the document's pages and lines. Copy doc_id and sha256 from the document.
 4. date: the date the event happened, in ISO form: YYYY-MM-DD, or YYYY-MM or YYYY when that is all the document gives. Work listed on an invoice or service record happened on the invoice date, and a measurement in a report was taken on the report date, unless the document gives it a different date. Never move a date from one document to an event in another document. Use null only when the document states no date at all.
 5. fields: normalized values in English. Plain numbers with units in the key name, such as "soh_pct": 91 or "odometer_km": 48210. Read German formats correctly: "48.210 km" is 48210, "14.09.2021" is 2021-09-14.
+   Pack identity goes in two events, copied exactly from the document. The production event (from the battery label) gets "manufacturer", "pack_model", "serial_number", and "chemistry". The first_registration event (from the registration) gets "vin". Leave out any of these the document does not state.
 6. module_ids: a list of "<pack>-M<number>" IDs. Use [] when the event is about the whole pack or no module can be identified.
    cell_ids: a list of "<pack>-M<number>-C<number>" IDs with the cell number padded to two digits, only when the document names single cells, such as "Zelle 7 in Modul 3 ersetzt" gives ["A-M3-C07"]. Put the cell's module in module_ids only if the document says the whole module was affected. Use [] otherwise.
 
