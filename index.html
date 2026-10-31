@@ -463,6 +463,8 @@ const cellsByModule = ids => groupBy(ids, id => id.replace(/-C\d+$/, '')).map(([
 const app = document.getElementById('app'), nav = document.getElementById('nav'), tip = document.getElementById('tip');
 const draftBtn = document.getElementById('draft-btn'), draftMenu = document.getElementById('draft-menu'), draftName = document.getElementById('draft-name');
 let current = null, drafts = [], statusData = null, statusError = false;
+// The public read-only copy (passport-site.mjs) cannot sign: the company signs on its own machine.
+const PUBLIC = window.STATIC_SITE === true;
 
 const routes = [
  ['new', 'New job', '0'],
@@ -579,7 +581,7 @@ function overview() {
   ['alert', 'Warnings', `${d.warnings.length} found`, 'done', 'Rules look for contradictions between events.', 'histories'],
   ['layers', 'Screen modules', `${heldMods.length} held back`, 'done', 'Modules with an accident or open warning are not taken apart.', 'held'],
   ['battery', 'Group cells', `${ess.length} ESS units`, 'done', 'Matching cells are combined into new ESS units.', 'ess'],
-  ['sign', 'Sign & publish', signed ? 'Published on Cardano' : current.paid ? 'Ready to sign' : 'Demo: not signable', signed ? 'done' : 'wait', 'A person signs; event logs and QR passports go on Cardano.', 'sign'],
+  ['sign', 'Sign & publish', signed ? 'Published on Cardano' : current.paid ? (PUBLIC ? 'On the company’s machine' : 'Ready to sign') : 'Demo: not signable', signed ? 'done' : 'wait', 'A person signs; event logs and QR passports go on Cardano.', 'sign'],
  ];
 
  const packRows = d.packs.map(p => {
@@ -602,7 +604,7 @@ function overview() {
  return `
  <section class="ov-hero">
   <div>
-   <span class="eyebrow"><span class="live ${signed ? 'ok' : current.paid ? 'part' : ''}"></span>${signed ? 'Signed draft' : current.paid ? 'Paid draft · ready to sign' : 'Demo draft · invented data'}</span>
+   <span class="eyebrow"><span class="live ${signed ? 'ok' : current.paid ? 'part' : ''}"></span>${signed ? 'Signed draft' : current.paid ? (PUBLIC ? 'Paid draft · read-only copy' : 'Paid draft · ready to sign') : 'Demo draft · invented data'}</span>
    <h1>${esc(d.packs.length)} donor packs <span class="arrow">→</span><br><span class="gradient">${esc(ess.length)} new ESS units</span></h1>
    <p class="lead">Every fact is quoted from a source document and checked by code. The AI is a clerk, not a witness; deterministic rules decide which cells go together, and a person signs the result.</p>
    <div class="fam-line">${families().length} cell famil${families().length === 1 ? 'y' : 'ies'} in this batch, never combined:${families().map(f => `<a class="chip" href="#/ess" data-tip="${esc(chem(f.chemistry).name)} · ${esc(chem(f.chemistry).v)} nominal">${esc(famLabel(f))}</a>`).join('')}</div>
@@ -840,12 +842,13 @@ async function upload(body, label) {
 }
 
 function signPage() {
- const paid = current.paid;
+ const paid = current.paid && !PUBLIC;
  return `
  <h1>Sign and publish</h1>
  <p class="lead">A person takes responsibility for the draft. Signing records your signature and writes the donor and ESS event logs and the QR passports on Cardano Preprod.</p>
  <section class="sign">
-  ${paid ? '<p>This draft was paid for through Masumi. Signing checks that it is exactly the draft that was paid for.</p>'
+  ${PUBLIC ? '<p class="muted">This is the public read-only copy. The second-life company reviews and signs the draft on its own machine, with its own key.</p>'
+   : paid ? '<p>This draft was paid for through Masumi. Signing checks that it is exactly the draft that was paid for.</p>'
    : '<p class="muted">This is the demo draft. Only a paid draft can be signed.</p>'}
   <label>Changes from the draft (optional)<textarea id="changes" placeholder="none"></textarea></label>
   <button class="btn" id="sign-btn" ${paid ? '' : 'disabled'}>Sign and publish</button>
