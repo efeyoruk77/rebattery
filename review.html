@@ -263,6 +263,7 @@ const pick = document.getElementById('pick'), app = document.getElementById('app
 let current = null;
 
 const routes = [
+ ['new', 'New job', '0'],
  ['overview', 'Overview', '1'],
  ['histories', 'Donor histories', '2'],
  ['ess', 'ESS passports', '3'],
@@ -288,7 +289,7 @@ function route() {
  const d = current.draft;
  const counts = {histories: d.packs.length, ess: (d.new_batteries || []).length, held: (d.held_back || []).length + d.rejected.length};
  nav.innerHTML = routes.map(([id, title, key]) => `<a class="pill ${id === name ? 'on' : ''}" href="#/${id}">${esc(title)}${counts[id] != null ? `<span class="n">${esc(counts[id])}</span>` : ''}<span class="k" aria-hidden="true">${esc(key)}</span></a>`).join('');
- const pages = {overview, histories, ess: arg ? essDetail.bind(null, arg) : essGallery, held, sign: signPage, help};
+ const pages = {new: newJob, overview, histories, ess: arg ? essDetail.bind(null, arg) : essGallery, held, sign: signPage, help};
  app.innerHTML = `<div class="page">${(pages[name] || notFound)()}</div>`;
  window.scrollTo({top: 0, behavior: 'instant'});
  wire();
@@ -481,6 +482,39 @@ function held() {
  ${!list.length && !d.rejected.length ? '<p class="muted">Nothing was held back.</p>' : ''}`;
 }
 
+// New job: store a batch's files on this machine and get the job input to paste into the Sokosumi task.
+function newJob() {
+ return `
+ <h1>New job</h1>
+ <p class="lead">Upload the documents and test results of the donor packs. They are stored on this machine, and you get the job input: a list of every file with its fingerprint. Paste it into a new task on Sokosumi to hire the agent.</p>
+ <section class="sec"><div class="sec-head"><div><h2>1. Choose the batch</h2><p>A folder with <code>manifest.json</code>, <code>packs/</code>, <code>module-tests/</code> and <code>cell-tests/</code>, like the demo batch.</p></div></div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+   <button class="btn" id="up-demo">Use the demo batch (3 packs)</button>
+   <label class="pill" style="cursor:pointer">Choose a batch folder…<input id="up-dir" type="file" webkitdirectory multiple hidden></label>
+  </div>
+  <div id="up-status" class="muted" style="margin-top:10px"></div>
+ </section>
+ <section class="sec" id="up-result" hidden><div class="sec-head"><div><h2>2. Copy the job input</h2><p id="up-summary"></p></div></div>
+  <textarea id="up-input" readonly rows="6" style="width:100%;font:12px ui-monospace,monospace;border-radius:12px;padding:10px;background:var(--soft);border:1px solid var(--line)"></textarea>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px"><button class="btn" id="up-copy">Copy job input</button><span id="up-copied" class="muted"></span></div>
+  <h2 style="margin-top:22px">3. Hire the agent on Sokosumi</h2>
+  <p>Open the TUM Workspace on Sokosumi, start a new task with the coworker <b>EV Battery History Recovery</b>, paste the job input as the task description, and pay. Follow the task on the <a href="/status" target="_blank" rel="noopener">status page</a>; the paid draft appears in the draft list when it is delivered.</p>
+  <a class="pill" href="https://preprod.sokosumi.com" target="_blank" rel="noopener">Open Sokosumi →</a>
+ </section>`;
+}
+
+async function upload(body, label) {
+ const status = document.getElementById('up-status');
+ status.textContent = `Uploading ${label}…`;
+ const res = await fetch('/api/upload', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(body)});
+ const out = await res.json();
+ if (!res.ok) { status.textContent = `Not uploaded: ${out.error}`; return; }
+ status.textContent = `Uploaded ${label}.`;
+ document.getElementById('up-summary').textContent = `${out.packs.length} donor packs (${out.packs.join(', ')}): ${out.documents} documents, ${out.moduleTests} module tests, ${out.cellTests} cell test batches.`;
+ document.getElementById('up-input').value = out.jobInput;
+ document.getElementById('up-result').hidden = false;
+}
+
 function signPage() {
  const paid = current.paid;
  return `
@@ -529,6 +563,21 @@ const notFound = () => `<h1>Not found</h1><p class="lead">This page does not exi
 // ---------- Interactions ----------
 
 function wire() {
+ const upDemo = document.getElementById('up-demo');
+ if (upDemo) {
+  upDemo.onclick = () => upload({demo: true}, 'the demo batch');
+  document.getElementById('up-dir').onchange = async e => {
+   const chosen = [...e.target.files];
+   if (!chosen.length) return;
+   const files = await Promise.all(chosen.map(async f => ({path: f.webkitRelativePath || f.name, text: await f.text()})));
+   upload({files}, `${files.length} files`);
+  };
+  document.getElementById('up-copy').onclick = async () => {
+   const t = document.getElementById('up-input');
+   try { await navigator.clipboard.writeText(t.value); } catch { t.select(); document.execCommand('copy'); }
+   document.getElementById('up-copied').textContent = 'Copied.';
+  };
+ }
  const signBtn = document.getElementById('sign-btn');
  if (signBtn) signBtn.onclick = sign;
 

@@ -71,9 +71,10 @@ function render(s) {
  </section>
 
  <section><h2>Tasks and jobs</h2>
-  ${s.tasks.length ? `<div class="scroll"><table><tr><th>Kind</th><th>ID</th><th>Phase</th><th>Payment stage</th><th>Seller paid</th><th>Updated</th></tr>
+  ${s.tasks.length ? `<div class="scroll"><table><tr><th>Kind</th><th>ID</th><th>Phase</th><th>Payment stage</th><th>On Cardano</th><th>Seller paid</th><th>Updated</th></tr>
    ${s.tasks.map(x => `<tr><td>${esc(x.kind)}</td><td><code>${esc(x.id.slice(0, 8))}</code></td><td>${esc(x.phase || '—')}</td><td>${esc(x.paidStage || '—')}</td>
-   <td>${x.settled === true ? badge('ok', 'verified') : x.settled === false ? badge('warn', 'not yet') : '—'}</td><td class="muted">${esc(ago(x.updatedAt))}</td></tr>`).join('')}</table></div>`
+   <td>${[['escrow', 'Escrow locked'], ['result', 'Result hash'], ['payout', 'Payout']].filter(([k]) => x.txs?.[k]).map(([k, label]) => `<a href="https://preprod.cardanoscan.io/transaction/${esc(x.txs[k])}" target="_blank" rel="noopener">${esc(label)} ↗</a>`).join('<br>') || '—'}</td>
+   <td>${x.settled === true ? badge('ok', x.receivedUsdm != null ? `${x.receivedUsdm} USDM received` : 'verified') : x.settled === false ? badge('warn', 'not yet') : '—'}</td><td class="muted">${esc(ago(x.updatedAt))}</td></tr>`).join('')}</table></div>`
    : '<p class="muted">No tasks yet. The first one runs once Sokosumi access is granted.</p>'}
  </section>
 

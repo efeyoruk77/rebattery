@@ -8,6 +8,8 @@ import {createStageB} from './stage-b.mjs';
 import {createCardanoSteps} from './cardano-steps.mjs';
 import {collectStatus} from './status.mjs';
 import {passportView,chainReader,TX} from './passport.mjs';
+import {uploadBatch,uploadFiles,uploadSummary} from './upload.mjs';
+import {defaultConfig} from './draft.mjs';
 
 // Member 3's Cardano steps are connected here, not in stage-b.mjs defaults, so tests never reach the real chain.
 // Writes stay off until CARDANO_WRITES_ENABLED=true.
@@ -101,6 +103,15 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
    if (req.method === 'GET' && url.pathname === '/api/draft') {
     const d = listDrafts().find(x => x.id === url.searchParams.get('id'));
     return d ? respond(res, 200, {id: d.id, paid: Boolean(d.paid), draft: JSON.parse(d.draftText), passports: await passportQrs(d.id)}) : respond(res, 404, {error: 'Draft not found'});
+   }
+   // New job: store a batch's files and return the job input for the Sokosumi task (the web version of upload.mjs).
+   if (req.method === 'POST' && url.pathname === '/api/upload') {
+    if (!fromThisScreen(req, port)) return respond(res, 403, {error: 'Uploads are accepted only from the review screen on this machine, as JSON'});
+    let body = ''; for await (const part of req) { body += part; if (body.length > 20_000_000) return respond(res, 413, {error: 'Batch too large (at most 20 MB)'}); }
+    let parsed; try { parsed = JSON.parse(body || '{}'); } catch { return respond(res, 400, {error: 'Request body must be JSON'}); }
+    const {storeDir} = defaultConfig();
+    try { return respond(res, 200, uploadSummary(parsed?.demo === true ? uploadBatch('battery/demo', storeDir) : uploadFiles(parsed?.files, storeDir))); }
+    catch (e) { return respond(res, 400, {error: e.message.slice(0, 300)}); }
    }
    if (req.method === 'POST' && url.pathname === '/api/sign') {
     if (!fromThisScreen(req, port)) return respond(res, 403, {error: 'Signing is accepted only from the review screen on this machine, as JSON'});
