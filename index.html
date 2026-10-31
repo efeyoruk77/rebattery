@@ -767,7 +767,7 @@ function essDetail(id) {
    </div>
   </div>
   ${qr ? `<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><a class="qr" href="${esc(qr.url)}" target="_blank" rel="noopener" title="Passport transaction ${esc(qr.txHash)}">${qr.svg}<span><b>${esc(b.battery_id)} · Battery passport</b><br>${qr.url === qr.explorer ? 'Scan: record on Cardano Preprod' : 'Scan with any phone camera'}${qr.testRun ? ' (test run)' : ''}</span></a><a class="pill" href="${qr.url === qr.explorer ? `/passport/${esc(qr.txHash)}` : esc(qr.url)}" target="_blank" rel="noopener">Open the passport →</a>${qr.url === qr.explorer ? '' : `<a class="muted" style="font-size:12px" href="${esc(qr.explorer)}" target="_blank" rel="noopener">Verify on Cardanoscan</a>`}</div>`
-   : '<div class="qr pending"><span>The QR code appears once this passport is written on-chain (after signing)</span></div>'}
+   : `<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div class="qr pending"><span>${current.paid ? (PUBLIC ? 'No QR code yet: the company has not signed this draft' : 'The QR code appears after you sign this draft (Sign page)') : 'No QR code: this draft was never written on-chain'}</span></div>${current.id !== 'demo' && drafts.some(d => d.id === 'demo') ? '<button type="button" class="pill" data-open-draft="demo">See the test-run QR codes →</button>' : ''}</div>`}
  </div>
  ${aiNote(explanation().ess?.[b.battery_id])}
  <section class="sec"><div class="sec-head"><div><h2>Where the cells came from</h2><p>Hover a pack or module to follow its cells.</p></div></div><div class="sankey-wrap">${sankey}</div></section>
