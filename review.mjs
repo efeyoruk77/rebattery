@@ -40,13 +40,21 @@ export function listDrafts(root = '.') {
 // The code opens Cardanoscan, or this server's passport page when PASSPORT_BASE_URL (an https address a phone can reach) is set.
 const PASSPORT_URL = /^https:\/\/preprod\.cardanoscan\.io\/transaction\/[0-9a-f]{64}$/;
 const passportBase = (base = process.env.PASSPORT_BASE_URL) => /^https:\/\/[^\s/?#]+(\/[^\s?#]*)?$/.test(base ?? '') ? base.replace(/\/+$/, '') : null;
+// The unsigned demo draft shows the passports of Member 3's unpaid test run instead, marked as a test run.
+const DEMO_PASSPORTS = 'examples/demo-passports.json';
+function passportsFor(id, root) {
+ const signed = readJson(`${root}/.local/signed/${id}.json`)?.passports;
+ if (signed || id !== 'demo') return {passports: signed ?? {}, testRun: false};
+ const recorded = readJson(`${root}/${DEMO_PASSPORTS}`)?.passports ?? {};
+ return {passports: Object.fromEntries(Object.entries(recorded).map(([ess, txHash]) => [ess, {txHash, url: `https://preprod.cardanoscan.io/transaction/${txHash}`}])), testRun: true};
+}
 export async function passportQrs(id, root = '.', base = passportBase()) {
- const passports = readJson(`${root}/.local/signed/${id}.json`)?.passports ?? {};
+ const {passports, testRun} = passportsFor(id, root);
  const out = {};
  for (const [ess, p] of Object.entries(passports)) {
   if (!PASSPORT_URL.test(p?.url ?? '')) continue;
   const url = base ? `${base}/passport/${p.txHash}` : p.url;
-  out[ess] = {txHash: p.txHash, url, explorer: p.url, svg: await QRCode.toString(url, {type: 'svg', margin: 1, errorCorrectionLevel: 'M'})};
+  out[ess] = {txHash: p.txHash, url, explorer: p.url, testRun, svg: await QRCode.toString(url, {type: 'svg', margin: 1, errorCorrectionLevel: 'M'})};
  }
  return out;
 }

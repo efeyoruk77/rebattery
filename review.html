@@ -449,7 +449,7 @@ function essDetail(id) {
     <div class="stat"><b>${esc(mods.length)}</b><span>donor modules</span></div>
    </div>
   </div>
-  ${qr ? `<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><a class="qr" href="${esc(qr.url)}" target="_blank" rel="noopener" title="Passport transaction ${esc(qr.txHash)}">${qr.svg}<span>Scan or click: passport on Cardano Preprod</span></a><a class="pill" href="/passport/${esc(qr.txHash)}" target="_blank" rel="noopener">Full passport: history and checks →</a></div>`
+  ${qr ? `<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><a class="qr" href="${esc(qr.url)}" target="_blank" rel="noopener" title="Passport transaction ${esc(qr.txHash)}">${qr.svg}<span>Scan or click: passport on Cardano Preprod${qr.testRun ? ' (test run, not a paid job)' : ''}</span></a><a class="pill" href="/passport/${esc(qr.txHash)}" target="_blank" rel="noopener">Full passport: history and checks →</a></div>`
    : '<div class="qr pending"><span>The QR code appears once this passport is written on-chain (after signing)</span></div>'}
  </div>
  ${aiNote(explanation().ess?.[b.battery_id])}
@@ -512,7 +512,7 @@ function help() {
   ['Does the AI decide which cells are used?', 'No. The AI only extracts what documents say. Deterministic code verifies the quotes and groups the cells; a person signs the result.'],
   ['Why is a module held back when only one event mentions it?', 'Grouping is conservative: an accident or an open warning on a module keeps all of its cells out until a person reviews it.'],
   ['Why is the AI explanation short or missing?', 'AI restrictions may limit the explanation for large batch requests: the model accepts only so much input, its quota can run out, and a paid job must finish within its time limit. The draft is still delivered, and the grouping, held-back items, and their reasons are always complete because code decides them.'],
-  ['Why is there no QR code on the demo draft?', 'QR codes appear only after a paid draft is signed and its passports are written on-chain. The demo shows a placeholder instead of a fake code.'],
+  ['Why does the demo draft have QR codes if it was never paid?', 'Its passports were written on Cardano Preprod in a test run, without a payment, to try the full chain. The QR codes open those real test passports and are marked as a test run. A paid draft gets its own QR codes when it is signed.'],
   ['Can I trust the documents themselves?', 'The system proves what a document says, not that the document is true. Signed documents from service shops reduce this risk.'],
  ];
  return `
