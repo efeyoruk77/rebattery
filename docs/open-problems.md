@@ -8,7 +8,6 @@ When you fix one, move it to **Solved** at the bottom with the commit hash, and 
 
 | # | Problem | Why it matters | Owner | Next step |
 |---|---|---|---|---|
-| 2 | **Paid Sokosumi task not settled yet.** Paid task `01a190fe-859d-75e5-be4b-3ad10177652d` in the TUM Workspace (Oct 31): Sokosumi paid 1 test USDM into escrow and the draft hash is on-chain; the payout to the seller is due after the unlock time. | Submission wants the task ID, payment transaction, and seller receipt together. | Member 4 | Keep `npm run worker` running until the task is `settled`, then record the receipt (`sokosumi --preprod runtime receipt <task> --coworker-id <id> --json`). |
 | 3 | **Buyers cannot upload files remotely yet.** For the demo this is solved: `node upload.mjs [batchDir]` stores a batch in `.local/uploads` and prints the job input, which goes into the Sokosumi task description. | A buyer outside our machine still has no upload path. | Member 4 | After the demo flow works: Sokosumi's task files API (`POST /v1/tasks/{id}/files`). |
 
 ## AI step (real model: Gemini `gemini-3.5-flash`)
@@ -35,6 +34,7 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 
 ## Solved
 
+- #2: paid run through Sokosumi, end to end (Oct 31): task `01a190fe-859d-75e5-be4b-3ad10177652d` in the TUM Workspace, escrow lock [1767ef45…](https://preprod.cardanoscan.io/transaction/1767ef455ad0536a245a1f7dde2234596c1de1213ec5861a6eb3ffa98b465f46), result [e0d086e0…](https://preprod.cardanoscan.io/transaction/e0d086e0b928b7437cc9d5d274b8a33ef99c41fdf361ca55fcfd2a0612f2972f), payout [ff813786…](https://preprod.cardanoscan.io/transaction/ff813786651e7f0af39013d24c2d4c2707067a11582160de4fb247b627f8ef07); Sokosumi receipt `settled: true`, 1 test USDM net to the seller (checked on Blockfrost). This is the submission's payment evidence. Details: [paid-run-report.md](paid-run-report.md).
 - #1: TUM Workspace access is `GRANTED`. Unpaid task `01a190f9-f34a-735b-a5ec-1dc8b7a5ede8` with the demo job input reached `COMPLETED` in 3 minutes (11 events, 2 warnings, 5 ESS, explanation). Follow-up comment "Why was module A-M4 not taken apart, and which quote decided it?" was answered from the draft, quoting A-e4 and A-e5.
 - The worker could not run on Windows (`spawnSync sokosumi ENOENT`; `sokosumi skills path` ends in `skills`), and follow-ups on draft tasks were silently skipped (no chat session). Both fixed, with a regression test (`sokosumi-windows.test.mjs`).
 - Code gaps closed (Oct 31): paid tasks only request payment for a valid job input; a failed draft attempt retries until the deadline (Sokosumi and direct Masumi paths); failed follow-up replies retry up to 3 times; a cleared module without a cell test batch is held back instead of lost; packs too large for one model call fail at once with the reason; uploads keep every version by hash; `/api/sign` accepts only same-machine JSON requests; Sign anchors missing file fingerprints first. The 3 Windows-only test failures were test assumptions and are fixed. 147/147 tests pass.

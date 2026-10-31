@@ -1,4 +1,25 @@
-# First paid run through Masumi (Oct 31, Preprod)
+# Paid runs (Oct 31, Preprod)
+
+## Paid run through Sokosumi (TUM Workspace)
+
+**Result: it worked end to end, through the route the hackathon asks for.** A task in the TUM Workspace hired our Coworker; Sokosumi paid 1 test USDM into Masumi's escrow without any manual step; the agent delivered the draft before the deadline; the seller wallet received the full 1 test USDM. Sokosumi's own receipt reports `settled: true`, and the net amount was checked on Blockfrost.
+
+| | |
+|---|---|
+| Sokosumi task | `01a190fe-859d-75e5-be4b-3ad10177652d` (TUM Workspace, status `COMPLETED`) |
+| Coworker | `01a18e63-a950-73ac-9195-53260585528f` (EV Battery History Recovery) |
+| Escrow lock (`FundsLocked`) | [1767ef45…](https://preprod.cardanoscan.io/transaction/1767ef455ad0536a245a1f7dde2234596c1de1213ec5861a6eb3ffa98b465f46) |
+| Result hash on-chain (`ResultSubmitted`) | [e0d086e0…](https://preprod.cardanoscan.io/transaction/e0d086e0b928b7437cc9d5d274b8a33ef99c41fdf361ca55fcfd2a0612f2972f), result hash `63a675fe…72ed` |
+| Payout (`Withdrawn`) | [ff813786…](https://preprod.cardanoscan.io/transaction/ff813786651e7f0af39013d24c2d4c2707067a11582160de4fb247b627f8ef07), confirmed 09:55 |
+| Seller receipt | `sokosumi runtime receipt`: `settled: true`; 1 test USDM net at the seller address (Core/MPS withdrawal hash matched with Blockfrost inputs and outputs) |
+
+Timeline (local time): 09:06 task created and payment requested by the worker → 09:09 funds locked (Sokosumi paid from the Workspace's credits, no approval step) → 09:14 result hash on-chain (deadline 09:26) → 09:18 task `COMPLETED` with the draft → 09:42 payout allowed → 09:55 payout confirmed (the payment service sends payouts in batches) → 09:57 worker verified the receipt.
+
+The unpaid task `01a190f9-f34a-735b-a5ec-1dc8b7a5ede8` in the same Workspace also completed, and its follow-up comment ("Why was module A-M4 not taken apart, and which quote decided it?") was answered from the draft, quoting A-e4 and A-e5.
+
+Fixed on the way: the worker could not start the Sokosumi CLI on Windows, and follow-ups on draft tasks were skipped. Both fixed in `cb87076`.
+
+## First paid run, directly through Masumi
 
 **Result: it worked end to end.** A buyer paid 1 test USDM into Masumi's escrow, our agent did the work with the real model, put its result hash on-chain before the deadline, and the seller wallet received the full 1 test USDM. Every transaction below was checked on Blockfrost.
 
