@@ -13,6 +13,18 @@ One small local web server, [review.mjs](../review.mjs), serves two pages. There
 
 The server listens on `127.0.0.1` only, so the pages are reachable from your own computer, not from the network.
 
+The review screen has its own pages, switched by the URL hash (keys 1–5 and `?` jump between them):
+
+| Hash | Page |
+|---|---|
+| `#/overview` | Summary: packs in, ESS units out, warnings |
+| `#/histories` | Donor pack timelines with quotes and sources |
+| `#/ess` | Gallery of ESS passports |
+| `#/ess/ESS-1` | One ESS: health, facility, family tree, QR code |
+| `#/held` | Modules not taken apart, cells not used, rejected claims |
+| `#/sign` | Sign and publish (paid drafts only) |
+| `#/help` | How to read the screen |
+
 ## Start it on your machine
 
 You need Node.js 24 and Git.
