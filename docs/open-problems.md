@@ -1,6 +1,6 @@
 # Open problems
 
-What still blocks or weakens the demo, with an owner for each. Updated Oct 31, 09:20. Roles are in [team-plan.md](team-plan.md).
+What still blocks or weakens the demo, with an owner for each. Updated Oct 31, 11:45. Roles are in [team-plan.md](team-plan.md).
 
 When you fix one, move it to **Solved** at the bottom with the commit hash, and push.
 
@@ -8,7 +8,8 @@ When you fix one, move it to **Solved** at the bottom with the commit hash, and 
 
 | # | Problem | Why it matters | Owner | Next step |
 |---|---|---|---|---|
-| 3 | **Buyers cannot upload files remotely yet.** For the demo this is solved: `node upload.mjs [batchDir]` stores a batch in `.local/uploads` and prints the job input, which goes into the Sokosumi task description. | A buyer outside our machine still has no upload path. | Member 4 | After the demo flow works: Sokosumi's task files API (`POST /v1/tasks/{id}/files`). |
+| 3 | **Buyers cannot upload files remotely yet.** For the demo this is solved: the review screen's **New job** page (or `node upload.mjs [batchDir]`) stores a batch in `.local/uploads` and gives the job input, which goes into the Sokosumi task description. The upload only accepts requests from our own machine. | A second-life company outside our machine can create the task but cannot send us its documents. | Member 4 | After the demo: Sokosumi's task files API (`POST /v1/tasks/{id}/files`). |
+| 13 | **Only the TUM Workspace can hire the Coworker.** It is connected only there, it is not on the public Sokosumi marketplace (searched Oct 31), and the worker accepts tasks from one Workspace only (`SOKOSUMI_ORGANIZATION_ID`). Companies with their own Masumi wallet can already hire it directly through the Masumi API. | Real second-life companies outside the hackathon cannot hire it on Sokosumi. | Member 4 | For the demo, a teammate on their own account plays the company. After: connect the Coworker to other Workspaces (`sokosumi coworkers connect`) and let the worker accept several; ask Masumi how to list it on the marketplace (publishing needs team approval). |
 
 ## AI step (real model: Gemini `gemini-3.5-flash`)
 
@@ -21,7 +22,8 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 
 | # | Problem | Owner | Next step |
 |---|---|---|---|
-| 10 | **No demo script, slides, rehearsal, or backup video yet.** Presentation rules (duration, whether the demo is live) are unknown. | Member 2 | A first script is in [demo-script.md](demo-script.md) (timings for a 5-minute slot, who clicks what, the paid run starting ~45 min before, and the fallback if it is not ready). Still to do: check the presentation rules in the opening slides (`TBC26_Hackathon_Opening.pdf`, Telegram Announcements) and adjust the timings, then slides, rehearsal, backup video. |
+| 10 | **Slides, rehearsal, and the demo video are not done.** The script and the 2:30 video shot list are in [demo-script.md](demo-script.md), updated for the live QR codes. The video is being recorded. Presentation rules (duration, whether the demo is live) are still unknown. | Member 2 | Pull `main` before the video setup. Check the presentation rules in the opening slides (`TBC26_Hackathon_Opening.pdf`, Telegram Announcements) and adjust the timings, then slides and a rehearsal. |
+| 14 | **No paid draft is signed yet, so no paid passport or QR code exists.** Only the unpaid test run has passports on-chain; their QR codes work. | The demo can show QR codes only from the test run, and must say so. | Member 4, team decision | Sign the paid draft on the Sign page with `CARDANO_WRITES_ENABLED=true` (14 transactions, about 3.1 tADA). Then rebuild the passport site and push it to `gh-pages` **before** scanning: the new QR codes 404 until then. Pull `main` first, or the rebuild undoes the passport fixes. |
 
 ## Smaller items
 
@@ -31,8 +33,18 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 - **Gemini free tier** returns 503 "high demand" errors at peak times (seen on newer models). Pick a backup model for demo day.
 - **Keys shared in chat** (Blockfrost, Gemini): replace them after the demo.
 - **Vendor name:** buyers see the Coworker under the Vendor "Citation Escrow", reused from another project. Cosmetic.
+- **Existing paid drafts show no pack model, serial number, or VIN.** They were made before the model was asked for these (`abf5b11`) and cannot change, since their hash is on-chain. The next run shows them. Restart `npm start` after pulling.
+- **Pack identity fields are not quote-checked.** Model, serial number, and VIN sit on a different line from the event's quote, so code does not check them word for word (the hand-made demo drafts work the same way). Fix if needed: give each its own quote. Owner: Member 1.
+- **Never regenerate `examples/demo-onchain-draft.json` or `examples/demo-onchain-signed.json`.** They are the exact draft and signed record of the Oct 31 test run; the passports check against them. A test pins the draft's hash.
 
 ## Solved
+
+- Public passports hid every history (Oct 31): `examples/demo-draft.json` gained pack model, serial number, and VIN (`6d9648a`) after the test run was written, so no draft matched the chain. Passports now match against `examples/demo-onchain-draft.json`, the exact bytes that run signed (its hash equals the on-chain `draft_hash`). (`53885d4`, `9fb1d64`)
+- Company signature not checked on the passports: the test run's signed record is rebuilt from the on-chain logs (`examples/demo-onchain-signed.json`). All 5 passports pass all four checks, including the signature on every log. (`9fb1d64`)
+- QR codes hard to find: the public passport list shows each unit's QR code, and a draft without passports explains why and links to the test-run QR codes. (`9fb1d64`)
+- Real drafts showed no pack identity: the model was never asked to put model, serial number, and VIN where the review screen reads them. Real model on packs A and C: all filled, 8/8 events verified. (`abf5b11`)
+- Public homepage said "ready to sign" although signing is off there: it now says "read-only copy". (`1a5c647`)
+- README rewritten as the project README with the submission evidence, the public site links, and the passport checks (`7465154`, `53885d4`, `985e377`). `docs/member3-tasks.md` traces the test-run passports against the on-chain copy (`c38c2b9`).
 
 - #2: paid run through Sokosumi, end to end (Oct 31): task `01a190fe-859d-75e5-be4b-3ad10177652d` in the TUM Workspace, escrow lock [1767ef45…](https://preprod.cardanoscan.io/transaction/1767ef455ad0536a245a1f7dde2234596c1de1213ec5861a6eb3ffa98b465f46), result [e0d086e0…](https://preprod.cardanoscan.io/transaction/e0d086e0b928b7437cc9d5d274b8a33ef99c41fdf361ca55fcfd2a0612f2972f), payout [ff813786…](https://preprod.cardanoscan.io/transaction/ff813786651e7f0af39013d24c2d4c2707067a11582160de4fb247b627f8ef07); Sokosumi receipt `settled: true`, 1 test USDM net to the seller (checked on Blockfrost). This is the submission's payment evidence. Details: [paid-run-report.md](paid-run-report.md).
 - #1: TUM Workspace access is `GRANTED`. Unpaid task `01a190f9-f34a-735b-a5ec-1dc8b7a5ede8` with the demo job input reached `COMPLETED` in 3 minutes (11 events, 2 warnings, 5 ESS, explanation). Follow-up comment "Why was module A-M4 not taken apart, and which quote decided it?" was answered from the draft, quoting A-e4 and A-e5.
