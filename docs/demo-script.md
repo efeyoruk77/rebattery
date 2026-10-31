@@ -13,6 +13,8 @@ A first version for Member 2 to edit. It follows the nine demo steps in [project
 | T−45 min | Operator | Start the **paid run**: on the review screen's **New job** page (key 0), upload the batch, copy the job input, and create the Sokosumi task with it. The payout unlocks about 36 minutes after the job starts, so the payout TxHash is ready by the time we present. |
 | T−10 min | Operator | Check on /status that the task reached the result and payment stages. Open the review screen on the paid draft. Keep the backup video and the demo draft ready. |
 
+**QR codes:** the test-run passports already have working QR codes. They are on the public passport list (https://efeyoruk77.github.io/Afterlife/passports.html), on the demo draft's ESS pages, and on the review screen behind the *See the test-run QR codes* button of any draft without passports. Each opens a passport page that passes all four checks against Cardano, including the company signature. A paid draft gets its own QR codes only after it is signed (Sign page). Open the passport list on a phone once before going on stage, to make sure the network reaches it.
+
 **If the paid run is not ready:** present on the demo draft (it has the same packs, ESS units, warnings, and a real recorded AI explanation) and show the registration TxHash from /status. Say plainly which parts are recorded. Never show a TxHash that did not happen.
 
 ## On stage
@@ -25,8 +27,8 @@ A first version for Member 2 to edit. It follows the nine demo steps in [project
 | 1:50–2:20 | Overview (1) | Code found a contradiction: 91% health 15 months after a module was replaced. That module is not taken apart. | Overview with the warning |
 | 2:20–3:00 | Held back (4) | Modules with an accident or open warning are never opened. Single cells that don't match are held back with a reason. The grey boxes are the AI explaining the code's decision; it never makes the decision. | Held-back modules, cell groups, AI explanation boxes |
 | 3:00–3:20 | Held back (4) | Bonus: someone claimed a fact that isn't in the invoice. The quote isn't in the document, so it is rejected. | Rejected claim A-x1 |
-| 3:20–4:10 | ESS passports (3) → ESS-1 | Five repurposed home batteries, 48 cells each. The law says each one needs a new passport linked to the passports of its original batteries (Article 77(7)); ours have none, so we rebuild the history. This one: 86.5% health, set by its weakest cell; made at our demo facility; and every cell traces back to its donor pack and source documents. | ESS-1 detail: health, facility, family tree, QR code |
-| 4:10–4:40 | Sign (5) | The company signs. The donor histories and each ESS passport are written to Cardano, and the agent was paid when it delivered the draft. | Sign result: TxHashes; scan a QR code with a phone |
+| 3:20–4:10 | ESS passports (3) → ESS-1 | Five repurposed home batteries, 48 cells each. The law says each one needs a new passport linked to the passports of its original batteries (Article 77(7)); ours have none, so we rebuild the history. This one: 86.5% health, set by its weakest cell; made at our demo facility; and every cell traces back to its donor pack and source documents. | ESS-1 detail: health, facility, family tree, QR code (on an unsigned paid draft: press *See the test-run QR codes*) |
+| 4:10–4:40 | Sign (5) | The company signs. The donor histories and each ESS passport are written to Cardano, and the agent was paid when it delivered the draft. Anyone can scan the unit: the passport page checks the records on Cardano, including the company's signature. | Sign result: TxHashes; scan a test-run QR code with a phone: four green checks, then a quote from a donor document |
 | 4:40–5:00 | Slides | Limits: we prove what a document says, not that it is true; legal acceptance of a reconstructed history is open; real use needs an ISO/IEC 15459 identifier behind the QR code (Article 77(3)). Next: cell-level data from real testers, Sokosumi file upload. | Limits / next steps slide |
 
 ## Rules
@@ -51,7 +53,7 @@ One real paid run, recorded end to end in the browser, with the waits cut out. R
 | 0:50–1:20 | What it found | **Donor histories** (2) → Overview warning (1) → **Held back** (4) | "Every fact is a quote with page and line, checked by code. Code finds a contradiction and keeps that module out. The AI only explains." |
 | 1:20–1:40 | New batteries | **ESS passports** (3) → ESS-1 | "240 matching cells become five home batteries. Each traces back to its donor packs." |
 | 1:40–2:00 | Sign | **Sign** (5) → *Sign and publish* → transaction IDs | "The company signs. The histories and passports are written to Cardano." |
-| 2:00–2:15 | Scan | Phone films the QR code on ESS-1; the passport page opens | "Anyone can scan the unit and see where its cells came from." |
+| 2:00–2:15 | Scan | Phone films the QR code on ESS-1; the passport page opens on the four green checks, then scrolls to a quote | "Anyone can scan the unit, see where its cells came from, and check it against Cardano, down to the company's signature." |
 | 2:15–2:30 | Paid | Caption *about 40 min later* → /status: **Payout ↗** and *1 USDM received* | "The agent was paid automatically once the escrow unlocked." |
 
 ### One-time setup (day before)
@@ -61,7 +63,7 @@ One real paid run, recorded end to end in the browser, with the waits cut out. R
    - A working model key. Gemini's free tier runs out after a few runs a day: keep a second key ready. **After any change to `.env`, restart `npm start`**; it reads `.env` only when it starts.
    - `PAID_TASKS_ENABLED=true` (payment setup is already done on this machine).
    - `CARDANO_WRITES_ENABLED=true` for the Sign step. This is a real write on Preprod: **team decision first**. Check the log wallet balance on /status (a full Sign costs about 3.1 tADA).
-   - `PASSPORT_BASE_URL` set to the public passport site, if it is live (it needs the repo public and GitHub Pages on the `gh-pages` branch). If not, the QR codes open the passport on Cardanoscan, which is also fine on camera.
+   - `PASSPORT_BASE_URL=https://efeyoruk77.github.io/Afterlife`. The site is live, so the QR codes open its readable passport pages instead of Cardanoscan. Restart `npm run review` after setting it.
 3. Recording tools: OBS (or Windows Game Bar, Win+G) at 1920×1080 for the screen, and a second phone to film the QR scan. Browser zoom 125% so text is readable in the video. Close other tabs and notifications.
 4. Rehearse once without recording. Without the team's go-ahead for writes, stop before pressing *Sign and publish*.
 
@@ -79,9 +81,10 @@ One real paid run, recorded end to end in the browser, with the waits cut out. R
    2. Sokosumi → new task with the coworker **EV Battery History Recovery** → paste the job input as the description → pay when asked (1 test USDM).
    3. /status (refreshes every 10 s): wait for *Escrow locked ↗* and *Result hash ↗*. Open each link once so the Cardanoscan page is on camera.
    4. When the draft is delivered, pick the paid task in the review screen's **Draft** menu (top right) and record the pages of scenes 0:50–1:40.
-   5. **Sign** → *Sign and publish*. Wait for the transaction IDs (a few minutes). If the passport site is used, rebuild and publish it now (`node --env-file-if-exists=.env passport-site.mjs`, then push `site/` to `gh-pages`; set `PUBLISH_PAID_HISTORIES=true` only because the demo data is invented).
-   6. ESS-1: film the QR scan with the second phone.
-   7. Leave everything running. After the unlock time (about 36 minutes after the job started), /status shows *Payout ↗* and *1 USDM received*. Record that.
+   5. **Sign** → *Sign and publish*. Wait for the transaction IDs (a few minutes).
+   6. **Publish the new passports before scanning.** The new QR codes point at pages on the public site that do not exist yet, so a scan now shows "404". Rebuild with `node --env-file-if-exists=.env passport-site.mjs` and push `site/` to the `gh-pages` branch. Only drafts made from the invented demo files are published, so the paid demo draft goes up with its full history. Wait until `https://efeyoruk77.github.io/Afterlife/passports.html` lists the new passports (a minute or two).
+   7. ESS-1: film the QR scan with the second phone. The page should open on four green checks, the last one *Company signature verifies*. If you skipped Sign, scan a test-run QR code from the passport list instead and say it is from the test run.
+   8. Leave everything running. After the unlock time (about 36 minutes after the job started), /status shows *Payout ↗* and *1 USDM received*. Record that.
 5. Note the Sokosumi task ID and the three transaction IDs from /status: the submission needs them.
 
 ### Editing
@@ -92,4 +95,4 @@ One real paid run, recorded end to end in the browser, with the waits cut out. R
 - Zoom in on small text in the editor rather than recording at a large zoom.
 - Same rules as on stage: say "test network (Preprod)" once, show only transactions that really happened, and label the AI explanation as AI.
 
-**If the new run fails:** use the first paid Sokosumi task (`01a190fe…`, see open problem #2), whose transactions are real, and the demo draft with its recorded test-run passports. Say which parts are from that earlier run.
+**If the new run fails:** use the first paid Sokosumi task (`01a190fe…`, settled, see the README's Evidence section), whose transactions are real, and the demo draft with its recorded test-run passports. Their QR codes are on https://efeyoruk77.github.io/Afterlife/passports.html. Say which parts are from that earlier run.
