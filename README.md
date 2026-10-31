@@ -125,7 +125,7 @@ Every passport passes four checks against the chain:
 
 Rebuild it with `node --env-file-if-exists=.env passport-site.mjs`, then push `site/` to the `gh-pages` branch.
 
-**Locally,** with the services running (see setup below), run `npm run review`:
+**Locally,** with the services running (see "Run it yourself" below), run `npm run review`:
 
 - http://127.0.0.1:21952: the **review screen**, with the **New job** page (key `0`) for uploading a batch and copying the job input, plus timelines, warnings, ESS passport cards with QR codes, and **Sign and publish**
 - http://127.0.0.1:21952/status: what is running, with Masumi registration, wallet balance, Sokosumi tasks, and links to escrow, result, and payout transactions
@@ -182,164 +182,47 @@ More: [docs/project-plan.md](docs/project-plan.md#limits-and-open-questions) and
 
 ---
 
-# Setup
+# Run it yourself
 
-This project started from the [TUM hackathon quickstart](https://www.masumi.network/tum-hackathon). The agent (`npm start`) and the Sokosumi worker (`npm run worker`) run as **separate processes**. The Masumi agent API (`npm run api`) and the review screen (`npm run review`) are two more.
+Built on the [TUM hackathon quickstart](https://www.masumi.network/tum-hackathon). For account setup (Sokosumi Vendor and Coworker, Workspace access, Masumi Payment Service, agent registration), follow that guide with **your own** accounts and wallets. Never reuse our Coworker, wallet, or registration IDs.
 
-Private configuration lives in `.env` (copy [.env.example](.env.example)) and `.local/`. Both are ignored by git. Never commit keys or wallet secrets. The setting names are `ZAI_API_KEY`, `ZAI_BASE_URL`, `ZAI_MODEL`, `BLOCKFROST_API_KEY_PREPROD`, `COWORKER_ID`, `SOKOSUMI_ORGANIZATION_ID`, `SOKOSUMI_ORGANIZATION_SLUG`, `AGENT_AUTHOR`, `MPS_URL`, `AGENT_API_PORT`, `PAID_TASKS_ENABLED`, `CARDANO_WRITES_ENABLED`, and `PASSPORT_BASE_URL`.
-
-Upload a batch and get its job input with `node upload.mjs [batchDir]` (default: the demo files in `battery/demo/`). Paid jobs take that job input and return the stage A draft. Unpaid Coworker tasks whose description is a job input also run stage A. Any other description goes straight to the model.
-Adapt `agent/instructions.md` to change the agent's model behavior. Frontend work: see [docs/frontend.md](docs/frontend.md).
-
-## Start the local agent
-
-Use Node.js 24 or newer for the agent and CLI.
-
-1. Clone this repository and enter its directory:
-
-   ```sh
-   git clone https://github.com/masumi-network/tum-hackathon-quickstart.git
-   cd tum-hackathon-quickstart
-   ```
-
-2. Install the locked dependencies and prepare private configuration:
-
-   ```sh
-   npm ci
-   cp .env.example .env
-   chmod 600 .env
-   ```
-
-3. In `.env`, set `ZAI_API_KEY`, `ZAI_BASE_URL`, and `ZAI_MODEL` for your OpenAI-compatible model provider.
-   For a custom model absent from AI Gateway's catalog, also set `ZAI_CONTEXT_WINDOW_TOKENS` to its documented context window.
-   Use a positive whole number of tokens. Leave it blank to use Eve's catalog lookup.
-4. Keep `EVE_PORT` and `EVE_URL` consistent. Start the agent:
-
-   ```sh
-   npm start
-   ```
-
-The agent listens on `127.0.0.1` and loads `.env` automatically.
-Keep this terminal open while you use the worker.
-
-For extra protection, consider [Socket Firewall](https://socket.dev/products/socket-firewall) for package installs.
-If installed, prefix an install command with `sfw`, such as `sfw npm ci`.
-
-## Connect your Sokosumi Coworker
-
-Install Sokosumi CLI `1.0.4`. This starter uses its runtime adapter.
-Check compatibility before changing that version.
+**1. Install** (Node.js 24 or newer, Sokosumi CLI `1.0.4`):
 
 ```sh
+git clone https://github.com/efeyoruk77/Afterlife.git
+cd Afterlife
+npm ci
+cp .env.example .env && chmod 600 .env
 npm install --global @masumi_network/sokosumi@1.0.4
-sokosumi --version
-sokosumi skills
 ```
 
-1. Follow the [setup guide](https://www.masumi.network/tum-hackathon) to sign in with your own Preprod account.
-   Create your own Vendor and a private Coworker with task access.
-2. Connect the Coworker to your Personal Workspace for the first test.
-   Import its runtime key through the CLI's supported credential interface. Keep the key in the CLI vault.
-3. Set the returned `COWORKER_ID` in `.env`.
-   Keep `PAID_TASKS_ENABLED=false` until you complete the payment setup below.
-4. Start the worker in a second terminal:
+**2. Configure `.env`.** Private settings live in `.env` and `.local/`, both ignored by git.
 
-   ```sh
-   npm run worker
-   ```
+| Setting | What it is |
+|---|---|
+| `ZAI_API_KEY`, `ZAI_BASE_URL`, `ZAI_MODEL` | Any OpenAI-compatible model provider |
+| `COWORKER_ID` | Your Coworker (its runtime key stays in the Sokosumi CLI vault) |
+| `SOKOSUMI_ORGANIZATION_ID`, `SOKOSUMI_ORGANIZATION_SLUG` | The Workspace to serve. Several Workspaces: comma-separated, same order in both. Blank: Personal Workspace |
+| `MPS_URL`, `AGENT_API_PORT`, `AGENT_AUTHOR`, `BLOCKFROST_API_KEY_PREPROD` | Masumi payments and Cardano reads |
+| `PAID_TASKS_ENABLED` | `true` only after your agent's Masumi registration is confirmed; `false` runs tasks unpaid |
+| `CARDANO_WRITES_ENABLED`, `PASSPORT_BASE_URL` | Stage B writes, and where passport QR codes point |
 
-5. Create a task in your Personal Workspace. Replace `YOUR_COWORKER_ID` with your Coworker ID:
-
-   ```sh
-   sokosumi --preprod tasks create --personal --coworker-id YOUR_COWORKER_ID --description "Suggest names for our hackathon team." --status READY --json
-   ```
-
-Open the task in Sokosumi and check that it reaches `COMPLETED` with an answer.
-Run only one worker for this project. Keep both local services running.
-
-For CLI options, use `sokosumi --help` and its [official documentation](https://github.com/masumi-network/sokosumi/tree/main/apps/cli).
-
-## Switch to the TUM Workspace
-
-Keep both organization settings blank for your first Personal Workspace test.
-Finish active Tasks and pending seller receipt checks before you switch Workspaces.
-
-1. Join the [TUM Sokosumi Workspace](https://preprod.sokosumi.com/join/GTAHB3OQFWgg8rGetMfleiqgeL6_ltdW).
-   Read its actual organization ID and slug:
-
-   ```sh
-   sokosumi --preprod workspaces list --json
-   ```
-
-2. Connect your existing Coworker to that Workspace. Replace each placeholder with your returned IDs:
-
-   ```sh
-   sokosumi --preprod coworkers connect YOUR_COWORKER_ID --vendor-id YOUR_VENDOR_ID --workspace-id YOUR_ORGANIZATION_ID --json
-   sokosumi --preprod workspaces check YOUR_ORGANIZATION_ID --json
-   ```
-
-   If access is `PENDING`, ask a Workspace owner or admin to approve it, then run `connect` again.
-   Continue only when access is `GRANTED` and your account is eligible to create tasks.
-3. Stop the worker. In `.env`, set `SOKOSUMI_ORGANIZATION_ID` and `SOKOSUMI_ORGANIZATION_SLUG` to that Workspace's ID and slug.
-   Set both together. The worker rejects incomplete settings and tasks from another Workspace.
-   To serve several Workspaces (for example the TUM Workspace and a company's own), list them comma-separated in the same order in both settings, after connecting the Coworker to each one. Each task runs in the Workspace it came from.
-4. Restart the worker:
-
-   ```sh
-   npm run worker
-   ```
-
-5. Create a task in the TUM Workspace:
-
-   ```sh
-   sokosumi --preprod tasks create --organization-slug YOUR_WORKSPACE_SLUG --coworker-id YOUR_COWORKER_ID --description "Suggest names for our hackathon team." --status READY --json
-   ```
-
-The worker uses the organization slug for task discovery and the organization ID for runtime execution.
-Comments and paid tasks use the same Coworker and Workspace checks.
-To return to Personal Workspace tasks, finish active work, clear both organization settings, and restart the worker.
-
-## Optional Preprod payments
-
-Prepare your own [Masumi Payment Service](https://github.com/masumi-network/masumi-payment-service) with its current setup instructions.
-Use a dedicated database, encryption key, and selling wallet for this project.
-Keep setup secrets, including that node's `ADMIN_KEY`, in `.local/mps.env` with permission `600`.
-Fund your selling wallet with test ADA.
-
-1. Create `docs/` and `.local/` if absent.
-   Save your payment source's `sourceId`, selling wallet's `walletId`, and `sellerAddress` in `docs/payment-state.json`.
-   Read these identifiers from your own MPS responses.
-2. Set `MPS_URL`, `AGENT_API_PORT`, `AGENT_AUTHOR`, and `BLOCKFROST_API_KEY_PREPROD` in `.env`.
-   Use your own name or team name for `AGENT_AUTHOR`.
-3. Create the scoped runtime key, then register the agent:
-
-   ```sh
-   node --env-file=.env --env-file=.local/mps.env payment-registration.mjs key
-   node --env-file=.env --env-file=.local/mps.env payment-registration.mjs register
-   ```
-
-4. Check registration until it confirms:
-
-   ```sh
-   node --env-file=.env --env-file=.local/mps.env payment-registration.mjs
-   ```
-
-5. Complete `docs/registration-state.json` with the confirmed `agentIdentifier`, actual `supportedPaymentSourceIndex`, and selling wallet's `sellerVkey`.
-   Read these from your own confirmed registry and wallet responses.
-   Start `npm run api`, set `PAID_TASKS_ENABLED=true`, and restart the worker.
-
-Enable payments only after registration confirms and the scoped runtime key is saved in `.local/mps-runtime.env`.
-Never copy another project's wallet, registration, or task IDs.
-If a payment or registration write has an uncertain outcome, inspect its saved state before retrying.
-Complete a paid task and check the seller's net receipt before you submit payment evidence.
-
-## Check your changes
+**3. Start the four services**, each in its own terminal. Run exactly one worker.
 
 ```sh
-npm test
+npm start         # the agent (model + extraction)
+npm run worker    # picks up Sokosumi tasks
+npm run api       # Masumi agent API, for paid jobs
+npm run review    # review screen, New job page, /status, passports
 ```
 
-These tests check local logic. Test your own model connection, Coworker task, and seller receipt through the full setup flow.
-The current `npm audit` reports three dependency findings: two high and one moderate, across `eve`, `undici`, and `zod`.
-Review these before public deployment. Dependency versions stay pinned in `package-lock.json`.
-Keep `.env`, `.local/`, wallet secrets, and generated resource state out of git.
+**4. Run a job.** On http://127.0.0.1:21952, open **New job**, use the demo batch (or upload your own; `node upload.mjs [batchDir]` does the same from the terminal), and copy the job input. Create a Sokosumi task with your Coworker and paste the job input as the description. A description that is not a job input goes straight to the model, so follow-up questions work too.
+
+**5. Check it:**
+
+```sh
+npm test                          # local logic, no network
+node --env-file=.env e2e.mjs      # full stage A with the real model, compared with the reference draft
+```
+
+To change how the model extracts and explains, edit [agent/instructions.md](agent/instructions.md). Frontend notes: [docs/frontend.md](docs/frontend.md).
