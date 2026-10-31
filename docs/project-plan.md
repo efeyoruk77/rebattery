@@ -6,10 +6,10 @@ Old electric vehicle batteries are taken apart. Modules with a clean history are
 
 ## The problem
 
-From February 18, 2027, every electric vehicle battery placed on the EU market must have a digital passport. Batteries placed on the market before that date have no passport.
+From 18 February 2027, every EV battery, every LMT battery, and every industrial battery with a capacity greater than 2 kWh placed on the EU market must have a digital passport (Regulation (EU) 2023/1542, Article 77(1)). Batteries placed on the market before that date have no passport.
 
 - **Cells inside one battery age differently.** A pack that had a module replaced, or a module damaged in an accident, contains cells with very different health. Even within one module, single cells drift apart. Second-life companies take packs apart and regroup cells with matching health into new ESS units.
-- **A regrouped battery needs a new passport.** A battery built from used cells counts as placed on the market again. The passport article of the regulation (Article 77) requires its passport to be linked to the passport of the original battery or batteries.
+- **A regrouped battery needs a new passport.** A repurposed battery is "placed on the market anew" (recital 16), and a battery "used for energy storage in private or domestic environments" counts as an industrial battery (recital 15). So each ESS above 2 kWh (about 11.7 kWh nominal in the demo: 48 cells × 3.7 V × 66 Ah) needs its own passport. Article 77(7): "Such battery shall have a new battery passport linked to the battery passport or passports of the original battery or batteries." The responsibility for that passport moves to the company that places the repurposed battery on the market.
 - **There are several originals, and none has a passport.** One new ESS can contain cells from three or more donor packs. For pre-2027 donors, no passport was ever created, and the regulation does not address this case.
 - **Information asymmetry.** At the end of a vehicle's life, batteries usually retain 70–80% of their capacity and can be used for another 5–10 years in stationary storage. But a buyer of a regrouped battery cannot see where each cell came from or what happened to it, which slows down the second-life market.
 - **Existing solutions assume the data exists.** The Cardano Foundation's DPP standard and other efforts assume events are recorded as they happen. For old batteries, events were never recorded; the history exists only in invoices, service records, and reports.
@@ -104,7 +104,7 @@ The on-chain side is built with ready-made patterns, so the effort goes into the
 - **Document hashes:** The hash of each source document is written on-chain; the document itself is stored off-chain.
 - **Signature:** The second-life company's signature permanently records on-chain who took responsibility.
 
-**Why Cardano:** The regulation requires passports to travel across the product's lifetime and across multiple companies. Once cells from several packs are mixed, no single company holds the whole history. It needs a shared record that no single company can change on its own. Cardano's low and predictable fees also keep costs reasonable for millions of cells.
+**Why Cardano:** Article 78 requires that the passport "remain available after the economic operator responsible … ceases to exist or ceases its activity in the Union" and that "data authentication, reliability and integrity shall be ensured". The regulation requires passports to travel across the product's lifetime and across multiple companies. Once cells from several packs are mixed, no single company holds the whole history. It needs a shared record that no single company can change on its own. Cardano's low and predictable fees also keep costs reasonable for millions of cells.
 
 ## Demo scenario
 
@@ -127,7 +127,9 @@ Three 2020-model EV packs of the same model will be taken apart, their clean mod
 
 - **The document itself could be fake.** The system proves what a document says, not that the document is true. Documents digitally signed by a service shop or the manufacturer reduce this risk.
 - **Module and cell identity.** Old documents rarely use the same numbering as the physical pack. The demo assumes the manufacturer's numbering; real use needs a mapping step when the pack is opened, and each removed cell needs a label.
-- **Legal acceptance is unclear.** The regulation does not settle whether a reconstructed history would be accepted in place of an "original passport." The project is a proposed solution to this gap, not an official approval. Check the exact Article 77 wording on linking to several original batteries before the pitch.
+- **Legal acceptance is unclear.** The regulation does not settle whether a reconstructed history would be accepted in place of an "original passport." The project is a proposed solution to this gap, not an official approval. Article 77(7) requires a link to the passports of the original batteries but says nothing about originals that never had one.
+- **QR code and identifier.** Article 77(3) requires the QR code to link to a unique identifier that complies with the ISO/IEC 15459 standards. The demo QR code opens the passport transaction on Cardanoscan; real use needs an ISO/IEC 15459 identifier that resolves to the passport.
+- **Repurposing, not remanufacturing.** Recital 17 treats restoring "at least 90 % of the original rated battery capacity" as remanufacturing. The demo ESS units are at 86.5–89.4 % health, so they are repurposed batteries.
 - **Grouping limits are examples.** The capacity and resistance bands in the demo are placeholders. Real limits depend on the cell model and the new ESS's design.
 - **Personal data.** Registration and insurance documents contain personal data. Documents are kept off-chain; only hashes are on-chain. Personal information must be stripped from the events.
 - **Passport access rules are not finalized yet.** Implementing decisions that will determine who can access which fields are still pending.

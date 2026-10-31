@@ -19,19 +19,20 @@ A first version for Member 2 to edit. It follows the nine demo steps in [project
 
 | Time | Page (key) | Presenter says | Screen shows |
 |---|---|---|---|
-| 0:00–0:40 | Slides | From Feb 2027 every EV battery in the EU needs a digital passport. Batteries built before then have none, but their cells still have 5–10 years of life in home storage. To reuse them, someone has to prove where each cell came from. | Problem slide |
+| 0:00–0:40 | Slides | From 18 February 2027, EV batteries and industrial batteries over 2 kWh, which includes home storage, need a digital passport (Article 77(1)). Batteries built before then have none, but their cells still have 5–10 years of life in home storage. To reuse them, someone has to prove where each cell came from. | Problem slide |
 | 0:40–1:10 | Status page | A second-life company hired our agent on Sokosumi for three old packs. The fee is locked in escrow on Cardano. | /status: agent registered (link to its registration transaction), the task and its payment stage |
 | 1:10–1:50 | Donor histories (2) | The agent read invoices, a German service report, an insurance record. Every line here is a quote with its page and line, checked by code, not by the AI. | Pack A timeline: "Modul 4 ersetzt", the 91% health report |
 | 1:50–2:20 | Overview (1) | Code found a contradiction: 91% health 15 months after a module was replaced. That module is not taken apart. | Overview with the warning |
 | 2:20–3:00 | Held back (4) | Modules with an accident or open warning are never opened. Single cells that don't match are held back with a reason. The grey boxes are the AI explaining the code's decision; it never makes the decision. | Held-back modules, cell groups, AI explanation boxes |
 | 3:00–3:20 | Held back (4) | Bonus: someone claimed a fact that isn't in the invoice. The quote isn't in the document, so it is rejected. | Rejected claim A-x1 |
-| 3:20–4:10 | ESS passports (3) → ESS-1 | Five new home batteries, 48 cells each. This one: 86.5% health, set by its weakest cell; made at our demo facility; and every cell traces back to its donor pack and source documents. | ESS-1 detail: health, facility, family tree, QR code |
+| 3:20–4:10 | ESS passports (3) → ESS-1 | Five repurposed home batteries, 48 cells each. The law says each one needs a new passport linked to the passports of its original batteries (Article 77(7)); ours have none, so we rebuild the history. This one: 86.5% health, set by its weakest cell; made at our demo facility; and every cell traces back to its donor pack and source documents. | ESS-1 detail: health, facility, family tree, QR code |
 | 4:10–4:40 | Sign (5) | The company signs. The donor histories and each ESS passport are written to Cardano, and the agent was paid when it delivered the draft. | Sign result: TxHashes; scan a QR code with a phone |
-| 4:40–5:00 | Slides | Limits: we prove what a document says, not that it is true; legal acceptance of a reconstructed history is open. Next: cell-level data from real testers, Sokosumi file upload. | Limits / next steps slide |
+| 4:40–5:00 | Slides | Limits: we prove what a document says, not that it is true; legal acceptance of a reconstructed history is open; real use needs an ISO/IEC 15459 identifier behind the QR code (Article 77(3)). Next: cell-level data from real testers, Sokosumi file upload. | Limits / next steps slide |
 
 ## Rules
 
 - Only show TxHashes, payments, and QR codes that really happened on Preprod. The status and review pages only show real ones; keep the slides the same.
 - Say "test network (Preprod)" once, early.
 - The AI explanation is labelled as AI on screen; say that code decided, the AI only explains.
-- Check the Article 77 wording (open problem #12) before quoting it on a slide.
+- Quote the law exactly. Article 77(7): "Such battery shall have a new battery passport linked to the battery passport or passports of the original battery or batteries."
+- Say "repurposed", not "remanufactured": our ESS units are at 86.5–89.4 % health, below the 90 % that recital 17 uses for remanufacturing.
