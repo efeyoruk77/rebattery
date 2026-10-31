@@ -24,7 +24,7 @@ test('job input lists documents and test files by hash',()=>{
 const withStore = async fn => { const store = mkdtempSync(join(tmpdir(), 'draft-store-')); try { return await fn(store); } finally { rmSync(store, {recursive:true, force:true}); } };
 
 test('stage A on the uploaded demo files gives the same ESS units as the battery demo',async()=>withStore(async store=>{
- const build = createDraftBuilder({extract: sampleExtract}, {storeDir: store, testerPublicKeyPath: demoTesterKeyPath});
+ const build = createDraftBuilder({extract: sampleExtract, explain: async () => null}, {storeDir: store, testerPublicKeyPath: demoTesterKeyPath});
  const text = prepareDemoJob(store);
  const draft = JSON.parse(await build(text));
  const expected = runDemo();
@@ -35,7 +35,7 @@ test('stage A on the uploaded demo files gives the same ESS units as the battery
 }));
 
 test('stage A stops if a stored file no longer matches the job input',async()=>withStore(async store=>{
- const build = createDraftBuilder({extract: sampleExtract}, {storeDir: store, testerPublicKeyPath: demoTesterKeyPath});
+ const build = createDraftBuilder({extract: sampleExtract, explain: async () => null}, {storeDir: store, testerPublicKeyPath: demoTesterKeyPath});
  const job = JSON.parse(prepareDemoJob(store));
  job.documents[0].sha256 = h('f');
  await assert.rejects(()=>build(JSON.stringify(job)), /hash mismatch/);
@@ -47,8 +47,19 @@ test('draft refuses to start past the result deadline',async()=>{
 
 test('the AI step gets the Masumi result deadline, so model retries stop in time',async()=>withStore(async store=>{
  let seen;
- const build = createDraftBuilder({extract: async (docs, opts) => { seen = opts.deadline; return sampleExtract(docs); }}, {storeDir: store, testerPublicKeyPath: demoTesterKeyPath});
+ const build = createDraftBuilder({extract: async (docs, opts) => { seen = opts.deadline; return sampleExtract(docs); }, explain: async () => null}, {storeDir: store, testerPublicKeyPath: demoTesterKeyPath});
  const deadline = Date.now() + 60_000;
  await build(prepareDemoJob(store), undefined, deadline);
  assert.equal(seen, deadline);
+}));
+
+test('the draft carries the model grouping explanation, and is still delivered when the explanation fails',async()=>withStore(async store=>{
+ const text = prepareDemoJob(store);
+ let seen;
+ const explained = createDraftBuilder({extract: sampleExtract, explain: async g => { seen = g; return {ess: {'ESS-1': 'x'}, modules: {}, cells: []}; }}, {storeDir: store, testerPublicKeyPath: demoTesterKeyPath});
+ const draft = JSON.parse(await explained(text));
+ assert.deepEqual(draft.explanation, {ess: {'ESS-1': 'x'}, modules: {}, cells: []});
+ assert.deepEqual(Object.keys(seen), ['new_batteries', 'held_back', 'events', 'warnings']);
+ const failing = createDraftBuilder({extract: sampleExtract, explain: async () => { throw Error('overloaded'); }}, {storeDir: store, testerPublicKeyPath: demoTesterKeyPath});
+ assert.equal(JSON.parse(await failing(text)).explanation, null);
 }));

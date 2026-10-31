@@ -15,7 +15,7 @@ So we follow the pattern with plain transaction metadata and no validator. Libra
 
 One **log** per donor pack (`pack:A`) and one per ESS (`battery:ESS-1`), plus one **passport** per ESS. A later batch of a log would carry `prev`, the transaction hash of the previous batch; the demo writes one batch per log.
 
-All entries use one metadata label (placeholder `1984`, team to decide). Metadata holds only integers, text up to 64 UTF-8 bytes, lists, and maps. Longer text (signature, Masumi identifier) is a list of pieces split between characters. Decimals such as `soh_pct: 86.5` are written as text (`"86.5"`), and `null` values are left out. Every entry is checked against these rules and a size limit before a transaction is built.
+All entries use one metadata label (placeholder `1984`, which is taken in CIP-10; team to decide, see [open problem #5](open-problems.md)). Metadata holds only integers, text up to 64 UTF-8 bytes, lists, and maps. Longer text (signature, Masumi identifier) is a list of pieces split between characters. Decimals such as `soh_pct: 86.5` are written as text (`"86.5"`), and `null` values are left out. Every entry is checked against these rules and a size limit before a transaction is built.
 
 ### Stage A: anchors
 

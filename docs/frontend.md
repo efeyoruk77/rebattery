@@ -13,6 +13,18 @@ One small local web server, [review.mjs](../review.mjs), serves two pages. There
 
 The server listens on `127.0.0.1` only, so the pages are reachable from your own computer, not from the network.
 
+The review screen has its own pages, switched by the URL hash (keys 1–5 and `?` jump between them):
+
+| Hash | Page |
+|---|---|
+| `#/overview` | Summary: packs in, ESS units out, warnings |
+| `#/histories` | Donor pack timelines with quotes and sources |
+| `#/ess` | Gallery of ESS passports |
+| `#/ess/ESS-1` | One ESS: health, facility, family tree, QR code |
+| `#/held` | Modules not taken apart, cells not used, rejected claims |
+| `#/sign` | Sign and publish (paid drafts only) |
+| `#/help` | How to read the screen |
+
 ## Start it on your machine
 
 You need Node.js 24 and Git.
@@ -25,7 +37,7 @@ npm run review
 
 Then open http://127.0.0.1:21952. Stop it with Ctrl+C. Use another port with `REVIEW_PORT=21960 npm run review` (PowerShell: `$env:REVIEW_PORT=21960; npm run review`).
 
-You need **no keys** for the review screen. It shows the demo draft from [examples/demo-draft.json](../examples/demo-draft.json): 3 donor packs, 12 events, 3 warnings, 1 rejected claim, 5 ESS units of 48 cells, and the held-back modules and cells.
+You need **no keys** for the review screen. It shows the demo draft from [examples/demo-draft.json](../examples/demo-draft.json): 3 donor packs, 11 events, 2 warnings, 1 rejected claim, 5 ESS units of 48 cells, the held-back modules and cells, and a recorded AI explanation of the grouping (the grey "AI explanation" boxes on the ESS and Held back pages; the data is `draft.explanation`).
 
 What differs between machines:
 
@@ -64,6 +76,7 @@ The Draft format is defined in [team-plan.md](team-plan.md#shared-data-formats).
 | `rejected_tests` | Test files that failed their signature check |
 | `new_batteries` | ESS units: `battery_id`, `cell_model`, `chemistry`, `rules`, `cells`, `donor_packs`, `health` (`soh_pct`, `usable_capacity_ah`, …), `second_life_facility` |
 | `held_back` | Modules not taken apart and cells not used: `{ id, level: "module" or "cell", reason }` |
+| `explanation` | The model's plain-language explanation of the grouping, or `null` (model failed, too close to the deadline, or the demo draft): `{ ess: { "ESS-1": text }, modules: { "B-M1": text }, cells: [{ cell_ids, text }] }`. Code keeps only IDs that are in the draft. Shown as grey "AI explanation" boxes on the ESS and Held back pages. |
 
 To get a new demo draft after the battery code or demo files change: `node examples/demo-job.mjs`.
 

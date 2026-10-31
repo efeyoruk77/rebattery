@@ -15,9 +15,9 @@ Tasks from [team-plan.md](team-plan.md#member-3-cardano-on-chain). Design in [ca
 | 9 | Question for Masumi on linking the result hash to several logs | Open |
 | 10 | Connect to stage-b.mjs, test with the demo draft | Done: connected in [review.mjs](../review.mjs), writes off until enabled |
 
-**No transaction has been sent yet.** Blocked on the team: approval for the first real write, and the metadata label (placeholder `1984`).
+**No transaction has been sent yet.** Blocked on the team: approval for the first real write, and the metadata label (placeholder `1984` is taken; proposal `1542`, see [open problem #5](open-problems.md)).
 
-### Dry-run estimate (Oct 30, demo draft with 5 ESS, nothing sent)
+### Dry-run estimate (Oct 30, demo draft with 5 ESS, nothing sent; rerun Oct 31 with the AI explanation in the draft: same 3.081118 tADA)
 
 | Transactions | Estimated fee |
 |---|---|

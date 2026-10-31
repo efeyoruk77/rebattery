@@ -2,7 +2,7 @@
 
 How the work in [project-plan.md](project-plan.md) is split across four people. Member 1 owns all agent code (AI and deterministic), and Member 2 owns the demo material and the presentation.
 
-**Frontend (review screen and status page): [frontend.md](frontend.md).** **What's still open, with owners: [open-problems.md](open-problems.md).** Check it before you start, and update it when you fix something.
+**Frontend (review screen and status page): [frontend.md](frontend.md).** **Demo script draft: [demo-script.md](demo-script.md).** **What's still open, with owners: [open-problems.md](open-problems.md).** Check it before you start, and update it when you fix something.
 
 The project's focus: several donor packs are taken apart in two steps. **Module screening:** a module with an accident, an open warning, or no traceable donor is held back and not taken apart. **Cell grouping:** the cells of cleared modules are tested and combined into new ESS units (energy storage systems) of a fixed size. Each ESS gets a QR code that shows its second-life health and the facility that made it, and links back to every donor.
 
@@ -188,7 +188,7 @@ Uploads are stored in `.local/uploads` (override with `UPLOAD_STORE_DIR`). Test 
 
 [stage-b.mjs](../stage-b.mjs) runs stage B. It first checks that the draft matches the result hash paid through Masumi, then calls Member 3's `sign`, `writeDonorLogs`, and `writeNewBatteryLog`.
 
-**Demo draft:** [examples/demo-draft.json](../examples/demo-draft.json) is stage A's real output on the demo files, with the hand-checked sample events standing in for the AI step: 11 events, 2 warnings, 1 rejected tampered claim, 5 ESS units of 48 cells, 3 modules not taken apart, and 12 cells not used. Regenerate it with `node examples/demo-job.mjs`. `npm run review` shows it at http://127.0.0.1:21952.
+**Demo draft:** [examples/demo-draft.json](../examples/demo-draft.json) is stage A's real output on the demo files, with the hand-checked sample events standing in for the AI step: 11 events, 2 warnings, 1 rejected tampered claim, 5 ESS units of 48 cells, 3 modules not taken apart, and 12 cells not used. It also carries a real, checked model explanation of the grouping, recorded in [examples/demo-explanation.json](../examples/demo-explanation.json). Regenerate the draft with `node examples/demo-job.mjs` (add `--explain`, with `--env-file=.env` and `npm start` running, to ask the model again). `npm run review` shows it at http://127.0.0.1:21952.
 
 ## Member 1: Agent code
 
