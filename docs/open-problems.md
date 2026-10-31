@@ -1,6 +1,6 @@
 # Open problems
 
-What still blocks or weakens the demo, with an owner for each. Updated Oct 30, 22:10. Roles are in [team-plan.md](team-plan.md).
+What still blocks or weakens the demo, with an owner for each. Updated Oct 31, 09:20. Roles are in [team-plan.md](team-plan.md).
 
 When you fix one, move it to **Solved** at the bottom with the commit hash, and push.
 
@@ -8,8 +8,7 @@ When you fix one, move it to **Solved** at the bottom with the commit hash, and 
 
 | # | Problem | Why it matters | Owner | Next step |
 |---|---|---|---|---|
-| 1 | **Sokosumi access is `PENDING`** for Coworker "EV Battery History Recovery" in the TUM Workspace (access request `01a18e65-a2f3-776c-a880-da1e2e340986`). | No task can run in the TUM Workspace until it is `GRANTED`. | Member 4 / Sandro (Masumi) | Asked Sandro directly and booked a call. Re-check with `coworkers connect` (returns the same request, creates nothing). |
-| 2 | **No paid run yet.** The payment service runs and the agent is registered (see Solved), but no paid task has gone through escrow. | The demo needs real TxHashes for escrow lock, result hash, and payout. | Member 4 | Run one paid task once Sokosumi access is granted (#1), then check the seller's net receipt. |
+| 2 | **Paid Sokosumi task not settled yet.** Paid task `01a190fe-859d-75e5-be4b-3ad10177652d` in the TUM Workspace (Oct 31): Sokosumi paid 1 test USDM into escrow and the draft hash is on-chain; the payout to the seller is due after the unlock time. | Submission wants the task ID, payment transaction, and seller receipt together. | Member 4 | Keep `npm run worker` running until the task is `settled`, then record the receipt (`sokosumi --preprod runtime receipt <task> --coworker-id <id> --json`). |
 | 3 | **Buyers cannot upload files remotely yet.** For the demo this is solved: `node upload.mjs [batchDir]` stores a batch in `.local/uploads` and prints the job input, which goes into the Sokosumi task description. | A buyer outside our machine still has no upload path. | Member 4 | After the demo flow works: Sokosumi's task files API (`POST /v1/tasks/{id}/files`). |
 
 ## AI step (real model: Gemini `gemini-3.5-flash`)
@@ -31,13 +30,16 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 
 - **Questions for Masumi:** how the result hash should link to several event logs in one job, and whether the price can differ from the fixed 1 test USDM.
 - **Gemini free tier** returns 503 "high demand" errors at peak times (seen on newer models). Pick a backup model for demo day.
-- **Review screen accepts requests from any page** (Member 4): `/api/sign` checks no `Host` or `Origin` and parses any body as JSON. Once `CARDANO_WRITES_ENABLED=true`, a page the company visits could trigger a real sign and Preprod write for a paid draft (DNS rebinding or a text/plain POST). Accept only `Host: 127.0.0.1:<port>` or `localhost:<port>` and `Content-Type: application/json` before enabling writes.
 - **Keys shared in chat** (Blockfrost, Gemini): replace them after the demo.
 - **Vendor name:** buyers see the Coworker under the Vendor "Citation Escrow", reused from another project. Cosmetic.
-- **Three starter tests fail on Windows only** (Linux paths and file permissions). They test the starter's own code, not ours.
 
 ## Solved
 
+- #1: TUM Workspace access is `GRANTED`. Unpaid task `01a190f9-f34a-735b-a5ec-1dc8b7a5ede8` with the demo job input reached `COMPLETED` in 3 minutes (11 events, 2 warnings, 5 ESS, explanation). Follow-up comment "Why was module A-M4 not taken apart, and which quote decided it?" was answered from the draft, quoting A-e4 and A-e5.
+- The worker could not run on Windows (`spawnSync sokosumi ENOENT`; `sokosumi skills path` ends in `skills`), and follow-ups on draft tasks were silently skipped (no chat session). Both fixed, with a regression test (`sokosumi-windows.test.mjs`).
+- Code gaps closed (Oct 31): paid tasks only request payment for a valid job input; a failed draft attempt retries until the deadline (Sokosumi and direct Masumi paths); failed follow-up replies retry up to 3 times; a cleared module without a cell test batch is held back instead of lost; packs too large for one model call fail at once with the reason; uploads keep every version by hash; `/api/sign` accepts only same-machine JSON requests; Sign anchors missing file fingerprints first. The 3 Windows-only test failures were test assumptions and are fixed. 147/147 tests pass.
+- QR codes open a readable passport page instead of Cardanoscan: `passport-site.mjs` builds one phone-friendly page per ESS passport (checked against the chain at build time) for GitHub Pages (`gh-pages` branch); `PASSPORT_BASE_URL` points the QR codes at it. Needs the repo public and Pages enabled on `gh-pages` (repo owner).
+- First paid run through Masumi (Oct 31, Preprod, without Sokosumi): our buyer wallet hired our agent; escrow lock [caf71d8e…](https://preprod.cardanoscan.io/transaction/caf71d8e14c7416831d9438b1d762bd46baa44ed004756714292c132abb93033), result hash on-chain 9 minutes before the deadline [86da2e43…](https://preprod.cardanoscan.io/transaction/86da2e43730532f734c7581a5e2f5041afeda260c4528849934b19cf73dba3e7), payout [ba7dd0bb…](https://preprod.cardanoscan.io/transaction/ba7dd0bb7ec786b3ae30fe671aa472aaffa983c03b1671477767185ffedf695e) with 1 test USDM net to the seller. Details, costs, and what went wrong: [paid-run-report.md](paid-run-report.md). Repeat with `masumi-self-test.mjs`.
 - End-to-end test of the local backend with the real model (Oct 31): `node --env-file=.env e2e.mjs` (needs `npm start`). Upload of the demo batch, stage A in 111 s under a 20-minute deadline, all 11 expected events verified, both warnings, the same 5 ESS units and held-back items as the reference, an AI explanation for every ESS and module, and stage B signs exactly the paid draft and refuses a changed one: 12/12 checks. The draft appears on the review screen as "Local end-to-end test".
 - Member 4's machine has its own Cardano log wallet and company key (`npm run cardano -- brew`, private `.local/cardano.env`), funded with 105 tADA. A dry run of the demo draft builds all 14 transactions for 3.11 tADA. The review screen's Sign button can now write once `CARDANO_WRITES_ENABLED=true` is set for the demo.
 - #5: label `1542` (after Regulation (EU) 2023/1542; `1984` is taken in CIP-10 by CIP-0171) and the first full test write on Preprod, Oct 31, marked `unpaid-test-run`: anchor [aeaa7cd7…d646](https://preprod.cardanoscan.io/transaction/aeaa7cd7c31f4641e524d2184af8f6521b9804f17a0eb1c05021189df981d646), 3 donor logs, 5 ESS logs, 5 passports, 14 transactions for a measured 3.081118 tADA (same as the dry run). ESS-1 passport [bb1c267b…f865](https://preprod.cardanoscan.io/transaction/bb1c267b3f9143091a3418a1be4d8928c139fc5a3d9fd854c2842d05cbe9f865) traces back to all 3 donors and the anchor, and `trace` reports the on-chain records match the draft and signed record. All TxHashes are in [member3-tasks.md](member3-tasks.md). Found during the run: Blockfrost can confirm a transaction while the wallet's UTxO view still lists the input it spent, so pack:C was first built on a spent input and refused; `waitConfirmed` now also waits until the wallet view holds the new change.

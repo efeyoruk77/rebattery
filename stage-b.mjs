@@ -7,6 +7,7 @@ export const defaultSteps = {
  sign: notConnected('sign'),                             // (record) -> {signer_public_key, signature}
  writeDonorLogs: notConnected('writeDonorLogs'),         // (signedRecord, draft) -> txHashes
  writeNewBatteryLog: notConnected('writeNewBatteryLog'), // (signedRecord, draft) -> txHashes
+ // anchor (optional): (draft) -> files with anchor_tx. Runs after the paid check, before signing.
 };
 
 // Only a draft whose Masumi result hash matches can be signed: the record must point at what was paid for.
@@ -23,6 +24,8 @@ export function createStageB(steps = {}) {
  const s = {...defaultSteps, ...steps};
  return async function finalize(paid, {changes = 'none'} = {}) {
   const draft = checkPaidDraft(paid);
+  // Optional anchor step (cardano-steps.mjs): the logs refuse files that are not anchored yet. Anchored files are skipped.
+  if (s.anchor) await s.anchor(draft);
   const record = {draft_hash: sha256(paid.draftText), masumi_result_hash: paid.resultHash, masumi_blockchain_identifier: paid.blockchainIdentifier, changes};
   const signedRecord = {...record, ...await s.sign(record)};
   const donorTxs = await s.writeDonorLogs(signedRecord, draft);

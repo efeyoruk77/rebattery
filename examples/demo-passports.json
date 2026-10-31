@@ -1,0 +1,10 @@
+{
+  "note": "Passports Member 3 wrote on Cardano Preprod for the demo draft in the unpaid test run of Oct 31 (docs/member3-tasks.md). The review screen shows their QR codes on the demo draft, marked as a test run. /passport/<tx> checks each one against the draft.",
+  "passports": {
+    "ESS-1": "bb1c267b3f9143091a3418a1be4d8928c139fc5a3d9fd854c2842d05cbe9f865",
+    "ESS-2": "4e64eb37ecc898da4410f0cf4f91df1a9b14bd1eff86768f9de725da81fa8292",
+    "ESS-3": "853d8ef1c085f2470b5e2890d8e4bf03ec79da4e99d1877583ec9e5d6e4b28f7",
+    "ESS-4": "0f4256fd170491f4f6690d7614fc06bcb0057b6aab2248cbc05de310e5180ff1",
+    "ESS-5": "f2c7849e5c13eee71cd17dcd4aa92d215f70bc81b2001297ce2e775f1934732c"
+  }
+}

@@ -100,6 +100,8 @@ export function createExtractor(options = {}) {
   async function extractPack(packId, docs, deadline) {
     mkdirSync(o.journalDir, { recursive: true, mode: 0o700 });
     const input = JSON.stringify({ documents: docs });
+    // Fail at once with the reason instead of three identical failed attempts in client.mjs.
+    if (o.ask === defaultAsk && input.length > 16000) throw Error(`Pack ${packId}: its documents are ${input.length} characters, but one model call takes at most 16000. Split them into smaller documents.`);
     const docsById = new Map(docs.map((d) => [d.doc_id, d]));
     let best;
     let lastError;

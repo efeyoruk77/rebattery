@@ -362,6 +362,10 @@ const sentence = s => s.charAt(0).toUpperCase() + s.slice(1);
 // The model's plain-language explanation of the grouping (draft.explanation). Code made the decision; this only explains it.
 const aiNote = text => text ? `<p class="ai"><span class="who">AI explanation · check against the rules and events</span>${esc(text)}</p>` : '';
 const explanation = () => current.draft.explanation || {ess: {}, modules: {}, cells: []};
+// AI limits (input size, model quota, the job's time limit) can shorten or skip the explanation for large batches.
+const aiLimitNote = () => current.draft.explanation
+ ? '<p class="muted">AI restrictions may limit the explanation for large batch requests. The grouping itself is decided by code and is always complete.</p>'
+ : '<div class="note warn">This draft has no AI explanation. AI restrictions (input size, model quota, and the job\'s time limit) may limit or skip the explanation for large batch requests. The grouping, held-back items, and their reasons are decided by code and are complete.</div>';
 const reasonItems = reason => String(reason).split(/;(?!\s*an ESS needs)\s*/).filter(p => p && p !== 'not taken apart').map(p => sentence(placeName(p
  .replace(/^accident event (\S+)/, 'accident recorded (event $1)')
  .replace(/^open warning (\w+)/, (_, rule) => `open warning: ${ruleNames[rule] || label(rule)}`)
@@ -421,6 +425,7 @@ const draftBtn = document.getElementById('draft-btn'), draftMenu = document.getE
 let current = null, drafts = [], statusData = null, statusError = false;
 
 const routes = [
+ ['new', 'New job', '0'],
  ['overview', 'Overview', '1'],
  ['histories', 'Donor histories', '2'],
  ['ess', 'ESS passports', '3'],
@@ -479,7 +484,7 @@ function route({keepScroll = false, quiet = false} = {}) {
  const d = current.draft;
  const counts = {histories: d.packs.length, ess: (d.new_batteries || []).length, held: (d.held_back || []).length + d.rejected.length};
  nav.innerHTML = routes.map(([id, title]) => `<a class="pill ${id === name ? 'on' : ''}" href="#/${id}">${esc(title)}${counts[id] != null ? `<span class="n">${esc(counts[id])}</span>` : ''}</a>`).join('');
- const pages = {overview, histories, ess: arg ? essDetail.bind(null, arg) : essGallery, held, sign: signPage, status: statusPage, help};
+ const pages = {new: newJob, overview, histories, ess: arg ? essDetail.bind(null, arg) : essGallery, held, sign: signPage, status: statusPage, help};
  document.getElementById('status-link').classList.toggle('on', name === 'status');
  // A status refresh redraws in place: no entry animation, no jump to the top.
  app.innerHTML = `<div class="${quiet ? '' : 'page'}">${(pages[name] || notFound)()}</div>`;
@@ -675,6 +680,7 @@ function essGallery() {
  return `
  <h1>ESS passports</h1>
  <p class="lead">Each new energy storage unit gets a passport. Its QR code shows the unit's second-life health, the facility that made it, and links back to every donor pack. The coloured bar shows which packs its cells came from.</p>
+ ${aiLimitNote()}
  ${withEss.map(f => `<div class="fam-head"><h2>${esc(f.cell_model)}</h2><span class="chip">${esc(f.chemistry)} · ${esc(chem(f.chemistry).name)}</span><span class="chip">${esc(chem(f.chemistry).v)} nominal</span><span class="chip">${esc(f.ess.length)} ESS unit${f.ess.length === 1 ? '' : 's'}</span><span class="chip">Packs ${esc([...f.packs].sort().join(', '))}</span></div>
   <div class="gallery">${f.ess.map(card).join('')}</div>`).join('') || '<p class="muted">No ESS proposed.</p>'}
  <section class="sec"><div class="sec-head"><div><h2>Which cells may share an ESS</h2><p>Code groups by cell family: the same cell model <em>and</em> the same chemistry. Nothing else is ever combined.</p></div></div>
@@ -718,7 +724,7 @@ function essDetail(id) {
     <div class="stat"><b>${esc(mods.length)}</b><span>donor modules</span></div>
    </div>
   </div>
-  ${qr ? `<a class="qr" href="${esc(qr.url)}" target="_blank" rel="noopener" title="Passport transaction ${esc(qr.txHash)}">${qr.svg}<span>Scan or click: passport on Cardano Preprod</span></a>`
+  ${qr ? `<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><a class="qr" href="${esc(qr.url)}" target="_blank" rel="noopener" title="Passport transaction ${esc(qr.txHash)}">${qr.svg}<span><b>${esc(b.battery_id)} · Battery passport</b><br>${qr.url === qr.explorer ? 'Scan: record on Cardano Preprod' : 'Scan with any phone camera'}${qr.testRun ? ' (test run)' : ''}</span></a><a class="pill" href="${qr.url === qr.explorer ? `/passport/${esc(qr.txHash)}` : esc(qr.url)}" target="_blank" rel="noopener">Open the passport →</a>${qr.url === qr.explorer ? '' : `<a class="muted" style="font-size:12px" href="${esc(qr.explorer)}" target="_blank" rel="noopener">Verify on Cardanoscan</a>`}</div>`
    : '<div class="qr pending"><span>The QR code appears once this passport is written on-chain (after signing)</span></div>'}
  </div>
  ${aiNote(explanation().ess?.[b.battery_id])}
@@ -748,6 +754,7 @@ function held() {
  return `
  <h1>Held back</h1>
  <p class="lead">What the code refused to use, and why. Nothing here is deleted: every decision is recorded with its reason so a buyer can check it later.</p>
+ ${aiLimitNote()}
  ${d.rejected.length ? `<p class="sub">Claims rejected by verification</p><div class="held-grid">${d.rejected.map(x => `<div class="held-card"><div class="name">Claim ${esc(x.event_id)}${/^[A-Z]-/.test(x.event_id || '') ? ` <span class="muted">· Pack ${esc(x.event_id[0])}</span>` : ''}</div><span class="tag">Rejected</span>${items(x.reason)}</div>`).join('')}</div>` : ''}
  ${mods.length ? `<p class="sub">Modules not taken apart</p><div class="held-grid">${mods.map(h => `<div class="held-card"><div class="name">${esc(placeName(h.id))}</div><span class="tag">Not taken apart</span>${items(h.reason)}${aiNote(explanation().modules?.[h.id])}</div>`).join('')}</div>` : ''}
  ${cells.length ? `<p class="sub">Cells not used</p><div class="held-grid">${groupBy(cells, h => h.reason).map(([reason, hs]) => `<div class="held-card">
@@ -757,6 +764,39 @@ function held() {
    <div class="cell-groups">${cellsByModule(hs.map(h => h.id)).map(([m, ns]) => `<div class="cell-group"><span class="where">${esc(placeName(m))}</span>${ns.map(n => `<span class="c">Cell ${esc(n)}</span>`).join('')}</div>`).join('')}</div>
   </div>`).join('')}</div>` : ''}
  ${!list.length && !d.rejected.length ? '<p class="muted">Nothing was held back.</p>' : ''}`;
+}
+
+// New job: store a batch's files on this machine and get the job input to paste into the Sokosumi task.
+function newJob() {
+ return `
+ <h1>New job</h1>
+ <p class="lead">Upload the documents and test results of the donor packs. They are stored on this machine, and you get the job input: a list of every file with its fingerprint. Paste it into a new task on Sokosumi to hire the agent.</p>
+ <section class="sec"><div class="sec-head"><div><h2>1. Choose the batch</h2><p>A folder with <code>manifest.json</code>, <code>packs/</code>, <code>module-tests/</code> and <code>cell-tests/</code>, like the demo batch.</p></div></div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+   <button class="btn" id="up-demo">Use the demo batch (3 packs)</button>
+   <label class="pill" style="cursor:pointer">Choose a batch folder…<input id="up-dir" type="file" webkitdirectory multiple hidden></label>
+  </div>
+  <div id="up-status" class="muted" style="margin-top:10px"></div>
+ </section>
+ <section class="sec" id="up-result" hidden><div class="sec-head"><div><h2>2. Copy the job input</h2><p id="up-summary"></p></div></div>
+  <textarea id="up-input" readonly rows="6" style="width:100%;font:12px ui-monospace,monospace;border-radius:12px;padding:10px;background:var(--soft);border:1px solid var(--line)"></textarea>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px"><button class="btn" id="up-copy">Copy job input</button><span id="up-copied" class="muted"></span></div>
+  <h2 style="margin-top:22px">3. Hire the agent on Sokosumi</h2>
+  <p>Open the TUM Workspace on Sokosumi, start a new task with the coworker <b>EV Battery History Recovery</b>, paste the job input as the task description, and pay. Follow the task on the <a href="/status" target="_blank" rel="noopener">status page</a>; the paid draft appears in the draft list when it is delivered.</p>
+  <a class="pill" href="https://preprod.sokosumi.com" target="_blank" rel="noopener">Open Sokosumi →</a>
+ </section>`;
+}
+
+async function upload(body, label) {
+ const status = document.getElementById('up-status');
+ status.textContent = `Uploading ${label}…`;
+ const res = await fetch('/api/upload', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(body)});
+ const out = await res.json();
+ if (!res.ok) { status.textContent = `Not uploaded: ${out.error}`; return; }
+ status.textContent = `Uploaded ${label}.`;
+ document.getElementById('up-summary').textContent = `${out.packs.length} donor packs (${out.packs.join(', ')}): ${out.documents} documents, ${out.moduleTests} module tests, ${out.cellTests} cell test batches.`;
+ document.getElementById('up-input').value = out.jobInput;
+ document.getElementById('up-result').hidden = false;
 }
 
 function signPage() {
@@ -790,7 +830,8 @@ function help() {
  const faq = [
   ['Does the AI decide which cells are used?', 'No. The AI only extracts what documents say. Deterministic code verifies the quotes and groups the cells; a person signs the result.'],
   ['Why is a module held back when only one event mentions it?', 'Grouping is conservative: an accident or an open warning on a module keeps all of its cells out until a person reviews it.'],
-  ['Why is there no QR code on the demo draft?', 'QR codes appear only after a paid draft is signed and its passports are written on-chain. The demo shows a placeholder instead of a fake code.'],
+  ['Why is the AI explanation short or missing?', 'AI restrictions may limit the explanation for large batch requests: the model accepts only so much input, its quota can run out, and a paid job must finish within its time limit. The draft is still delivered, and the grouping, held-back items, and their reasons are always complete because code decides them.'],
+  ['Why does the demo draft have QR codes if it was never paid?', 'Its passports were written on Cardano Preprod in a test run, without a payment, to try the full chain. The QR codes open those real test passports and are marked as a test run. A paid draft gets its own QR codes when it is signed.'],
   ['Why are NMC cells from one pack not used in an ESS built from NMC cells of another pack?', 'Same chemistry is not enough. A different cell model has a different capacity, internal resistance, format and ageing curve; in one series string the weakest cell sets the capacity and the others age unevenly. Cells of a different chemistry (LFP vs NMC) differ even in their voltage window, so a battery management system cannot charge them together safely. The ESS passports page shows the matrix for the open draft.'],
   ['Can I trust the documents themselves?', 'The system proves what a document says, not that the document is true. Signed documents from service shops reduce this risk.'],
  ];
@@ -859,6 +900,21 @@ const notFound = () => `<h1>Not found</h1><p class="lead">This page does not exi
 // ---------- Interactions ----------
 
 function wire() {
+ const upDemo = document.getElementById('up-demo');
+ if (upDemo) {
+  upDemo.onclick = () => upload({demo: true}, 'the demo batch');
+  document.getElementById('up-dir').onchange = async e => {
+   const chosen = [...e.target.files];
+   if (!chosen.length) return;
+   const files = await Promise.all(chosen.map(async f => ({path: f.webkitRelativePath || f.name, text: await f.text()})));
+   upload({files}, `${files.length} files`);
+  };
+  document.getElementById('up-copy').onclick = async () => {
+   const t = document.getElementById('up-input');
+   try { await navigator.clipboard.writeText(t.value); } catch { t.select(); document.execCommand('copy'); }
+   document.getElementById('up-copied').textContent = 'Copied.';
+  };
+ }
  const signBtn = document.getElementById('sign-btn');
  if (signBtn) signBtn.onclick = sign;
 

@@ -38,17 +38,32 @@ function sokosumiAccess(root) {
  return access ? {status: access.status, checkedAt: latest.t} : {status: 'unknown', checkedAt: null};
 }
 
+// A paid task's Cardano transactions, from the payment service's history: escrow lock, result hash, payout.
+// Only confirmed transactions count. The payout is the one the settlement check matched to the seller's receipt.
+const STEP_OF = {FundsLocked: 'escrow', ResultSubmitted: 'result', Withdrawn: 'payout', DisputedWithdrawn: 'payout'};
+export function paymentTxs(observed, settlement) {
+ const out = {};
+ for (const t of [observed?.CurrentTransaction, ...(observed?.TransactionHistory ?? [])]) {
+  const step = STEP_OF[t?.newOnChainState];
+  if (step && t.status === 'Confirmed' && /^[0-9a-f]{64}$/.test(t.txHash ?? '') && !out[step]) out[step] = t.txHash;
+ }
+ if (settlement?.verified && /^[0-9a-f]{64}$/.test(settlement.txHash ?? '')) out.payout = settlement.txHash;
+ return out;
+}
+// The seller's net receipt in USDM (6 decimals), once the settlement check verified it.
+const received = settlement => settlement?.verified && /^\d+$/.test(settlement.netAtomicUnits ?? '') ? Number(settlement.netAtomicUnits) / 1e6 : null;
+
 function tasks(root) {
  const out = [];
  const dir = `${root}/.local`;
  for (const f of existsSync(dir) ? readdirSync(dir).filter(f => /^[0-9a-f-]{36}\.json$/.test(f)) : []) {
   const s = readJson(`${dir}/${f}`) ?? {};
-  out.push({kind: 'Sokosumi task', id: f.slice(0, -5), phase: s.phase ?? null, paidStage: s.paid?.stage ?? null, settled: s.paid?.settlement?.verified ?? null, updatedAt: mtime(`${dir}/${f}`)});
+  out.push({kind: 'Sokosumi task', id: f.slice(0, -5), phase: s.phase ?? null, paidStage: s.paid?.stage ?? null, settled: s.paid?.settlement?.verified ?? null, txs: paymentTxs(s.paid?.observed, s.paid?.settlement), receivedUsdm: received(s.paid?.settlement), updatedAt: mtime(`${dir}/${f}`)});
  }
  const jobs = `${dir}/standard-jobs`;
  for (const f of existsSync(jobs) ? readdirSync(jobs).filter(f => /^[0-9a-f-]{36}\.json$/.test(f)) : []) {
   const j = readJson(`${jobs}/${f}`) ?? {};
-  out.push({kind: 'Masumi job', id: f.slice(0, -5), phase: j.phase ?? null, paidStage: j.status ?? null, settled: null, updatedAt: mtime(`${jobs}/${f}`)});
+  out.push({kind: 'Masumi job', id: f.slice(0, -5), phase: j.phase ?? null, paidStage: j.status ?? null, settled: null, txs: {}, receivedUsdm: null, updatedAt: mtime(`${jobs}/${f}`)});
  }
  return out.sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt))).slice(0, 20);
 }

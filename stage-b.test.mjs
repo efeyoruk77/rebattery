@@ -35,3 +35,14 @@ test('Sokosumi task drafts are checked with the task hash, without the nonce',as
 test('unconnected signing names its owner',async()=>{
  await assert.rejects(()=>finalize(paid), /"sign" is not connected yet \(owner: Member 3\)/);
 });
+
+// Regression: the review screen's Sign button never anchored, so a paid draft whose files this machine had not
+// anchored stopped with "Not anchored yet". The anchor step now runs after the paid check, before signing.
+test('the anchor step runs on the paid draft before signing, and never for a changed draft',async()=>{
+ const calls = [];
+ const run = createStageB({anchor:async d=>{calls.push(`anchor ${d.packs.join('')}`)},sign:async()=>{calls.push('sign');return {}},writeDonorLogs:async()=>[],writeNewBatteryLog:async()=>[]});
+ await run(paid);
+ assert.deepEqual(calls, ['anchor ABC', 'sign']);
+ await assert.rejects(()=>run({...paid, draftText: draftText.replace('"ESS-1"', '"ESS-9"')}), /does not match/);
+ assert.equal(calls.length, 2);
+});

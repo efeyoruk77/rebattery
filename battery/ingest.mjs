@@ -42,7 +42,8 @@ export function readManifestFiles(manifestPath, baseDir) {
 }
 
 // ---- Upload store (runs before the Masumi job) ----
-// Files are stored by content hash; index.json maps each ID to its hash and metadata.
+// Files are stored by content hash; index.json maps each ID to its hash and metadata. Each upload is also kept
+// under "<key>@<sha256>", so uploading a changed file with the same ID never breaks an earlier job input.
 
 const indexPath = (storeDir) => join(storeDir, 'index.json');
 const readIndex = (storeDir) => (existsSync(indexPath(storeDir)) ? JSON.parse(readFileSync(indexPath(storeDir), 'utf8')) : {});
@@ -54,7 +55,9 @@ export function uploadDocuments(files, storeDir) {
   const listed = files.map((file) => {
     const doc = ingestOne(file); // fail at upload time, not inside the paid job
     writeFileSync(join(storeDir, doc.sha256), file.bytes);
-    index[`doc:${doc.doc_id}`] = { sha256: doc.sha256, pack_id: file.pack_id, kind: file.kind, language: file.language, filename: file.filename };
+    const entry = { sha256: doc.sha256, pack_id: file.pack_id, kind: file.kind, language: file.language, filename: file.filename };
+    index[`doc:${doc.doc_id}`] = entry;
+    index[`doc:${doc.doc_id}@${doc.sha256}`] = entry;
     return { doc_id: doc.doc_id, sha256: doc.sha256 };
   });
   writeFileSync(indexPath(storeDir), JSON.stringify(index, null, 2));
@@ -70,6 +73,7 @@ function uploadRecords(records, prefix, storeDir) {
     const hash = sha256(bytes);
     writeFileSync(join(storeDir, hash), bytes);
     index[`${prefix}:${record.module_id}`] = { sha256: hash };
+    index[`${prefix}:${record.module_id}@${hash}`] = { sha256: hash };
     return { module_id: record.module_id, sha256: hash };
   });
   writeFileSync(indexPath(storeDir), JSON.stringify(index, null, 2));
@@ -85,7 +89,7 @@ export const uploadCellTests = (batches, storeDir) => uploadRecords(batches, 'ce
 export function loadJobInputs(jobInput, storeDir) {
   const index = readIndex(storeDir);
   const read = (key, listedHash) => {
-    const entry = index[key];
+    const entry = index[`${key}@${listedHash}`] ?? index[key];
     if (!entry) throw new Error(`${key} was not uploaded`);
     const bytes = readFileSync(join(storeDir, entry.sha256));
     const actual = sha256(bytes);

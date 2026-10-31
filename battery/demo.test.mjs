@@ -49,6 +49,11 @@ test('upload returns IDs and hashes, and the job stops if a stored file changed'
     assert.equal(loaded.documents.length, 4);
     assert.equal(loaded.cellTests[0].cells[0].cell_id, 'A-M1-C01');
     assert.throws(() => loadJobInputs({ ...job, packs: ['B'] }, store), /not in the job/);
+    // Regression: uploading a changed test for the same module broke every earlier job input with "hash mismatch".
+    const changed = uploadModuleTests([{ module_id: 'A-M1', capacity_ah: 57 }], store);
+    assert.notEqual(changed[0].sha256, module_tests[0].sha256);
+    assert.equal(loadJobInputs(job, store).moduleTests[0].capacity_ah, 58);
+    assert.equal(loadJobInputs({ ...job, module_tests: changed, cell_tests: [] }, store).moduleTests[0].capacity_ah, 57);
     writeFileSync(join(store, documents[2].sha256), 'Modul 4 ersetzt und Kapazitaet 100 %');
     assert.throws(() => loadJobInputs(job, store), /hash mismatch/);
   } finally {

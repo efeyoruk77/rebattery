@@ -24,16 +24,24 @@ export async function trace(passportTx,read){
 }
 // Compares the traced chain with the off-chain draft text and signed record. Returns a list of problems; empty means it all matches.
 // With companyKey, the signature must also come from the company's public key.
-export function checkTrace(traced,draftText,signed,{companyKey}={}){
- const draft=JSON.parse(draftText),id=traced.passport.battery,problems=[];
- const same=(a,b)=>canonical(a)===canonical(b),asMetadata=v=>v==null?undefined:metadatum(v);
+export const checkTrace=(traced,draftText,signed,options)=>[...checkSignature(traced,draftText,signed,options),...checkContent(traced,draftText)];
+// The signed record: it must verify against the draft, and every log must carry its fields.
+export function checkSignature(traced,draftText,signed,{companyKey}={}){
+ const problems=[];
  if(!verifySignedRecord(signed,draftText))problems.push('signed record does not verify against the draft');
  if(companyKey&&signed.signer_public_key!==companyKey)problems.push('signed record is not signed with the company key');
  const expected={draft:signed.draft_hash,paid:signed.masumi_result_hash,masumi:signed.masumi_blockchain_identifier,changes:sha256(String(signed.changes)),signer:signed.signer_public_key,sig:signed.signature};
  for(const entry of [traced.battery,...Object.values(traced.donors).map(d=>d.log)])
   for(const [field,value] of Object.entries(expected))if(unchunk(entry[field])!==value)problems.push(`${entry.log}: on-chain ${field} differs from the signed record`);
+ return problems;
+}
+// The content: cells, health, facility, events roots, held-back items, and file anchors must match the draft.
+// Needs only the draft, so the passport page can run it without the signed record.
+export function checkContent(traced,draftText){
+ const draft=JSON.parse(draftText),id=traced.passport.battery,problems=[];
+ const same=(a,b)=>canonical(a)===canonical(b),asMetadata=v=>v==null?undefined:metadatum(v);
  const battery=draft.new_batteries.find(b=>b.battery_id===id);
- if(!battery)return [...problems,`${id}: not in the draft`];
+ if(!battery)return [`${id}: not in the draft`];
  // Each cell with its module and donor pack must match the draft exactly.
  const onChain=Object.entries(traced.donors).flatMap(([name,d])=>Object.entries(d.modules).flatMap(([m,cells])=>cells.map(c=>`${name.slice(5)}|${m}|${c}`))).sort();
  const inDraft=battery.cells.map(c=>`${c.donor_pack}|${c.module_id??moduleOf(c.cell_id)}|${c.cell_id}`).sort();
