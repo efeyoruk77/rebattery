@@ -4,6 +4,19 @@ const BLOCKFROST='https://cardano-preprod.blockfrost.io/api/v0';
 export {explorerUrl};
 const words=mnemonic=>{const w=(mnemonic||'').trim().split(/\s+/);if(w.length!==24)throw new Error('CARDANO_WALLET_MNEMONIC must hold 24 words');return w};
 export const brewMnemonic=()=>MeshWallet.brew();
+// Waits until txHash is in a block and the wallet's UTxO view holds its change. Blockfrost can report a block
+// while the address view still lists the input the transaction spent; the next build then reuses a spent input.
+export async function waitSettled({txHash,onChain,walletTxs,timeoutMs=5*60*1000,pollMs=10000}){
+ const until=Date.now()+timeoutMs;let last,landed;
+ while(Date.now()<until){
+  // A failed poll (rate limit, timeout) is retried until the deadline: the transaction may already be on its way.
+  try{landed??=await onChain(txHash);if(landed&&(await walletTxs()).includes(txHash))return landed}catch(e){last=e}
+  await new Promise(r=>setTimeout(r,pollMs));
+ }
+ // In a block is what the journal records; only the next build waits on a stale view.
+ if(landed)return landed;
+ throw new Error(`Transaction ${txHash} not confirmed within ${timeoutMs/60000} minutes${last?` (last error: ${last.message})`:''}. Check ${explorerUrl(txHash)}, then rerun: the same transaction is resent, never a second one.`);
+}
 // Address derivation needs no network. Used by the CLI before Blockfrost is configured.
 export async function walletAddress(mnemonic=process.env.CARDANO_WALLET_MNEMONIC){
  const wallet=new MeshWallet({networkId:0,key:{type:'mnemonic',words:words(mnemonic)}});await wallet.init();return wallet.getChangeAddress();
@@ -30,15 +43,7 @@ export async function createChain({mnemonic=process.env.CARDANO_WALLET_MNEMONIC,
   async send(signedTx){return guard(wallet.submitTx(signedTx))},
   // 'confirmed' once in a block, 'pending' while Blockfrost's mempool holds it, null if the network has not seen it.
   async status(txHash){if(await onChain(txHash))return 'confirmed';return await bf(`/mempool/${txHash}`)?'pending':null},
-  async waitConfirmed(txHash,timeoutMs=5*60*1000){
-   const until=Date.now()+timeoutMs;let last;
-   while(Date.now()<until){
-    // A failed poll (rate limit, timeout) is retried until the deadline: the transaction may already be on its way.
-    try{const t=await onChain(txHash);if(t)return t}catch(e){last=e}
-    await new Promise(r=>setTimeout(r,10000));
-   }
-   throw new Error(`Transaction ${txHash} not confirmed within ${timeoutMs/60000} minutes${last?` (last error: ${last.message})`:''}. Check ${explorerUrl(txHash)}, then rerun: the same transaction is resent, never a second one.`);
-  },
+  async waitConfirmed(txHash,timeoutMs){return waitSettled({txHash,onChain,timeoutMs,walletTxs:async()=>(await guard(wallet.getUtxos())).map(u=>u.input.txHash)})},
   async readMetadata(txHash){const rows=await bf(`/txs/${txHash}/metadata`);return rows?.find(r=>String(r.label)===String(label))?.json_metadata??null}
  };
 }

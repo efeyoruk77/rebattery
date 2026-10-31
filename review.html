@@ -424,7 +424,7 @@ async function load() {
 async function show(id) {
  current = await (await fetch('/api/draft?id=' + encodeURIComponent(id))).json();
  const d = drafts.find(x => x.id === id);
- draftName.textContent = d ? (d.paid ? d.label : d.id === 'demo-mixed' ? 'Demo · mixed families' : 'Demo') : id;
+ draftName.textContent = d ? (d.paid ? d.label : d.id === 'demo' ? 'Demo' : d.id === 'demo-mixed' ? 'Demo · mixed families' : d.label.replace(/\s*\(.*\)$/, '')) : id;
  renderDraftMenu();
  route();
 }

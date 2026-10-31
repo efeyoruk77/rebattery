@@ -1972,23 +1972,29 @@
   ],
   "explanation": {
     "ess": {
-      "ESS-1": "ESS-1 consists of 48 AC-NMC-66P (NMC) cells sourced from donor packs A (20 cells), B (8 cells), and C (20 cells). It was configured using a capacity band rule of ±2%, a resistance band rule of ±10%, and a size of 48 cells per ESS. Based on signed cell test results from 2026-10-29, the battery has a usable capacity of 57.11 Ah (nominal capacity 66 Ah), an average cell capacity of 57.72 Ah, an average cell resistance of 0.85 mΩ, and an SOH of 86.5%. The SOH percentage follows the weakest cell because the cells are connected in series.",
-      "ESS-2": "ESS-2 consists of 48 AC-NMC-66P (NMC) cells sourced from donor packs A (20 cells), B (13 cells), and C (15 cells). It was configured using a capacity band rule of ±2%, a resistance band rule of ±10%, and a size of 48 cells per ESS. Based on signed cell test results from 2026-10-29, the battery has a usable capacity of 58.03 Ah (nominal capacity 66 Ah), an average cell capacity of 58.2 Ah, an average cell resistance of 0.852 mΩ, and an SOH of 87.9%. The SOH percentage follows the weakest cell because the cells are connected in series.",
-      "ESS-3": "ESS-3 consists of 48 AC-NMC-66P (NMC) cells sourced from donor packs A (14 cells), B (11 cells), and C (23 cells). It was configured using a capacity band rule of ±2%, a resistance band rule of ±10%, and a size of 48 cells per ESS. Based on signed cell test results from 2026-10-29, the battery has a usable capacity of 58.39 Ah (nominal capacity 66 Ah), an average cell capacity of 58.57 Ah, an average cell resistance of 0.845 mΩ, and an SOH of 88.5%. The SOH percentage follows the weakest cell because the cells are connected in series.",
-      "ESS-4": "ESS-4 consists of 48 AC-NMC-66P (NMC) cells sourced from donor packs A (15 cells), B (14 cells), and C (19 cells). It was configured using a capacity band rule of ±2%, a resistance band rule of ±10%, and a size of 48 cells per ESS. Based on signed cell test results from 2026-10-29, the battery has a usable capacity of 58.7 Ah (nominal capacity 66 Ah), an average cell capacity of 58.82 Ah, an average cell resistance of 0.849 mΩ, and an SOH of 88.9%. The SOH percentage follows the weakest cell because the cells are connected in series.",
-      "ESS-5": "ESS-5 consists of 48 AC-NMC-66P (NMC) cells sourced from donor packs A (14 cells), B (20 cells), and C (14 cells). It was configured using a capacity band rule of ±2%, a resistance band rule of ±10%, and a size of 48 cells per ESS. Based on signed cell test results from 2026-10-29, the battery has a usable capacity of 59.01 Ah (nominal capacity 66 Ah), an average cell capacity of 59.18 Ah, an average cell resistance of 0.851 mΩ, and an SOH of 89.4%. The SOH percentage follows the weakest cell because the cells are connected in series."
+      "ESS-1": "ESS-1 is composed of 48 cells (20 from donor pack A, 8 from pack B, and 20 from pack C) assembled according to rules requiring 48 cells per ESS, a ±2% capacity band, and a ±10% resistance band. It delivers a usable capacity of 57.11 Ah (nominal capacity 66 Ah) with an average cell capacity of 57.72 Ah and an average cell resistance of 0.85 mΩ. Its state of health is 86.5%, which follows the weakest cell because the cells are connected in series.",
+      "ESS-2": "ESS-2 is composed of 48 cells (20 from donor pack A, 13 from pack B, and 15 from pack C) assembled according to rules requiring 48 cells per ESS, a ±2% capacity band, and a ±10% resistance band. It delivers a usable capacity of 58.03 Ah (nominal capacity 66 Ah) with an average cell capacity of 58.2 Ah and an average cell resistance of 0.852 mΩ. Its state of health is 87.9%, which follows the weakest cell because the cells are connected in series.",
+      "ESS-3": "ESS-3 is composed of 48 cells (14 from donor pack A, 11 from pack B, and 23 from pack C) assembled according to rules requiring 48 cells per ESS, a ±2% capacity band, and a ±10% resistance band. It delivers a usable capacity of 58.39 Ah (nominal capacity 66 Ah) with an average cell capacity of 58.57 Ah and an average cell resistance of 0.845 mΩ. Its state of health is 88.5%, which follows the weakest cell because the cells are connected in series.",
+      "ESS-4": "ESS-4 is composed of 48 cells (15 from donor pack A, 14 from pack B, and 19 from pack C) assembled according to rules requiring 48 cells per ESS, a ±2% capacity band, and a ±10% resistance band. It delivers a usable capacity of 58.7 Ah (nominal capacity 66 Ah) with an average cell capacity of 58.82 Ah and an average cell resistance of 0.849 mΩ. Its state of health is 88.9%, which follows the weakest cell because the cells are connected in series.",
+      "ESS-5": "ESS-5 is composed of 48 cells (14 from donor pack A, 20 from pack B, and 14 from pack C) assembled according to rules requiring 48 cells per ESS, a ±2% capacity band, and a ±10% resistance band. It delivers a usable capacity of 59.01 Ah (nominal capacity 66 Ah) with an average cell capacity of 59.18 Ah and an average cell resistance of 0.851 mΩ. Its state of health is 89.4%, which follows the weakest cell because the cells are connected in series."
     },
     "modules": {
-      "A-M4": "Module A-M4 was not taken apart due to an open warning soh_after_replacement involving events A-e4 and A-e5. The deciding event document states: \"Modul 4 ersetzt (Grund: Zellungleichgewicht)\".",
-      "B-M1": "Module B-M1 was not taken apart due to accident event B-e3 and an open warning accident_without_inspection. The deciding event document states: \"The battery housing is deformed near modules 1 and 2.\"",
-      "B-M2": "Module B-M2 was not taken apart due to accident event B-e3 and an open warning accident_without_inspection. The deciding event document states: \"The battery housing is deformed near modules 1 and 2.\""
+      "A-M4": "Module A-M4 was not taken apart due to an open soh_after_replacement warning between module replacement event A-e4 (\"Modul 4 ersetzt (Grund: Zellungleichgewicht)\") and SOH measurement event A-e5 (\"Measured state of health: 91 %\").",
+      "B-M1": "Module B-M1 was not taken apart due to accident event B-e3 (\"The battery housing is deformed near modules 1 and 2.\") and an open accident_without_inspection warning.",
+      "B-M2": "Module B-M2 was not taken apart due to accident event B-e3 (\"The battery housing is deformed near modules 1 and 2.\") and an open accident_without_inspection warning."
     },
     "cells": [
       {
         "cell_ids": [
           "A-M2-C11"
         ],
-        "text": "This cell was held back because its capacity of 52.4 Ah matches no neighbouring cell within the ±2% capacity band."
+        "text": "Cell A-M2-C11 was held back because its capacity of 52.4 Ah matched no neighbouring cell within ±2%."
+      },
+      {
+        "cell_ids": [
+          "C-M3-C05"
+        ],
+        "text": "Cell C-M3-C05 was held back because its resistance of 1.12 mΩ is 31.9% above the median of 0.849 mΩ for AC-NMC-66P cells, exceeding the ±10% resistance band."
       },
       {
         "cell_ids": [
@@ -2003,13 +2009,7 @@
           "C-M2-C11",
           "C-M2-C12"
         ],
-        "text": "These cells were left over because only 10 matching cells remained between 59.41 and 59.7 Ah, whereas an ESS unit requires 48 cells."
-      },
-      {
-        "cell_ids": [
-          "C-M3-C05"
-        ],
-        "text": "This cell was held back because its resistance of 1.12 mΩ is 31.9% above the median of 0.849 mΩ for AC-NMC-66P cells, exceeding the ±10% resistance band."
+        "text": "These cells were left over because only 10 matching cells remained between 59.41 and 59.7 Ah, which is insufficient to complete an ESS requiring 48 cells."
       }
     ]
   }

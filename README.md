@@ -11,6 +11,7 @@ Paid jobs take a job input (see `job-input.mjs`) that lists the donor packs and 
 Unpaid Coworker tasks whose description is a job input also run stage A, so the flow can be tested before payments. Any other description goes straight to the model, so the connection test below keeps working.
 Upload a batch and get its job input with `node upload.mjs [batchDir]` (default: the demo files in `battery/demo/`).
 Run `npm run review` and open http://127.0.0.1:21952/status to see what is running: local services, Masumi registration and wallet balance, Sokosumi access, tasks, Cardano writes, and the team's open problems. The review screen is at http://127.0.0.1:21952. Frontend work: see [docs/frontend.md](docs/frontend.md).
+Test the whole local backend with the real model: `node --env-file=.env e2e.mjs` while `npm start` runs (upload, stage A, checks against the reference result, stage B checks; no payment and no chain writes).
 Adapt `agent/instructions.md` to change the agent's model behavior.
 Use the [full agent brief](https://www.masumi.network/tum-hackathon/agent) for your coding agent.
 Before handing in your project, follow the [submission checklist](https://www.masumi.network/tum-hackathon/submission).
