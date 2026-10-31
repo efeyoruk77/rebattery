@@ -206,6 +206,8 @@ h2{font-size:22px;letter-spacing:-.02em;margin:0}
 .packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:18px;min-width:0}
 .card h3{margin:0 0 14px;font-size:16px;display:flex;align-items:center;gap:8px}
+.ident{font-size:12px;color:var(--muted);margin:-8px 0 12px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.term .ident{margin:2px 0 6px}
 .more{margin-top:12px;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;gap:8px;align-items:center;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .2s}
 .more:hover{transform:translateY(-2px);background:var(--panel)}
 .flag-hint{background:var(--warn-bg);color:var(--warn);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:600}
@@ -397,6 +399,14 @@ function families() {
  const first = f => f.ess.length ? Math.min(...f.ess.map(b => Number(String(b.battery_id).replace(/\D/g, '')) || 0)) : Infinity;
  return [...fams.values()].sort((a, b) => first(a) - first(b) || a.key.localeCompare(b.key));
 }
+// What identifies a pack in its documents: model and serial number from the label, VIN from the registration.
+function packIdentity(p) {
+ const d = current.draft, f = t => d.events.find(e => e.pack_id === p && e.type === t)?.fields || {};
+ const prod = f('production'), reg = f('first_registration');
+ return {maker: prod.manufacturer, model: prod.pack_model, serial: prod.serial_number, vin: reg.vin};
+}
+const identityParts = p => { const i = packIdentity(p); return [i.model, i.serial ? `S/N ${i.serial}` : null, i.vin ? `VIN ${i.vin}` : null].filter(Boolean); };
+const identityLine = p => { const parts = identityParts(p); return parts.length ? `<div class="ident">${parts.map(esc).join(' · ')}</div>` : ''; };
 const familyOfPack = p => families().find(f => f.packs.has(p));
 const famLabel = f => `${f.cell_model} · ${f.chemistry}`;
 // Why two families never share an ESS.
@@ -533,7 +543,7 @@ function overview() {
   const hm = heldMods.filter(h => packOf(h.id) === p).length;
   const ev = d.events.filter(e => e.pack_id === p).length;
   const total = u + hc || 1;
-  return `<a class="prow" href="#/histories"><span class="who"><span class="dot" style="background:${packColor(p)}"></span>Pack ${esc(p)}${familyOfPack(p) ? `<span class="chip" data-tip="cell family">${esc(famLabel(familyOfPack(p)))}</span>` : ''}</span>
+  return `<a class="prow" href="#/histories"><span class="who" ${identityParts(p).length ? `data-tip="${esc(identityParts(p).join(' · '))}"` : ''}><span class="dot" style="background:${packColor(p)}"></span>Pack ${esc(p)}${familyOfPack(p) ? `<span class="chip" data-tip="cell family">${esc(famLabel(familyOfPack(p)))}</span>` : ''}</span>
    <span class="stack" data-tip="${esc(u)} cells used · ${esc(hc)} cells not used"><i style="width:${(u / total * 100).toFixed(1)}%;background:${packColor(p)}"></i><i class="held" style="width:${(hc / total * 100).toFixed(1)}%"></i></span>
    <span class="nums">${esc(u)} cells used · ${esc(hc)} not used · ${esc(hm)} module${hm === 1 ? '' : 's'} held back · ${esc(ev)} events</span></a>`;
  }).join('');
@@ -613,6 +623,7 @@ function histories() {
   const open = openPacks.has(p), shown = open ? all : all.slice(0, 1), hidden = all.length - shown.length;
   const hiddenFlagged = all.slice(1).filter(e => flagged.has(e.event_id)).length;
   return `<div class="card"><h3><span class="dot" style="background:${packColor(p)}"></span>Pack ${esc(p)}<span class="meta" style="margin-left:auto;font-weight:400">${esc(all.length)} event${all.length === 1 ? '' : 's'}</span></h3>
+   ${identityLine(p)}
    ${shown.map(event).join('') || '<p class="muted">No events.</p>'}
    ${all.length > 1 ? `<button type="button" class="more" data-expand="${esc(p)}" aria-expanded="${open}">${open ? 'Show less ▴' : `Show ${esc(hidden)} more event${hidden === 1 ? '' : 's'} ▾`}${!open && hiddenFlagged ? `<span class="flag-hint">${esc(hiddenFlagged)} in a warning</span>` : ''}</button>` : ''}
   </div>`;
@@ -717,7 +728,7 @@ function essDetail(id) {
   <div class="legend">${packs.map(([p, cs]) => `<button type="button" data-legend="${esc(p)}"><span class="dot" style="background:${packColor(p)}"></span>Pack ${esc(p)} · ${esc(cs.length)} cells</button>`).join('')}</div>
  </section>
  <section class="sec"><div class="sec-head"><div><h2>Source documents</h2><p>Each document's fingerprint (SHA-256) is anchored on-chain.</p></div></div>
-  <div class="help-grid">${packs.map(([p]) => `<div class="term"><b><span class="dot" style="background:${packColor(p)}"></span> Pack ${esc(p)}</b><ul class="docs">${d.documents.filter(x => x.pack_id === p).map(x => `<li>${esc(x.doc_id)} <span data-tip="${esc(x.sha256)}">${esc(String(x.sha256).slice(0, 10))}…</span>${x.anchor_tx ? ' · anchored' : ''}</li>`).join('')}</ul></div>`).join('')}</div>
+  <div class="help-grid">${packs.map(([p]) => `<div class="term"><b><span class="dot" style="background:${packColor(p)}"></span> Pack ${esc(p)}</b>${identityLine(p)}<ul class="docs">${d.documents.filter(x => x.pack_id === p).map(x => `<li>${esc(x.doc_id)} <span data-tip="${esc(x.sha256)}">${esc(String(x.sha256).slice(0, 10))}…</span>${x.anchor_tx ? ' · anchored' : ''}</li>`).join('')}</ul></div>`).join('')}</div>
  </section>`;
 }
 
@@ -764,7 +775,7 @@ function signPage() {
 
 function help() {
  const terms = [
-  ['Pack, module, cell', 'An EV battery pack is made of modules, and each module of cells. IDs read like <code>A-M2-C07</code>: pack A, module 2, cell 7. This screen writes them as “Pack A · Module 2 · Cell 7”.'],
+  ['Pack, module, cell', 'An EV battery pack is made of modules, and each module of cells. IDs read like <code>A-M2-C07</code>: pack A, module 2, cell 7. This screen writes them as “Pack A · Module 2 · Cell 7”. “Pack A” is only the batch letter; the pack\'s own identity (model, serial number from its label, VIN from its registration) is shown under the name wherever the documents give it.'],
   ['ESS', 'Energy storage system: a new home or grid battery built from matching used cells.'],
   ['Cell family', 'Cells with the same cell model <em>and</em> the same chemistry (for example <code>AC-NMC-66P · NMC</code>). Only cells of one family are ever combined in an ESS. Chemistry facts and sources: <code>docs/battery-info.md</code>.'],
   ['Second-life health (SoH)', 'Usable capacity divided by the cell\'s original capacity. Cells are in series, so the weakest cell sets the value.'],

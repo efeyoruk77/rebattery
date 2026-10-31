@@ -83,6 +83,10 @@ for (const [pack, fam] of Object.entries(families)) {
 
 // Mock extraction for D and E, in the same shape as battery/demo/sample-events.json. Quotes are word for word.
 const docs = new Map(ingest(readManifestFiles(`${mixed}manifest.json`, mixed)).map((d) => [d.doc_id, d]));
+// Pack identity from the documents: model and serial number from the label, VIN from the registration.
+const field = (doc_id, prefix) => { const l = docs.get(doc_id)?.pages[0].lines.find((x) => x.startsWith(prefix)); return l ? l.slice(prefix.length).trim() : undefined; };
+const ident = (p) => ({ manufacturer: field(`pack${p}-label`, 'Manufacturer:'), pack_model: field(`pack${p}-label`, 'Model:'), serial_number: field(`pack${p}-label`, 'Serial number:') });
+const vin = (p) => ({ vin: field(`pack${p}-registration`, 'Vehicle identification number:') });
 const src = (doc_id, line, quote) => {
   const doc = docs.get(doc_id);
   const text = doc.pages[0].lines[line - 1] ?? '';
@@ -92,29 +96,29 @@ const src = (doc_id, line, quote) => {
 const ev = (event_id, type, date, fields, source) =>
   ({ event_id, pack_id: event_id[0], module_ids: [], cell_ids: [], type, date, fields, confidence: 'documented', source, basis: [] });
 const extra = [
-  ev('D-e1', 'production', '2021-05-18', { manufacturer: 'Lithosa Zellwerk GmbH', chemistry: 'LFP', cell_model: 'LZ-LFP-100P' }, src('packD-label', 10, 'Production date: 2021-05-18')),
-  ev('D-e2', 'first_registration', '2021-07-02', {}, src('packD-registration', 8, 'Date of first registration: 2021-07-02')),
+  ev('D-e1', 'production', '2021-05-18', { ...ident('D'), chemistry: 'LFP', cell_model: 'LZ-LFP-100P' }, src('packD-label', 10, 'Production date: 2021-05-18')),
+  ev('D-e2', 'first_registration', '2021-07-02', vin('D'), src('packD-registration', 8, 'Date of first registration: 2021-07-02')),
   ev('D-e3', 'soh_measurement', '2024-03-12', { soh_pct: 93, chemistry: 'LFP' }, src('packD-health-2024', 9, 'Measured state of health: 93 %')),
-  ev('E-e1', 'production', '2021-09-09', { manufacturer: 'Altmark Cells GmbH', chemistry: 'NMC', cell_model: 'AC-NMC-78P' }, src('packE-label', 10, 'Production date: 2021-09-09')),
-  ev('E-e2', 'first_registration', '2021-11-15', {}, src('packE-registration', 8, 'Date of first registration: 2021-11-15')),
+  ev('E-e1', 'production', '2021-09-09', { ...ident('E'), chemistry: 'NMC', cell_model: 'AC-NMC-78P' }, src('packE-label', 10, 'Production date: 2021-09-09')),
+  ev('E-e2', 'first_registration', '2021-11-15', vin('E'), src('packE-registration', 8, 'Date of first registration: 2021-11-15')),
   ev('E-e3', 'soh_measurement', '2023-08-21', { soh_pct: 89, chemistry: 'NMC' }, src('packE-health-2023', 9, 'Measured state of health: 89 %')),
-  ev('F-e1', 'production', '2020-11-23', { manufacturer: 'Nordzell Energie AG', chemistry: 'NCA', cell_model: 'NZ-NCA-21700-5A' }, src('packF-label', 10, 'Production date: 2020-11-23')),
-  ev('F-e2', 'first_registration', '2021-01-20', {}, src('packF-registration', 8, 'Date of first registration: 2021-01-20')),
+  ev('F-e1', 'production', '2020-11-23', { ...ident('F'), chemistry: 'NCA', cell_model: 'NZ-NCA-21700-5A' }, src('packF-label', 10, 'Production date: 2020-11-23')),
+  ev('F-e2', 'first_registration', '2021-01-20', vin('F'), src('packF-registration', 8, 'Date of first registration: 2021-01-20')),
   ev('F-e3', 'soh_measurement', '2024-06-05', { soh_pct: 88, chemistry: 'NCA' }, src('packF-health-2024', 9, 'Measured state of health: 88 %')),
-  ev('G-e1', 'production', '2022-02-14', { manufacturer: 'Lithosa Zellwerk GmbH', chemistry: 'LFP', cell_model: 'LZ-LFP-135P' }, src('packG-label', 10, 'Production date: 2022-02-14')),
-  ev('G-e2', 'first_registration', '2022-03-30', {}, src('packG-registration', 8, 'Date of first registration: 2022-03-30')),
+  ev('G-e1', 'production', '2022-02-14', { ...ident('G'), chemistry: 'LFP', cell_model: 'LZ-LFP-135P' }, src('packG-label', 10, 'Production date: 2022-02-14')),
+  ev('G-e2', 'first_registration', '2022-03-30', vin('G'), src('packG-registration', 8, 'Date of first registration: 2022-03-30')),
   ev('G-e3', 'soh_measurement', '2025-01-15', { soh_pct: 95, chemistry: 'LFP' }, src('packG-health-2025', 9, 'Measured state of health: 95 %')),
-  ev('H-e1', 'production', '2020-08-05', { manufacturer: 'Altmark Cells GmbH', chemistry: 'NMC', cell_model: 'AC-NMC-66P' }, src('packH-label', 10, 'Production date: 2020-08-05')),
-  ev('H-e2', 'first_registration', '2020-10-01', {}, src('packH-registration', 8, 'Date of first registration: 2020-10-01')),
+  ev('H-e1', 'production', '2020-08-05', { ...ident('H'), chemistry: 'NMC', cell_model: 'AC-NMC-66P' }, src('packH-label', 10, 'Production date: 2020-08-05')),
+  ev('H-e2', 'first_registration', '2020-10-01', vin('H'), src('packH-registration', 8, 'Date of first registration: 2020-10-01')),
   ev('H-e3', 'soh_measurement', '2023-05-10', { soh_pct: 90, chemistry: 'NMC' }, src('packH-health-2023', 9, 'Measured state of health: 90 %')),
-  ev('I-e1', 'production', '2023-04-03', { manufacturer: 'Rhein Phosphat Zellen AG', chemistry: 'LMFP', cell_model: 'RP-LMFP-120P' }, src('packI-label', 10, 'Production date: 2023-04-03')),
-  ev('I-e2', 'first_registration', '2023-05-19', {}, src('packI-registration', 8, 'Date of first registration: 2023-05-19')),
+  ev('I-e1', 'production', '2023-04-03', { ...ident('I'), chemistry: 'LMFP', cell_model: 'RP-LMFP-120P' }, src('packI-label', 10, 'Production date: 2023-04-03')),
+  ev('I-e2', 'first_registration', '2023-05-19', vin('I'), src('packI-registration', 8, 'Date of first registration: 2023-05-19')),
   ev('I-e3', 'soh_measurement', '2025-09-02', { soh_pct: 94, chemistry: 'LMFP' }, src('packI-health-2025', 9, 'Measured state of health: 94 %')),
-  ev('J-e1', 'production', '2024-01-22', { manufacturer: 'Baltic Natrium GmbH', chemistry: 'Na-ion', cell_model: 'BN-NA-210P' }, src('packJ-label', 10, 'Production date: 2024-01-22')),
-  ev('J-e2', 'first_registration', '2024-03-08', {}, src('packJ-registration', 8, 'Date of first registration: 2024-03-08')),
+  ev('J-e1', 'production', '2024-01-22', { ...ident('J'), chemistry: 'Na-ion', cell_model: 'BN-NA-210P' }, src('packJ-label', 10, 'Production date: 2024-01-22')),
+  ev('J-e2', 'first_registration', '2024-03-08', vin('J'), src('packJ-registration', 8, 'Date of first registration: 2024-03-08')),
   ev('J-e3', 'soh_measurement', '2026-02-17', { soh_pct: 96, chemistry: 'Na-ion' }, src('packJ-health-2026', 9, 'Measured state of health: 96 %')),
-  ev('K-e1', 'production', '2018-06-27', { manufacturer: 'Elbe Akku GmbH', chemistry: 'LMO-NMC', cell_model: 'EA-LMO94P' }, src('packK-label', 10, 'Production date: 2018-06-27')),
-  ev('K-e2', 'first_registration', '2018-08-14', {}, src('packK-registration', 8, 'Date of first registration: 2018-08-14')),
+  ev('K-e1', 'production', '2018-06-27', { ...ident('K'), chemistry: 'LMO-NMC', cell_model: 'EA-LMO94P' }, src('packK-label', 10, 'Production date: 2018-06-27')),
+  ev('K-e2', 'first_registration', '2018-08-14', vin('K'), src('packK-registration', 8, 'Date of first registration: 2018-08-14')),
   ev('K-e3', 'soh_measurement', '2024-11-26', { soh_pct: 84, chemistry: 'LMO-NMC' }, src('packK-health-2024', 9, 'Measured state of health: 84 %')),
 ];
 const base = JSON.parse(readFileSync(`${demo}sample-events.json`, 'utf8'));

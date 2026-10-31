@@ -272,6 +272,8 @@
       "date": "2020-03-11",
       "fields": {
         "manufacturer": "Altmark Cells GmbH",
+        "pack_model": "VX-60 Traction Pack",
+        "serial_number": "AC-VX60-200311-0417",
         "chemistry": "NMC"
       },
       "confidence": "documented",
@@ -291,7 +293,9 @@
       "cell_ids": [],
       "type": "first_registration",
       "date": "2020-05-12",
-      "fields": {},
+      "fields": {
+        "vin": "DEMO0VX60A0000001"
+      },
       "confidence": "documented",
       "source": {
         "doc_id": "packA-registration",
@@ -375,6 +379,8 @@
       "date": "2020-04-02",
       "fields": {
         "manufacturer": "Altmark Cells GmbH",
+        "pack_model": "VX-60 Traction Pack",
+        "serial_number": "AC-VX60-200402-1123",
         "chemistry": "NMC"
       },
       "confidence": "documented",
@@ -394,7 +400,9 @@
       "cell_ids": [],
       "type": "first_registration",
       "date": "2020-06-30",
-      "fields": {},
+      "fields": {
+        "vin": "DEMO0VX60B0000002"
+      },
       "confidence": "documented",
       "source": {
         "doc_id": "packB-registration",
@@ -438,6 +446,8 @@
       "date": "2020-02-19",
       "fields": {
         "manufacturer": "Altmark Cells GmbH",
+        "pack_model": "VX-60 Traction Pack",
+        "serial_number": "AC-VX60-200219-0088",
         "chemistry": "NMC"
       },
       "confidence": "documented",
@@ -457,7 +467,9 @@
       "cell_ids": [],
       "type": "first_registration",
       "date": "2020-04-21",
-      "fields": {},
+      "fields": {
+        "vin": "DEMO0VX60C0000003"
+      },
       "confidence": "documented",
       "source": {
         "doc_id": "packC-registration",
