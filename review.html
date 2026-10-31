@@ -324,7 +324,30 @@ textarea{width:100%;min-height:88px;background:var(--panel);border:1px solid var
 #status{font-size:14px;white-space:pre-wrap;word-break:break-word}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Glass look (Apple-style frosted panels). Compare with the old solid panels: add ?look=classic to the address. */
+:root{--glass:rgba(255,255,255,.55);--glass-soft:rgba(255,255,255,.38);--glass-edge:rgba(255,255,255,.75);
+ --glass-hi:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.25);
+ --glass-shadow:0 1px 1px rgba(0,0,0,.03),0 10px 30px rgba(31,38,135,.08);--glass-blur:blur(28px) saturate(180%)}
+@media (prefers-color-scheme:dark){:root{--glass:rgba(255,255,255,.055);--glass-soft:rgba(255,255,255,.04);--glass-edge:rgba(255,255,255,.12);
+ --glass-hi:inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(255,255,255,.03);
+ --glass-shadow:0 1px 1px rgba(0,0,0,.2),0 12px 40px rgba(0,0,0,.35)}}
+html:not(.classic) body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI Variable","Segoe UI",Inter,system-ui,sans-serif;letter-spacing:-.005em}
+html:not(.classic) .blobs i{opacity:.7;filter:blur(90px)}
+html:not(.classic) :is(.glass,.menu,.stat,.step,.card,.ess,.term,details.faq,.mosaic,.sankey,.held-card,.qr.pending){
+ background:var(--glass);border:1px solid var(--glass-edge);box-shadow:var(--glass-hi),var(--glass-shadow);
+ -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}
+html:not(.classic) :is(.stat,.step,.term,.held-card):hover{border-color:var(--glass-edge);background:color-mix(in srgb,var(--glass) 100%,rgba(255,255,255,.06));box-shadow:var(--glass-hi),0 18px 50px rgba(0,0,0,.18)}
+html:not(.classic) :is(.kpi,.glass):hover{border-color:var(--glass-edge);box-shadow:var(--glass-hi),0 18px 50px rgba(0,0,0,.18)}
+html:not(.classic) :is(.kpi .ic:not(.warn),.pstep .ic,.eyebrow,.more,.info){background:var(--glass);border:1px solid var(--glass-edge);box-shadow:var(--glass-hi);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}
+html:not(.classic) :is(.ai,.quote){background:var(--glass-soft);border:1px solid var(--glass-edge);box-shadow:var(--glass-hi);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+html:not(.classic) :is(.pill:not(.on),.legend button,select,.c,kbd){background:var(--glass);border-color:var(--glass-edge);box-shadow:var(--glass-hi);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}
+html:not(.classic) :is(textarea,input:not([type=checkbox]):not([type=radio])){background:var(--glass-soft);border:1px solid var(--glass-edge);box-shadow:inset 0 1px 2px rgba(0,0,0,.08);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);transition:border-color .2s,box-shadow .2s}
+html:not(.classic) :is(textarea,input):focus{outline:none;border-color:color-mix(in srgb,var(--pa) 60%,transparent);box-shadow:0 0 0 4px color-mix(in srgb,var(--pa) 22%,transparent)}
+html:not(.classic) .bar{background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);border-bottom-color:var(--glass-edge)}
+html:not(.classic) .preview{background:linear-gradient(135deg,color-mix(in srgb,var(--pa) 18%,transparent),color-mix(in srgb,var(--pc) 18%,transparent))}
 </style>
+<script>if (/[?&]look=classic\b/.test(location.search)) document.documentElement.classList.add('classic');</script>
 </head>
 <body>
 <div class="blobs" aria-hidden="true"><i></i><i></i><i></i></div>
