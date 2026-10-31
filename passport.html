@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Battery Passport</title>
+<title>Afterlife · Battery Passport</title>
 <style>
 :root{--bg:#fbfbfa;--panel:#fff;--soft:#f3f3f1;--ink:#0b0b0c;--muted:#6f6f78;--line:#e6e6e3;
  --good:#16a34a;--good-bg:#f0fdf4;--warn:#b45309;--warn-bg:#fff7ed;--bad:#b91c1c;--bad-bg:#fef2f2;--chip:#f1f1ef;
@@ -74,7 +74,7 @@ const colors = ['var(--pa)', 'var(--pb)', 'var(--pc)'];
 const fields = f => Object.entries(f || {}).filter(([k]) => k !== 'uncertainty').map(([k, v]) => `${words(k)}: ${Array.isArray(v) ? v.join(', ') : v}${/_pct$/.test(k) ? '%' : ''}`).join(' · ');
 // On the public site the data is embedded in the page; there is no "this machine".
 const STATIC = Boolean(window.PASSPORT_DATA);
-const brand = () => `<div class="brand"><span><span class="logo">⚡</span>Battery passport</span>${STATIC ? '<nav class="nav"><a href="../../passports.html">All passports</a><a href="../../">Review screen</a></nav>' : ''}</div>`;
+const brand = () => `<div class="brand"><span><span class="logo">⚡</span>Afterlife · Battery passport</span>${STATIC ? '<nav class="nav"><a href="../../passports.html">All passports</a><a href="../../">Review screen</a></nav>' : ''}</div>`;
 const markOf = ok => ok === true ? '<span class="mark ok">✓</span>' : ok === false ? '<span class="mark no">✗</span>' : '<span class="mark na">–</span>';
 
 function donor(d, i) {
