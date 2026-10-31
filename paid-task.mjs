@@ -1,4 +1,5 @@
 import {createHash,randomBytes} from 'node:crypto';
+import {parseJobInput} from './job-input.mjs';
 import {readFileSync,existsSync,writeFileSync} from 'node:fs';
 import {parseEnv} from 'node:util';
 import {verifySettlement} from './settlement.mjs';
@@ -54,6 +55,8 @@ export async function createPaidAdapter({save,answer,core:providedCore,mps:provi
   let p=state.paid??{};const r=registration();
   if(!p.stage){
    if(!state.input?.trim())throw new Error('Paid Task requires authoritative started input');
+   // Ask for money only for work the agent can do: a valid job input.
+   parseJobInput(state.input);
    const nonce=randomBytes(10).toString('hex');const now=Date.now();
    const body={network:'Preprod',agentIdentifier:r.agentIdentifier,paymentSourceType:'Web3CardanoV2',supportedPaymentSourceIndex:r.supportedPaymentSourceIndex,
     inputHash:taskHash(state.input),identifierFromPurchaser:nonce,RequestedFunds:[{amount:'1000000',unit:USDM}],
@@ -78,8 +81,12 @@ export async function createPaidAdapter({save,answer,core:providedCore,mps:provi
     if(Date.now()>=Number(p.payment.submitResultTime))throw new Error('Result deadline expired before model');
     state=await persist(task,state,{...p,stage:'model-pending'});
     if(Date.now()>=Number(p.payment.submitResultTime))throw new Error('Result deadline expired before model send');
-    const result=await answer(state.input,`.local/${task.id}-session.json`,Number(p.payment.submitResultTime));
-    if(typeof result!=='string'||!result.trim())throw new Error('Model did not return a result');
+    // Nothing external is written while the draft is built, so a failed attempt goes back to the escrow stage
+    // and the next poll tries again until the deadline.
+    let result;
+    try{result=await answer(state.input,`.local/${task.id}-session.json`,Number(p.payment.submitResultTime));
+     if(typeof result!=='string'||!result.trim())throw new Error('Model did not return a result');}
+    catch(e){await persist(task,state,{...p,stage:'awaiting-escrow',lastError:String(e.message).slice(0,300)});throw e;}
     writeFileSync(`.local/${task.id}.txt`,result,{mode:0o600});
     return persist(task,state,{...p,stage:'result-saved',result,resultHash:taskHash(result)});
    }

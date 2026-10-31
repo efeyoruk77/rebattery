@@ -119,6 +119,7 @@ function render(v) {
 
  <section class="sec"><h2>Where its cells came from</h2>${v.donors.map(donor).join('')}</section>
 
+ ${v.checkedAt ? `<p class="muted" style="font-size:13px">These checks ran against Cardano on ${esc(v.checkedAt.slice(0, 10))}, when this page was published. To check again yourself, open any record below in a blockchain explorer.</p>` : ''}
  <section class="sec"><h2>Records on Cardano</h2><div class="card"><ul class="txs">${txs.map(([t, tx]) => `<li><b>${esc(t)}</b><br>${txLink(tx, tx)}</li>`).join('')}</ul></div></section>`;
 }
 
@@ -126,9 +127,13 @@ function render(v) {
  const app = document.getElementById('app');
  const tx = location.pathname.split('/').pop();
  try {
-  const r = await fetch(`/api/passport?tx=${encodeURIComponent(tx)}`);
-  const v = await r.json();
-  if (!r.ok) throw Error(v.error || `HTTP ${r.status}`);
+  // The public passport site (passport-site.mjs) embeds the data; the review server serves it from /api/passport.
+  let v = window.PASSPORT_DATA;
+  if (!v) {
+   const r = await fetch(`/api/passport?tx=${encodeURIComponent(tx)}`);
+   v = await r.json();
+   if (!r.ok) throw Error(v.error || `HTTP ${r.status}`);
+  }
   app.innerHTML = render(v);
  } catch (e) {
   app.innerHTML = `<div class="brand"><span class="logo">⚡</span>Battery passport</div><div class="error"><b>This passport could not be read.</b><br>${esc(e.message)}</div>

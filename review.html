@@ -449,7 +449,7 @@ function essDetail(id) {
     <div class="stat"><b>${esc(mods.length)}</b><span>donor modules</span></div>
    </div>
   </div>
-  ${qr ? `<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><a class="qr" href="${esc(qr.url)}" target="_blank" rel="noopener" title="Passport transaction ${esc(qr.txHash)}">${qr.svg}<span>Scan or click: passport on Cardano Preprod${qr.testRun ? ' (test run, not a paid job)' : ''}</span></a><a class="pill" href="/passport/${esc(qr.txHash)}" target="_blank" rel="noopener">Full passport: history and checks →</a></div>`
+  ${qr ? `<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><a class="qr" href="${esc(qr.url)}" target="_blank" rel="noopener" title="Passport transaction ${esc(qr.txHash)}">${qr.svg}<span><b>${esc(b.battery_id)} · Battery passport</b><br>${qr.url === qr.explorer ? 'Scan: record on Cardano Preprod' : 'Scan with any phone camera'}${qr.testRun ? ' (test run)' : ''}</span></a><a class="pill" href="${qr.url === qr.explorer ? `/passport/${esc(qr.txHash)}` : esc(qr.url)}" target="_blank" rel="noopener">Open the passport →</a>${qr.url === qr.explorer ? '' : `<a class="muted" style="font-size:12px" href="${esc(qr.explorer)}" target="_blank" rel="noopener">Verify on Cardanoscan</a>`}</div>`
    : '<div class="qr pending"><span>The QR code appears once this passport is written on-chain (after signing)</span></div>'}
  </div>
  ${aiNote(explanation().ess?.[b.battery_id])}

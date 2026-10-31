@@ -58,7 +58,7 @@ All JSON. Defined in [review.mjs](../review.mjs).
 | `GET /status` | status.html |
 | `GET /api/drafts` | `[{ id, label, paid }]`: the demo draft (`id: "demo"`) plus every paid draft on this machine |
 | `GET /api/draft?id=…` | `{ id, paid, draft, passports }`. `draft` is the Draft format below. `passports` is `{ "ESS-1": { txHash, url, svg } }` for a signed draft, `{}` otherwise; `svg` is the ready QR code. |
-| `POST /api/sign` with `{ id, changes }` | Signs a **paid** draft and publishes it on Cardano (Member 3's code). Refuses the demo draft. Returns `{ signedRecord, donorTxs, newBatteryTxs, passports }`. |
+| `POST /api/sign` with `{ id, changes }` | Signs a **paid** draft and publishes it on Cardano (Member 3's code). Refuses the demo draft, and any request that is not from this page on `127.0.0.1` or `localhost` with a JSON body (403). Anchors files not yet anchored before signing. Returns `{ signedRecord, donorTxs, newBatteryTxs, passports }`. |
 | `GET /api/status` | The status page data, built by [status.mjs](../status.mjs): `services`, `masumi`, `sokosumi`, `tasks`, `cardano`, `team`. |
 
 ## Data the review screen renders
@@ -89,7 +89,7 @@ To get a new demo draft after the battery code or demo files change: `node examp
 - **Show only what is real.** Never display a made-up transaction, QR code, or payment as if it were on-chain. Placeholders must say what is missing.
 - **Do not turn on Cardano writes** (`CARDANO_WRITES_ENABLED=true`) or sign anything on your machine. Real writes wait for the team decision in open problem #5.
 - **Never put keys in pages or API responses.** `status.mjs` reads only public data; keep it that way.
-- Run `npm test` before you push. Three starter tests fail on Windows only (Linux paths and permissions); every other test must pass.
+- Run `npm test` before you push. Every test must pass, on Windows too.
 
 ## Ideas that would help the demo
 

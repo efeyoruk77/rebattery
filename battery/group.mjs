@@ -153,5 +153,9 @@ export function group(moduleTests, cells, events, warnings, rules = defaults, sc
   const heldCells = screened.held_cells ?? [];
   const named = new Set(heldCells.map((h) => h.id));
   const grouped = groupCells(cells.filter((c) => cleared.has(c.module_id) && !named.has(c.cell_id)), rules);
-  return { new_batteries: grouped.new_batteries, held_back: [...screened.held_back, ...heldCells, ...grouped.held_back] };
+  // A cleared module without a valid cell test batch has no cells to group. Name it, so every module is accounted for.
+  const tested = new Set(cells.map((c) => c.module_id));
+  const untested = [...cleared].filter((m) => !tested.has(m)).sort()
+    .map((id) => ({ id, level: 'module', reason: 'cleared, but no valid cell test batch; cells not used' }));
+  return { new_batteries: grouped.new_batteries, held_back: [...screened.held_back, ...untested, ...heldCells, ...grouped.held_back] };
 }

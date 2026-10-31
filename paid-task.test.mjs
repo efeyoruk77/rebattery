@@ -1,6 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {taskHash,purchasePayload,createPaidAdapter,confirmedState,USDM} from './paid-task.mjs';
+const JOB=JSON.stringify({packs:["A"],documents:[{doc_id:"d1",sha256:"a".repeat(64)}],module_tests:[],cell_tests:[]});
 const registration={walletId:'seller-wallet',agentIdentifier:'a'.repeat(80),supportedPaymentSourceIndex:0};
 const target={coworkerId:'coworker',organizationId:null};
 const task={id:'task',coworkerId:'coworker',organizationId:null};
@@ -41,7 +42,7 @@ test('confirmed history proves lock when CurrentTransaction is absent',()=>{
 });
 test('successful quote survives later payload rejection',async()=>{
  let saved; const adapter=await createPaidAdapter({target,core,registration,save:async(_,s)=>{saved=s},answer:async()=>{},mps:async()=>({...payment,forceLayer:'L1'})});
- const state=await adapter.advance(task,{input:'abc'});
+ const state=await adapter.advance(task,{input:JOB});
  assert.equal(saved.paid.payment.blockchainIdentifier,'signed');
  assert.equal(state.paid.stage,'terms-saved');
  await assert.rejects(()=>adapter.advance(task,state),/cannot preserve/);
@@ -61,4 +62,19 @@ test('paid execution rejects another Workspace or Coworker before any saved stat
   {id:'task',coworkerId:'other-coworker',organizationId:'event-organization'},
  ])await assert.rejects(adapter.advance(task,{input:'abc'}),/configured Coworker and Workspace/);
  assert.equal(writes,0);
+});
+
+// Regression: with paid tasks on, a task that is not a job input used to request payment, lock funds, then fail for good.
+test('no payment is requested for a task that is not a job input',async()=>{
+ let writes=0;const adapter=await createPaidAdapter({target,core,registration,save:async()=>{writes++},answer:async()=>'x',mps:async()=>{writes++;return payment;}});
+ await assert.rejects(adapter.advance(task,{input:'Suggest names for our team.'}));
+ assert.equal(writes,0);
+});
+// Regression: a failed draft attempt left the task at model-pending, so it never retried and the buyer waited for a refund.
+test('a failed draft attempt goes back to the escrow stage for a retry',async()=>{
+ let saved;const locked={...payment,onChainState:'FundsLocked',CurrentTransaction:{status:'Confirmed',newOnChainState:'FundsLocked'}};
+ const adapter=await createPaidAdapter({target,core,registration,save:async(_,s)=>{saved=s},answer:async()=>{throw Error('model down')},mps:async()=>locked});
+ await assert.rejects(adapter.advance(task,{input:JOB,paid:{stage:'awaiting-escrow',payment}}),/model down/);
+ assert.equal(saved.paid.stage,'awaiting-escrow');
+ assert.match(saved.paid.lastError,/model down/);
 });

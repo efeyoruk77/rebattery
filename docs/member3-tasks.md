@@ -61,7 +61,7 @@ These are Mesh's computed fees for the real wallet, not measured fees. The plan'
 
 | Step | Called by | Function |
 |---|---|---|
-| Anchor uploads | Member 4's upload step, or `npm run cardano -- anchor` | `createCardanoSteps().anchor(jobInputOrDraft)` |
+| Anchor uploads | stage-b.mjs before signing (the review screen's Sign button; files already anchored are skipped), or `npm run cardano -- anchor` | `createCardanoSteps().anchor(jobInputOrDraft)` |
 | `sign(record)` | stage-b.mjs | Company key from `.local/cardano.env` |
 | `writeDonorLogs(signedRecord, draft)` | stage-b.mjs | Donor log TxHashes in pack order |
 | `writeNewBatteryLog(signedRecord, draft)` | stage-b.mjs | Per ESS: log TxHash, then passport TxHash |

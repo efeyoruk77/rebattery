@@ -100,7 +100,7 @@ test('group() only uses cells from modules cleared by screening', () => {
   const r = group(modules, [...cellsOf('A-M1', 4), ...cellsOf('A-M2', 4)], [...known, crash], [], rules);
   assert.equal(r.new_batteries.length, 1);
   assert.ok(r.new_batteries[0].cells.every((c) => c.module_id === 'A-M1'));
-  assert.deepEqual(ids(r.held_back), ['A-M2']);
+  assert.deepEqual(ids(r.held_back), ['A-M2', 'A-M3']); // A-M3 is cleared but has no cell test batch
 });
 
 test('a cell named by an accident or open warning is held back alone; the rest of its module is used', () => {
@@ -163,4 +163,11 @@ test('cell tests need a valid signature, a cleared module, and cell IDs from tha
     'A-M3: cell tests: cell model or chemistry differs from the module test',
     'A-M4: cell tests: module A-M4 was not cleared for disassembly',
   ]);
+});
+
+// Regression: a cleared module with no valid cell test batch disappeared: it was neither in an ESS nor held back.
+test('a cleared module without a cell test batch is held back, not lost', () => {
+  const r = group(modules, [...cellsOf('A-M1', 4), ...cellsOf('A-M2', 4)], known, [], rules);
+  assert.match(reasonFor(r.held_back, 'A-M3'), /no valid cell test batch/);
+  assert.equal(r.held_back.find((h) => h.id === 'A-M3').level, 'module');
 });

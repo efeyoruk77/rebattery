@@ -29,7 +29,8 @@ createServer(async(req,res)=>{
  }
  if(req.method!=='POST'||url.pathname!=='/start_job')return respond(res,404,{error:'Route not found'});
  let bytes=0,body='';for await(const part of req){bytes+=part.length;if(bytes>MAX_JOB_INPUT_CHARS*2+4000)return respond(res,413,{error:'Request too large'});body+=part}
- const input=JSON.parse(body);const nonce=input.identifier_from_purchaser??input.identifierFromPurchaser;
+ let input;try{input=JSON.parse(body)}catch{return respond(res,400,{error:'Body must be JSON'})}
+ const nonce=input.identifier_from_purchaser??input.identifierFromPurchaser;
  if(!/^[a-fA-F0-9]{14,26}$/.test(nonce||'')||typeof input.input_data?.job!=='string'||Object.keys(input.input_data).some(k=>k!=='job'))return respond(res,400,{error:'Expected hex purchaser nonce and input_data.job'});
  try{parseJobInput(input.input_data.job)}catch(e){return respond(res,400,{error:e.message})}
  const reg=registry();if(reg.registrationState!=='RegistrationConfirmed'&&reg.registration?.state!=='RegistrationConfirmed')return respond(res,503,{error:'Registration not confirmed'});
@@ -59,6 +60,9 @@ setInterval(async()=>{
  if(Number(payment.submitResultTime)<=Date.now()){job.phase='deadline-blocked';job.status='failed';save(job);continue;}
  await mps('/payment/submit-result',{network:'Preprod',blockchainIdentifier:payment.blockchainIdentifier,submitResultHash:job.resultHash});
  job.phase='awaiting-result';save(job);
- }catch(e){console.error('Standard job needs inspection',job.id)}
+ }catch(e){
+  // A failed draft wrote nothing external: retry on the next poll until the deadline marks the job failed.
+  if(job.phase==='model-pending'){job.phase='waiting-payment';job.status='awaiting_payment';job.lastError=String(e.message).slice(0,300);save(job);console.error('Draft failed, will retry',job.id,job.lastError);}
+  else console.error('Standard job needs inspection',job.id)}
  }}finally{busy=false}
 },5000);

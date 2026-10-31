@@ -186,7 +186,7 @@ Files are uploaded before the job starts; the job input lists them by ID and has
 
 Uploads are stored in `.local/uploads` (override with `UPLOAD_STORE_DIR`). Test signatures are checked with the demo tester key unless `TESTER_PUBLIC_KEY_PATH` is set.
 
-[stage-b.mjs](../stage-b.mjs) runs stage B. It first checks that the draft matches the result hash paid through Masumi, then calls Member 3's `sign`, `writeDonorLogs`, and `writeNewBatteryLog`.
+[stage-b.mjs](../stage-b.mjs) runs stage B. It first checks that the draft matches the result hash paid through Masumi, then calls Member 3's `anchor` (only files not yet anchored), `sign`, `writeDonorLogs`, and `writeNewBatteryLog`.
 
 **Demo draft:** [examples/demo-draft.json](../examples/demo-draft.json) is stage A's real output on the demo files, with the hand-checked sample events standing in for the AI step: 11 events, 2 warnings, 1 rejected tampered claim, 5 ESS units of 48 cells, 3 modules not taken apart, and 12 cells not used. It also carries a real, checked model explanation of the grouping, recorded in [examples/demo-explanation.json](../examples/demo-explanation.json). Regenerate the draft with `node examples/demo-job.mjs` (add `--explain`, with `--env-file=.env` and `npm start` running, to ask the model again). `npm run review` shows it at http://127.0.0.1:21952.
 

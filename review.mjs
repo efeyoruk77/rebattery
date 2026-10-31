@@ -71,6 +71,15 @@ function cachedPassport(tx, read = chainReader()) {
  return view;
 }
 
+// Sign writes on Cardano, so it accepts only the review page itself: a local Host (no DNS rebinding), a same-origin
+// Origin when the browser sends one, and a JSON body (a cross-site form or text/plain POST cannot set that type).
+export function fromThisScreen(req, port) {
+ const hosts = [`127.0.0.1:${port}`, `localhost:${port}`];
+ const origin = req.headers.origin;
+ return hosts.includes(req.headers.host) && (origin === undefined || hosts.some(h => origin === `http://${h}`))
+  && /^application\/json\s*(;|$)/i.test(req.headers['content-type'] ?? '');
+}
+
 const respond = (res, status, data, type = 'application/json') => { res.writeHead(status, {'content-type': type}); res.end(type === 'application/json' ? JSON.stringify(data) : data); };
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
@@ -94,8 +103,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     return d ? respond(res, 200, {id: d.id, paid: Boolean(d.paid), draft: JSON.parse(d.draftText), passports: await passportQrs(d.id)}) : respond(res, 404, {error: 'Draft not found'});
    }
    if (req.method === 'POST' && url.pathname === '/api/sign') {
+    if (!fromThisScreen(req, port)) return respond(res, 403, {error: 'Signing is accepted only from the review screen on this machine, as JSON'});
     let body = ''; for await (const part of req) { body += part; if (body.length > 20000) return respond(res, 413, {error: 'Request too large'}); }
-    const {id, changes} = JSON.parse(body || '{}');
+    let parsed; try { parsed = JSON.parse(body || '{}'); } catch { return respond(res, 400, {error: 'Request body must be JSON'}); }
+    const {id, changes} = parsed ?? {};
     const d = listDrafts().find(x => x.id === id);
     if (!d) return respond(res, 404, {error: 'Draft not found'});
     if (!d.paid) return respond(res, 400, {error: 'Only a paid draft can be signed. The demo draft is for display.'});
