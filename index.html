@@ -597,7 +597,7 @@ function overview() {
 
  const attention = [
   ...d.warnings.map(w => ['warn', 'alert', 'Warning', placeName(w.message), '#/histories']),
-  ...d.rejected.map(x => ['bad', 'x', `Claim ${x.event_id} rejected`, reasonItems(x.reason).join('. '), '#/held']),
+  ...d.rejected.map(x => ['bad', 'x', `Claim ${x.event_id}${x.field ? ` (${x.field})` : ''} rejected`, reasonItems(x.reason).join('. '), '#/held']),
   ...heldMods.map(h => ['bad', 'ban', `${placeName(h.id)} not taken apart`, reasonItems(h.reason).join('. '), '#/held']),
  ];
 
@@ -797,7 +797,7 @@ function held() {
  <h1>Held back</h1>
  <p class="lead">What the code refused to use, and why. Nothing here is deleted: every decision is recorded with its reason so a buyer can check it later.</p>
  ${aiLimitNote()}
- ${d.rejected.length ? `<p class="sub">Claims rejected by verification</p><div class="held-grid">${d.rejected.map(x => `<div class="held-card"><div class="name">Claim ${esc(x.event_id)}${/^[A-Z]-/.test(x.event_id || '') ? ` <span class="muted">· Pack ${esc(x.event_id[0])}</span>` : ''}</div><span class="tag">Rejected</span>${items(x.reason)}</div>`).join('')}</div>` : ''}
+ ${d.rejected.length ? `<p class="sub">Claims rejected by verification</p><div class="held-grid">${d.rejected.map(x => `<div class="held-card"><div class="name">Claim ${esc(x.event_id)}${x.field ? ` · ${esc(x.field)}` : ''}${/^[A-Z]-/.test(x.event_id || '') ? ` <span class="muted">· Pack ${esc(x.event_id[0])}</span>` : ''}</div><span class="tag">Rejected</span>${items(x.reason)}</div>`).join('')}</div>` : ''}
  ${mods.length ? `<p class="sub">Modules not taken apart</p><div class="held-grid">${mods.map(h => `<div class="held-card"><div class="name">${esc(placeName(h.id))}</div><span class="tag">Not taken apart</span>${items(h.reason)}${aiNote(explanation().modules?.[h.id])}</div>`).join('')}</div>` : ''}
  ${cells.length ? `<p class="sub">Cells not used</p><div class="held-grid">${groupBy(cells, h => h.reason).map(([reason, hs]) => `<div class="held-card">
    <div class="name">${esc(hs.length)} cell${hs.length === 1 ? '' : 's'}</div><span class="tag">Not used</span>${items(reason)}
