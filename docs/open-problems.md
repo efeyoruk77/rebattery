@@ -1,6 +1,6 @@
 # Open problems
 
-What still blocks or weakens the demo, with an owner for each. Updated Oct 31, 11:45. Roles are in [team-plan.md](team-plan.md).
+What still blocks or weakens the demo, with an owner for each. Updated Oct 31, 14:45. Roles are in [team-plan.md](team-plan.md).
 
 When you fix one, move it to **Solved** at the bottom with the commit hash, and push.
 
@@ -21,7 +21,6 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 | # | Problem | Owner | Next step |
 |---|---|---|---|
 | 10 | **Slides, rehearsal, and the demo video are not done.** The script and the 2:30 video shot list are in [demo-script.md](demo-script.md), updated for the live QR codes. The video is being recorded. Presentation rules (duration, whether the demo is live) are still unknown. | Member 2 | Pull `main` before the video setup. Check the presentation rules in the opening slides (`TBC26_Hackathon_Opening.pdf`, Telegram Announcements) and adjust the timings, then slides and a rehearsal. |
-| 14 | **No paid draft is signed yet, so no paid passport or QR code exists.** Only the unpaid test run has passports on-chain; their QR codes work. | The demo can show QR codes only from the test run, and must say so. | Member 4, team decision | Sign the paid draft on the Sign page with `CARDANO_WRITES_ENABLED=true` (14 transactions, about 3.1 tADA). Then rebuild the passport site and push it to `gh-pages` **before** scanning: the new QR codes 404 until then. Pull `main` first, or the rebuild undoes the passport fixes. |
 
 ## Smaller items
 
@@ -36,6 +35,7 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 
 ## Solved
 
+- #14: a paid draft is signed and on-chain (Oct 31). Sokosumi task `01a191bd-9833-736e-afc9-de5079d37d6c`: escrow [e09cd916…8d5c](https://preprod.cardanoscan.io/transaction/e09cd916350d09656b3313347a06c6af76fbdf5745765d81ab928b676bab8d5c), result hash = draft hash `a13c3661…c269` [6bf71603…c792](https://preprod.cardanoscan.io/transaction/6bf716031e5b89bfbda49343777562d9f0d33c1d0e7f761fba98ac298e50c792), signed on Member 4's machine with its company key `e876a098…d582`, 13 Stage B transactions for 3.16 tADA (it reused the document anchor [5bf32564…0e76](https://preprod.cardanoscan.io/transaction/5bf32564551849f39f12162328e621b3c23a6565230d4848ac0ad6d43f5a0e76)), payout of 1 test USDM to the seller [72be903b…9248](https://preprod.cardanoscan.io/transaction/72be903b435590741f1d7d7265f9f62c1e0cc0c3e9ad6d2cef18bb0a1f0b9248). The 5 passports (ESS-1 [861fcf76…6db7](https://preprod.cardanoscan.io/transaction/861fcf76fb0f609ddedb9b4502782b775fd2357acf3f05783a9a5531ca526db7)) are on the public site with working QR codes. Checked from a second machine with only chain data and the published draft: content, two-way module links, and the company signature pass for all 5. The demo can now scan a paid passport instead of a test-run one.
 - #3: outside companies can send their files (Oct 31): a job input entry may give a public https `url` with its SHA-256. The agent downloads it before asking for payment and keeps it only if the hash matches; private hosts, redirects, and large files are refused. Live check: two demo files downloaded from GitHub and loaded. ([remote-files.mjs](../remote-files.mjs)) Sokosumi's own task attachments are not used: its CLI and docs have no endpoint for them yet.
 - #13 (code part): one worker serves several Workspaces: `SOKOSUMI_ORGANIZATION_ID` and `SOKOSUMI_ORGANIZATION_SLUG` take comma-separated lists, and each task runs in its own Workspace. Still to do per company: `sokosumi coworkers connect` to its Workspace (their admin approves). The public marketplace listing is a Masumi/Sokosumi question, not code.
 - Pack identity values are checked: model, serial number, chemistry, manufacturer, and VIN must appear word for word in the event's source document, or the field is removed and listed as a rejected claim.

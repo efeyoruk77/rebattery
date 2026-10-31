@@ -1,4 +1,6 @@
-# EV Battery History Recovery
+<p align="center"><img src="docs/logo.jpg" alt="Afterlife logo: a battery with a halo" width="160"></p>
+
+# Afterlife: EV Battery History Recovery
 
 An AI agent on Sokosumi that rebuilds the history of old EV batteries that never had a digital passport, and proposes how to regroup their cells into second-life home storage units. Every finding is checked against its source document. The final record goes on Cardano, and each new storage unit gets a passport with a QR code.
 
@@ -103,11 +105,26 @@ Seller receipt from Sokosumi (`sokosumi --preprod runtime receipt 01a190fe-859d-
 
 The worker also checked the payout transaction on Blockfrost and found 1 test USDM net at the seller address.
 
+**Paid Sokosumi task, signed and on-chain (the full flow)**
+
+Task `01a191bd-9833-736e-afc9-de5079d37d6c` in the TUM Workspace (created 12:34 CET, Oct 31) went through every step: paid draft, company signature, Cardano logs, passports.
+
+| Step | Transaction |
+|---|---|
+| Sokosumi locked 1 test USDM in escrow | [e09cd916…8d5c](https://preprod.cardanoscan.io/transaction/e09cd916350d09656b3313347a06c6af76fbdf5745765d81ab928b676bab8d5c) |
+| Result hash on-chain (the draft's SHA-256 `a13c3661…c269`, 9 minutes after the escrow) | [6bf71603…c792](https://preprod.cardanoscan.io/transaction/6bf716031e5b89bfbda49343777562d9f0d33c1d0e7f761fba98ac298e50c792) |
+| Company signed exactly that draft and wrote 3 donor logs, 5 ESS logs, 5 passports (13 transactions, 3.16 tADA) | ESS-1 passport [861fcf76…6db7](https://preprod.cardanoscan.io/transaction/861fcf76fb0f609ddedb9b4502782b775fd2357acf3f05783a9a5531ca526db7) |
+| Payout: **1 test USDM net to the seller wallet** (block 5357055) | [72be903b…9248](https://preprod.cardanoscan.io/transaction/72be903b435590741f1d7d7265f9f62c1e0cc0c3e9ad6d2cef18bb0a1f0b9248) |
+
+The other passports: ESS-2 [a67ca8b6…c287](https://preprod.cardanoscan.io/transaction/a67ca8b6cf2863c3026e13ff5673b8141c6bf971b65de6d829787d7ac55dc287), ESS-3 [7f18fd96…1cec](https://preprod.cardanoscan.io/transaction/7f18fd966b04de7dced6669353746bd2af0186bc053a99b289adce0458fe1cec), ESS-4 [3d970be1…40f8](https://preprod.cardanoscan.io/transaction/3d970be1e5718bc676f69e35ef24947c23e4692904ddf5137b7b31316aff40f8), ESS-5 [01ec4f3f…825c](https://preprod.cardanoscan.io/transaction/01ec4f3f7111dccc161b4a531d164801f91940aeef451ea7f34fee397473825c). The donor logs reuse the document anchor [5bf32564…0e76](https://preprod.cardanoscan.io/transaction/5bf32564551849f39f12162328e621b3c23a6565230d4848ac0ad6d43f5a0e76), because the files had already been anchored.
+
+Checked from a second machine using only public chain data and the published draft: all 5 passports pass the four checks below. The on-chain `draft_hash` and `paid` hash equal the result hash Masumi recorded, so the signed draft is exactly the one that was paid for. The payout moved 1 USDM from the escrow script to the same seller address as the earlier payouts. Open the passports and their QR codes at [efeyoruk77.github.io/Afterlife/passports.html](https://efeyoruk77.github.io/Afterlife/passports.html).
+
 **Stage B on-chain test write (unpaid test run)**
 
 One full write of the demo draft: 14 transactions for 3.08 tADA. That covers the document anchor [aeaa7cd7…d646](https://preprod.cardanoscan.io/transaction/aeaa7cd7c31f4641e524d2184af8f6521b9804f17a0eb1c05021189df981d646), 3 donor logs, 5 ESS logs, and 5 passports. The ESS-1 passport [bb1c267b…f865](https://preprod.cardanoscan.io/transaction/bb1c267b3f9143091a3418a1be4d8928c139fc5a3d9fd854c2842d05cbe9f865) traces back to all 3 donors. All transaction hashes are in [docs/member3-tasks.md](docs/member3-tasks.md).
 
-Every passport passes four checks against the chain:
+Every passport (test run and paid) passes four checks against the chain:
 
 1. The passport, its ESS log, and every donor log are found on Cardano.
 2. Every donor log sends its modules to this ESS, so the link holds in both directions.
@@ -120,8 +137,8 @@ Every passport passes four checks against the chain:
 
 **Public site, nothing to install:** https://efeyoruk77.github.io/Afterlife/
 
-- [Review screen](https://efeyoruk77.github.io/Afterlife/) (read-only): the paid Sokosumi draft and the demo drafts, with timelines, warnings, held-back items, and ESS cards
-- [Battery passports](https://efeyoruk77.github.io/Afterlife/passports.html): one page per ESS from the Cardano test run, what the QR code on a unit opens. Each one follows its cells back to every donor pack, event, quote, and file fingerprint, checked against the chain when the site was built, including the company signature. The list shows each unit's QR code.
+- [Review screen](https://efeyoruk77.github.io/Afterlife/) (read-only): the paid Sokosumi drafts (one signed, with its passports) and the demo drafts, with timelines, warnings, held-back items, and ESS cards
+- [Battery passports](https://efeyoruk77.github.io/Afterlife/passports.html): one page per ESS, for the signed paid task and the unpaid test run (marked "test run"). This is what the QR code on a unit opens. Each one follows its cells back to every donor pack, event, quote, and file fingerprint, checked against the chain when the site was built, including the company signature. The list shows each unit's QR code.
 
 Rebuild it with `node --env-file-if-exists=.env passport-site.mjs`, then push `site/` to the `gh-pages` branch.
 
