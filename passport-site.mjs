@@ -22,7 +22,9 @@ export function passportTxs(root = '.') {
  const out = [];
  for (const [ess, tx] of Object.entries(readJson(`${root}/examples/demo-passports.json`)?.passports ?? {})) out.push({ess, tx, draft: 'demo'});
  const dir = `${root}/.local/signed`;
- for (const f of existsSync(dir) ? readdirSync(dir).filter(f => f.endsWith('.json')) : []) {
+ // PUBLISH_SIGNED=task-<id>,... limits the signed drafts whose passports go online (default: all).
+ const only = process.env.PUBLISH_SIGNED ? new Set(process.env.PUBLISH_SIGNED.split(',').map(s => s.trim())) : null;
+ for (const f of existsSync(dir) ? readdirSync(dir).filter(f => f.endsWith('.json') && (!only || only.has(f.slice(0, -5)))) : []) {
   for (const [ess, p] of Object.entries(readJson(join(dir, f))?.passports ?? {})) out.push({ess, tx: p?.txHash, draft: f.slice(0, -5)});
  }
  return out.filter(p => TX.test(p.tx ?? ''));
