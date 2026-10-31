@@ -3,7 +3,7 @@
 Written for the team. Status date: 31 October 2026. Every section ends with its sources; a claim without a source is marked as such.
 **Confirmed** = manufacturer statement or on-the-record trade press. **Reported** = press citing unnamed sources, teardown or spec sites. Where sources disagree, both numbers are given.
 
-Why this document exists: our grouping code ([battery/group.mjs](../battery/group.mjs)) combines cells only when they have the **same cell model and the same chemistry** (`assertOneFamily` stops the draft otherwise). The second demo draft (`examples/demo-mixed-draft.json`, eight packs, five cell families) shows that rule at work. This file holds the facts behind it and what the German installed base looks like, so the demo data and the pitch stay realistic.
+Why this document exists: our grouping code ([battery/group.mjs](../battery/group.mjs)) combines cells only when they have the **same cell model and the same chemistry** (`assertOneFamily` stops the draft otherwise). The review screen's default draft (`examples/demo-mixed-draft.json`: 11 packs, 8 cell families, 20 ESS units) shows that rule at work; the chemistry values shown next to each family come from section 2. This file holds the facts behind it and what the German installed base looks like, so the demo data and the pitch stay realistic.
 
 ## 1. What this means for our agent
 
@@ -206,7 +206,7 @@ Sources: https://battery-news.de/en/2025/12/18/volkswagen-launches-cell-producti
 1. MEB cell-supplier-per-pack and BMW Gen5 module counts rest on third-party sources; official numbers exist only for modules and cells per module (VW, Audi, Porsche, Mercedes EQS).
 2. Cell-to-pack designs (PowerCo unified cell, BMW Gen6, Mercedes MB.EA-L) have no removable modules.
 3. Several items are plans, not production: SSP, Tesla Grünheide cells (2027), Lyten Heide (2028), Mercedes MB.EA-L cylindrical cells (2028), Samsung SDI for Mercedes (2028), Cylib Dormagen (2027).
-4. Our demo manufacturers, cell models and packs (Altmark Cells, Lithosa Zellwerk, Nordzell Energie, Voltaro VX-60/VX-80/CX-40/CX-55/RX-90) are invented and must not be presented as real products.
+4. Our demo manufacturers, cell models and packs (Altmark Cells, Lithosa Zellwerk, Nordzell Energie, Rhein Phosphat Zellen, Baltic Natrium, Elbe Akku; Voltaro VX-33/VX-60/VX-80/CX-30/CX-40/CX-48/CX-55/RX-90) are invented and must not be presented as real products. The sodium-ion and LMFP packs are forward-looking: no German brand sells such a car today (section 5).
 5. Article 77(7)/(8) and Annex VII wording comes from secondary reproductions; EUR-Lex blocked automated access. Open https://eur-lex.europa.eu/eli/reg/2023/1542/oj and confirm before quoting.
 6. No accessible standard contains a literal "do not mix cell types" clause; the argument rests on per-cell-type test bases (UL 9540A, UN 38.3), IEC 63330-1's traceability requirement, GB/T 34015.3's same-model grouping and Battery University guidance.
 7. Matching tolerances (±2–5 % capacity, about ±10 % resistance) are practice figures, not normative values.

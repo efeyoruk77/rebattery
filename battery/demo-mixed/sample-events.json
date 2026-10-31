@@ -529,5 +529,188 @@
       "quote": "Measured state of health: 90 %"
     },
     "basis": []
+  },
+  {
+    "event_id": "I-e1",
+    "pack_id": "I",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "production",
+    "date": "2023-04-03",
+    "fields": {
+      "manufacturer": "Rhein Phosphat Zellen AG",
+      "chemistry": "LMFP",
+      "cell_model": "RP-LMFP-120P"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packI-label",
+      "sha256": "a17fa47988ee839c38093ee3bc407e4558b1ca6648dd866752d94b56c4d02163",
+      "page": 1,
+      "line": 10,
+      "quote": "Production date: 2023-04-03"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "I-e2",
+    "pack_id": "I",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "first_registration",
+    "date": "2023-05-19",
+    "fields": {},
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packI-registration",
+      "sha256": "b4d1307d8a57fb330269042b08a0ba1fc353322f25261403993644653ed7c75d",
+      "page": 1,
+      "line": 8,
+      "quote": "Date of first registration: 2023-05-19"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "I-e3",
+    "pack_id": "I",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "soh_measurement",
+    "date": "2025-09-02",
+    "fields": {
+      "soh_pct": 94,
+      "chemistry": "LMFP"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packI-health-2025",
+      "sha256": "d05ae7e754fe4c9c8d2dc64f6b5aef643d533f97848366bcb5fffdcc55f0c338",
+      "page": 1,
+      "line": 9,
+      "quote": "Measured state of health: 94 %"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "J-e1",
+    "pack_id": "J",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "production",
+    "date": "2024-01-22",
+    "fields": {
+      "manufacturer": "Baltic Natrium GmbH",
+      "chemistry": "Na-ion",
+      "cell_model": "BN-NA-210P"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packJ-label",
+      "sha256": "5f5162952f8051cf1d654e92270635f4df773b2b6ec642d5f6d556f48b3a4c51",
+      "page": 1,
+      "line": 10,
+      "quote": "Production date: 2024-01-22"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "J-e2",
+    "pack_id": "J",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "first_registration",
+    "date": "2024-03-08",
+    "fields": {},
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packJ-registration",
+      "sha256": "cbdfd7e81a90b26276fa943cf22648a310d9edf7c8d19d977470a187326defb6",
+      "page": 1,
+      "line": 8,
+      "quote": "Date of first registration: 2024-03-08"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "J-e3",
+    "pack_id": "J",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "soh_measurement",
+    "date": "2026-02-17",
+    "fields": {
+      "soh_pct": 96,
+      "chemistry": "Na-ion"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packJ-health-2026",
+      "sha256": "4b251ca909c118a6714b440bc2bd81e2d322763a7f724276617e0430d73fc716",
+      "page": 1,
+      "line": 9,
+      "quote": "Measured state of health: 96 %"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "K-e1",
+    "pack_id": "K",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "production",
+    "date": "2018-06-27",
+    "fields": {
+      "manufacturer": "Elbe Akku GmbH",
+      "chemistry": "LMO-NMC",
+      "cell_model": "EA-LMO94P"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packK-label",
+      "sha256": "138871d2cb894abf8a868eb198c7636fc22d948889d06ec3ac131488fcf77076",
+      "page": 1,
+      "line": 10,
+      "quote": "Production date: 2018-06-27"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "K-e2",
+    "pack_id": "K",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "first_registration",
+    "date": "2018-08-14",
+    "fields": {},
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packK-registration",
+      "sha256": "e1316ef1386a6647b1dce6aee1f70f55d5e51387c5bb4b155b724acd6a8fc0da",
+      "page": 1,
+      "line": 8,
+      "quote": "Date of first registration: 2018-08-14"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "K-e3",
+    "pack_id": "K",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "soh_measurement",
+    "date": "2024-11-26",
+    "fields": {
+      "soh_pct": 84,
+      "chemistry": "LMO-NMC"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packK-health-2024",
+      "sha256": "34370fa8dc3a17b7784918f22dd6f6a2b1c956e96c860632aa9a0506473fd1a6",
+      "page": 1,
+      "line": 9,
+      "quote": "Measured state of health: 84 %"
+    },
+    "basis": []
   }
 ]

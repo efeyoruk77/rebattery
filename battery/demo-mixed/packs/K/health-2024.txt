@@ -1,0 +1,13 @@
+Voltaro Dealer Battery Health Report
+DEMO DOCUMENT - all data invented
+
+Report date: 2024-11-26
+VIN: DEMO0VX33K0000011
+Odometer: 112,800 km
+
+Battery chemistry: lithium manganese oxide / NMC blend (LMO-NMC)
+Measured state of health: 84 %
+Module voltage spread at rest: 27 mV
+Result: battery within specification
+
+Technician: T. Example, Autohaus Beispiel GmbH

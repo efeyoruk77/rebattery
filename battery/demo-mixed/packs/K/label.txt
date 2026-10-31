@@ -1,0 +1,11 @@
+Transcript of battery label photo (packK-label.jpg), typed and checked by hand.
+The photo is legible; OCR was not used for this demo.
+
+Manufacturer: Elbe Akku GmbH
+Model: VX-33 City Pack
+Chemistry: LMO-NMC
+Cell type: EA-LMO94P (prismatic, LMO/NMC blend)
+Nominal capacity: 94.0 Ah / 33 kWh
+Modules: 8
+Production date: 2018-06-27
+Serial number: EA-VX33-180627-1204

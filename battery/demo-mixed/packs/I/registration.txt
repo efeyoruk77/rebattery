@@ -1,0 +1,8 @@
+Vehicle registration certificate, part I (excerpt)
+DEMO DOCUMENT - all data invented
+
+Registration number: MA-DE 9009
+Holder: Jonas Beispiel, Musterstieg 3, 68159 Mannheim
+Vehicle identification number: DEMO0CX48I0000009
+Make and model: Voltaro CX-48 Compact
+Date of first registration: 2023-05-19

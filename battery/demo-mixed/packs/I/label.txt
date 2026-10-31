@@ -1,0 +1,11 @@
+Transcript of battery label photo (packI-label.jpg), typed and checked by hand.
+The photo is legible; OCR was not used for this demo.
+
+Manufacturer: Rhein Phosphat Zellen AG
+Model: CX-48 Compact Pack
+Chemistry: LMFP
+Cell type: RP-LMFP-120P (prismatic)
+Nominal capacity: 120.0 Ah / 48 kWh
+Modules: 8
+Production date: 2023-04-03
+Serial number: RP-CX48-230403-0051

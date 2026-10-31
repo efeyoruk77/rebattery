@@ -7,7 +7,7 @@ const PACK = /^[A-Z0-9]{1,8}$/;
 const DOC = /^[A-Za-z0-9._-]{1,64}$/;
 const MODULE = /^([A-Z0-9]{1,8})-M[0-9]{1,3}$/;
 const SHA = /^[0-9a-f]{64}$/;
-const LIMITS = { packs: 10, documents: 100, module_tests: 200, cell_tests: 200 };
+const LIMITS = { packs: 16, documents: 100, module_tests: 200, cell_tests: 200 };
 
 function onlyKeys(value, keys, where) {
  if (!value || typeof value !== 'object' || Array.isArray(value)) throw Error(`${where} must be an object`);

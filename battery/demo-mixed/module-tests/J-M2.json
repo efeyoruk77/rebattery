@@ -1,0 +1,10 @@
+{
+  "module_id": "J-M2",
+  "cell_model": "BN-NA-210P",
+  "chemistry": "Na-ion",
+  "capacity_ah": 200.2,
+  "nominal_capacity_ah": 210,
+  "internal_resistance_mohm": 0.67,
+  "tested_on": "2026-10-28",
+  "signature": "ZkY+QA/+E6ppbPutv96o0sAJ3Rx3WBRYQNhC1F0vTycsuTWeaaTieSe5dkW7L81RQ7OG1SVXyTl7Uj2JLm7BBw=="
+}

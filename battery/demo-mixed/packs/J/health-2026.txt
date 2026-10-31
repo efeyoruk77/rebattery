@@ -1,0 +1,13 @@
+Voltaro Dealer Battery Health Report
+DEMO DOCUMENT - all data invented
+
+Report date: 2026-02-17
+VIN: DEMO0CX30J0000010
+Odometer: 29,300 km
+
+Battery chemistry: sodium-ion (Na-ion)
+Measured state of health: 96 %
+Cell voltage spread at rest: 12 mV
+Result: battery within specification
+
+Technician: K. Example, Autohaus Beispiel GmbH

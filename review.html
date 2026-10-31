@@ -8,12 +8,12 @@
 :root{--bg:#fbfbfa;--panel:#fff;--soft:#f3f3f1;--ink:#0b0b0c;--muted:#6f6f78;--line:#e6e6e3;--accent:#0b0b0c;--accent-ink:#fff;
  --good:#16a34a;--warn:#b45309;--warn-bg:#fff7ed;--bad:#b91c1c;--bad-bg:#fef2f2;--chip:#f1f1ef;
  --signed:#15803d;--documented:#1d4ed8;--estimated:#7e22ce;
- --pa:#6366f1;--pb:#f97316;--pc:#14b8a6;--pd:#db2777;--pe:#ca8a04;--pf:#0ea5e9;--pg:#65a30d;--ph:#7c3aed;--blob1:#c7d2fe;--blob2:#fed7aa;--blob3:#99f6e4;
+ --pa:#6366f1;--pb:#f97316;--pc:#14b8a6;--pd:#db2777;--pe:#ca8a04;--pf:#0ea5e9;--pg:#65a30d;--ph:#7c3aed;--pi:#0f766e;--pj:#b45309;--pk:#64748b;--blob1:#c7d2fe;--blob2:#fed7aa;--blob3:#99f6e4;
  --shadow:0 1px 2px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.08)}
 @media (prefers-color-scheme:dark){:root{--bg:#08080a;--panel:#111114;--soft:#18181c;--ink:#f5f5f4;--muted:#a1a1aa;--line:#26262b;--accent:#f5f5f4;--accent-ink:#08080a;
  --good:#4ade80;--warn:#fbbf24;--warn-bg:#2a1f0a;--bad:#f87171;--bad-bg:#2a1010;--chip:#1c1c21;
  --signed:#4ade80;--documented:#93c5fd;--estimated:#d8b4fe;
- --pa:#818cf8;--pb:#fb923c;--pc:#2dd4bf;--pd:#f472b6;--pe:#facc15;--pf:#38bdf8;--pg:#a3e635;--ph:#a78bfa;--blob1:#312e81;--blob2:#7c2d12;--blob3:#134e4a;
+ --pa:#818cf8;--pb:#fb923c;--pc:#2dd4bf;--pd:#f472b6;--pe:#facc15;--pf:#38bdf8;--pg:#a3e635;--ph:#a78bfa;--pi:#2dd4bf;--pj:#fbbf24;--pk:#94a3b8;--blob1:#312e81;--blob2:#7c2d12;--blob3:#134e4a;
  --shadow:0 1px 2px rgba(0,0,0,.5),0 12px 32px rgba(0,0,0,.5)}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -362,7 +362,8 @@ const reasonItems = reason => String(reason).split(/;(?!\s*an ESS needs)\s*/).fi
  .replace(/^open warning (\w+)/, (_, rule) => `open warning: ${ruleNames[rule] || label(rule)}`)
  .replace(/^quote not found at (\S+) page (\d+) line (\d+)/, 'the quoted text is not in $1 at page $2, line $3'))));
 const packOf = id => String(id).split('-')[0];
-const packColor = p => ({A: 'var(--pa)', B: 'var(--pb)', C: 'var(--pc)', D: 'var(--pd)', E: 'var(--pe)', F: 'var(--pf)', G: 'var(--pg)', H: 'var(--ph)'})[p] || 'var(--muted)';
+// Packs beyond K get a colour from their letter, so any batch size renders.
+const packColor = p => ({A: 'var(--pa)', B: 'var(--pb)', C: 'var(--pc)', D: 'var(--pd)', E: 'var(--pe)', F: 'var(--pf)', G: 'var(--pg)', H: 'var(--ph)', I: 'var(--pi)', J: 'var(--pj)', K: 'var(--pk)'})[p] || `hsl(${(String(p).charCodeAt(0) * 47) % 360} 60% 50%)`;
 // Many items share one reason; group them. ["B-M3-C05", "B-M3-C08"] -> [["B-M3", ["5", "8"]]]
 const groupBy = (list, key) => { const g = new Map(); for (const x of list) { const k = key(x); (g.get(k) || g.set(k, []).get(k)).push(x); } return [...g]; };
 // Chemistry facts shown next to each cell family: nominal and full-charge cell voltage. Sources: docs/battery-info.md.
@@ -371,6 +372,8 @@ const CHEM = {
  NCA: {name: 'nickel cobalt aluminium', v: '3.6 V', vmax: '4.2 V'},
  LFP: {name: 'lithium iron phosphate', v: '3.2 V', vmax: '3.65 V'},
  LMFP: {name: 'lithium manganese iron phosphate', v: '3.7–3.8 V', vmax: '4.2 V'},
+ 'LMO-NMC': {name: 'lithium manganese oxide / NMC blend', v: '3.7 V', vmax: '4.15–4.2 V'},
+ 'NA-ION': {name: 'sodium-ion', v: '3.0–3.1 V', vmax: '3.95 V'},
 };
 const chem = c => CHEM[String(c).toUpperCase()] || {name: String(c), v: 'unknown', vmax: 'unknown'};
 // Cell families in the open draft: one per cell model + chemistry. Code never combines cells of two families.
@@ -424,7 +427,7 @@ async function load() {
 async function show(id) {
  current = await (await fetch('/api/draft?id=' + encodeURIComponent(id))).json();
  const d = drafts.find(x => x.id === id);
- draftName.textContent = d ? (d.paid ? d.label : d.id === 'demo' ? 'Demo' : d.id === 'demo-mixed' ? 'Demo · mixed families' : d.label.replace(/\s*\(.*\)$/, '')) : id;
+ draftName.textContent = d ? (d.paid ? d.label : d.id === 'demo' ? 'Demo · 3 NMC packs' : d.id === 'demo-mixed' ? 'Demo · 11 packs, 8 families' : d.label.replace(/\s*\(.*\)$/, '')) : id;
  renderDraftMenu();
  route();
 }
@@ -458,7 +461,8 @@ window.addEventListener('hashchange', () => route());
 const currentRoute = () => location.hash.replace(/^#\/?/, '').split('/')[0] || 'overview';
 function route({keepScroll = false, quiet = false} = {}) {
  if (!current) return;
- const [name = 'overview', arg] = location.hash.replace(/^#\/?/, '').split('/').map(decodeURIComponent);
+ const [rawName, arg] = location.hash.replace(/^#\/?/, '').split('/').map(decodeURIComponent);
+ const name = rawName || 'overview'; // a bare URL with no hash opens the overview
  const d = current.draft;
  const counts = {histories: d.packs.length, ess: (d.new_batteries || []).length, held: (d.held_back || []).length + d.rejected.length};
  nav.innerHTML = routes.map(([id, title]) => `<a class="pill ${id === name ? 'on' : ''}" href="#/${id}">${esc(title)}${counts[id] != null ? `<span class="n">${esc(counts[id])}</span>` : ''}</a>`).join('');
@@ -650,7 +654,7 @@ function essGallery() {
  ${withEss.map(f => `<div class="fam-head"><h2>${esc(f.cell_model)}</h2><span class="chip">${esc(f.chemistry)} · ${esc(chem(f.chemistry).name)}</span><span class="chip">${esc(chem(f.chemistry).v)} nominal</span><span class="chip">${esc(f.ess.length)} ESS unit${f.ess.length === 1 ? '' : 's'}</span><span class="chip">Packs ${esc([...f.packs].sort().join(', '))}</span></div>
   <div class="gallery">${f.ess.map(card).join('')}</div>`).join('') || '<p class="muted">No ESS proposed.</p>'}
  <section class="sec"><div class="sec-head"><div><h2>Which cells may share an ESS</h2><p>Code groups by cell family: the same cell model <em>and</em> the same chemistry. Nothing else is ever combined.</p></div></div>
-  ${matrix || `<p class="muted">All cells in this batch belong to one family (${esc(F.map(famLabel).join(', ') || 'unknown')}). Cells of another chemistry or another cell model would form their own units or stay held back.${mixedDemo ? ' ' : ''}</p>${mixedDemo ? `<button type="button" class="pill" data-open-draft="demo-mixed">Open the mixed-family demo (LFP pack + another NMC model) →</button>` : ''}`}
+  ${matrix || `<p class="muted">All cells in this batch belong to one family (${esc(F.map(famLabel).join(', ') || 'unknown')}). Cells of another chemistry or another cell model would form their own units or stay held back.${mixedDemo ? ' ' : ''}</p>${mixedDemo ? `<button type="button" class="pill" data-open-draft="demo-mixed">Open the 11-pack demo with 8 cell families →</button>` : ''}`}
  </section>`;
 }
 

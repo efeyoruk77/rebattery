@@ -1,0 +1,76 @@
+{
+  "module_id": "J-M3",
+  "cell_model": "BN-NA-210P",
+  "chemistry": "Na-ion",
+  "nominal_capacity_ah": 210,
+  "tested_on": "2026-10-29",
+  "facility": {
+    "id": "DSL-AUG-01",
+    "name": "Demo Second Life GmbH",
+    "site": "Plant 1, Augsburg, DE",
+    "note": "invented for the demo"
+  },
+  "cells": [
+    {
+      "cell_id": "J-M3-C01",
+      "capacity_ah": 198.74,
+      "internal_resistance_mohm": 0.342
+    },
+    {
+      "cell_id": "J-M3-C02",
+      "capacity_ah": 198.78,
+      "internal_resistance_mohm": 0.329
+    },
+    {
+      "cell_id": "J-M3-C03",
+      "capacity_ah": 198.37,
+      "internal_resistance_mohm": 0.335
+    },
+    {
+      "cell_id": "J-M3-C04",
+      "capacity_ah": 198.98,
+      "internal_resistance_mohm": 0.336
+    },
+    {
+      "cell_id": "J-M3-C05",
+      "capacity_ah": 198.57,
+      "internal_resistance_mohm": 0.328
+    },
+    {
+      "cell_id": "J-M3-C06",
+      "capacity_ah": 199.08,
+      "internal_resistance_mohm": 0.329
+    },
+    {
+      "cell_id": "J-M3-C07",
+      "capacity_ah": 198.81,
+      "internal_resistance_mohm": 0.337
+    },
+    {
+      "cell_id": "J-M3-C08",
+      "capacity_ah": 198.91,
+      "internal_resistance_mohm": 0.337
+    },
+    {
+      "cell_id": "J-M3-C09",
+      "capacity_ah": 199.4,
+      "internal_resistance_mohm": 0.337
+    },
+    {
+      "cell_id": "J-M3-C10",
+      "capacity_ah": 198.7,
+      "internal_resistance_mohm": 0.347
+    },
+    {
+      "cell_id": "J-M3-C11",
+      "capacity_ah": 199.83,
+      "internal_resistance_mohm": 0.348
+    },
+    {
+      "cell_id": "J-M3-C12",
+      "capacity_ah": 198.63,
+      "internal_resistance_mohm": 0.341
+    }
+  ],
+  "signature": "Kov09bet3MADOgl6Qy0Z8MeA+/Vdprbupw7SPGX4JhwVkE6nc+rVwzW1LJ9IpSx7xJ6SM0H+tONmOG3lVRJHDA=="
+}

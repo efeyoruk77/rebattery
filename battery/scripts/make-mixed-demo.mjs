@@ -3,8 +3,9 @@
 //   E: an NMC pack from the same cell maker as A-C but a different cell model (AC-NMC-78P),
 //   F: an NCA pack with cylindrical cells (NZ-NCA-21700-5A),
 //   G: an LFP pack from the same maker as D but a different cell model (LZ-LFP-135P), and
-//   H: a pack with the same AC-NMC-66P cells as A-C, to show that one family does combine across packs.
-// It copies A-C's signed test files, signs new module and cell tests for D-H with the demo tester key,
+//   H: a pack with the same AC-NMC-66P cells as A-C, to show that one family does combine across packs,
+//   I: an LMFP pack, J: a sodium-ion pack, K: an LMO/NMC-blend pack (older city car).
+// It copies A-C's signed test files, signs new module and cell tests for D-K with the demo tester key,
 // and writes sample-events.json (mock extraction) for all packs. Documents for D-H are hand-written.
 // Run after battery/scripts/sign-demo-tests.mjs:  node battery/scripts/make-mixed-demo.mjs
 import { copyFileSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
@@ -37,6 +38,15 @@ const families = {
   // The same cell model as A-C, so its cells join the AC-NMC-66P units (SoH ~89%).
   H: { cell_model: 'AC-NMC-66P', chemistry: 'NMC', nominal: 66.0, cellRes: 0.85,
        modules: [[58.6, 1.43], [58.3, 1.45], [58.8, 1.42], [58.1, 1.46], [58.5, 1.44], [58.9, 1.41], [58.4, 1.44], [58.7, 1.43]] },
+  // LMFP, 3.75 V nominal prismatic cells: 120 Ah (SoH ~93%).
+  I: { cell_model: 'RP-LMFP-120P', chemistry: 'LMFP', nominal: 120.0, cellRes: 0.36, cellNoise: [0.5, 0.015],
+       modules: [[111.8, 0.70], [112.3, 0.69], [111.5, 0.71], [112.0, 0.70], [111.9, 0.70], [112.4, 0.69], [111.6, 0.71], [112.1, 0.70]] },
+  // Sodium-ion, 3.1 V nominal prismatic cells: 210 Ah, young pack (SoH ~95%).
+  J: { cell_model: 'BN-NA-210P', chemistry: 'Na-ion', nominal: 210.0, cellRes: 0.34, cellNoise: [0.8, 0.015],
+       modules: [[199.6, 0.68], [200.2, 0.67], [199.1, 0.69], [200.5, 0.67], [199.8, 0.68], [200.0, 0.68], [199.4, 0.69], [200.3, 0.67]] },
+  // LMO/NMC blend, 94 Ah prismatic cells from an older city car (SoH ~83%).
+  K: { cell_model: 'EA-LMO94P', chemistry: 'LMO-NMC', nominal: 94.0, cellRes: 0.95, cellNoise: [0.5, 0.03],
+       modules: [[78.1, 1.92], [77.6, 1.95], [78.4, 1.90], [77.3, 1.97], [77.9, 1.93], [78.2, 1.91], [77.5, 1.96], [77.8, 1.94]] },
 };
 
 let seed = 20261031;
@@ -97,6 +107,15 @@ const extra = [
   ev('H-e1', 'production', '2020-08-05', { manufacturer: 'Altmark Cells GmbH', chemistry: 'NMC', cell_model: 'AC-NMC-66P' }, src('packH-label', 10, 'Production date: 2020-08-05')),
   ev('H-e2', 'first_registration', '2020-10-01', {}, src('packH-registration', 8, 'Date of first registration: 2020-10-01')),
   ev('H-e3', 'soh_measurement', '2023-05-10', { soh_pct: 90, chemistry: 'NMC' }, src('packH-health-2023', 9, 'Measured state of health: 90 %')),
+  ev('I-e1', 'production', '2023-04-03', { manufacturer: 'Rhein Phosphat Zellen AG', chemistry: 'LMFP', cell_model: 'RP-LMFP-120P' }, src('packI-label', 10, 'Production date: 2023-04-03')),
+  ev('I-e2', 'first_registration', '2023-05-19', {}, src('packI-registration', 8, 'Date of first registration: 2023-05-19')),
+  ev('I-e3', 'soh_measurement', '2025-09-02', { soh_pct: 94, chemistry: 'LMFP' }, src('packI-health-2025', 9, 'Measured state of health: 94 %')),
+  ev('J-e1', 'production', '2024-01-22', { manufacturer: 'Baltic Natrium GmbH', chemistry: 'Na-ion', cell_model: 'BN-NA-210P' }, src('packJ-label', 10, 'Production date: 2024-01-22')),
+  ev('J-e2', 'first_registration', '2024-03-08', {}, src('packJ-registration', 8, 'Date of first registration: 2024-03-08')),
+  ev('J-e3', 'soh_measurement', '2026-02-17', { soh_pct: 96, chemistry: 'Na-ion' }, src('packJ-health-2026', 9, 'Measured state of health: 96 %')),
+  ev('K-e1', 'production', '2018-06-27', { manufacturer: 'Elbe Akku GmbH', chemistry: 'LMO-NMC', cell_model: 'EA-LMO94P' }, src('packK-label', 10, 'Production date: 2018-06-27')),
+  ev('K-e2', 'first_registration', '2018-08-14', {}, src('packK-registration', 8, 'Date of first registration: 2018-08-14')),
+  ev('K-e3', 'soh_measurement', '2024-11-26', { soh_pct: 84, chemistry: 'LMO-NMC' }, src('packK-health-2024', 9, 'Measured state of health: 84 %')),
 ];
 const base = JSON.parse(readFileSync(`${demo}sample-events.json`, 'utf8'));
 writeFileSync(`${mixed}sample-events.json`, `${JSON.stringify([...base, ...extra], null, 2)}\n`);

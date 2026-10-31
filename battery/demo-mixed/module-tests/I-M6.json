@@ -1,0 +1,10 @@
+{
+  "module_id": "I-M6",
+  "cell_model": "RP-LMFP-120P",
+  "chemistry": "LMFP",
+  "capacity_ah": 112.4,
+  "nominal_capacity_ah": 120,
+  "internal_resistance_mohm": 0.69,
+  "tested_on": "2026-10-28",
+  "signature": "b3w9f8xkqopqqmbNJl4N3exoIcmKkneAaWPrds5KkmHVwuvWNSOoSRVfYETNmxb7ovQQfSjWoNgbm9YFprrYDw=="
+}

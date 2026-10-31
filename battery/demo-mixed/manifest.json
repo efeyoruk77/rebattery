@@ -1,5 +1,5 @@
 {
-  "note": "Second demo set: the three NMC packs of battery/demo plus D (LFP, another cell maker), E (NMC, same maker as A-C, different cell model), F (NCA, cylindrical cells), G (LFP, same maker as D, different cell model) and H (the same AC-NMC-66P cells as A-C). Shows that cells are combined only within one cell family: same cell model and same chemistry.",
+  "note": "Second demo set: the three NMC packs of battery/demo plus D (LFP, another cell maker), E (NMC, same maker as A-C, different cell model), F (NCA, cylindrical cells), G (LFP, same maker as D, different cell model), H (the same AC-NMC-66P cells as A-C), I (LMFP), J (sodium-ion) and K (LMO/NMC blend). Shows that cells are combined only within one cell family: same cell model and same chemistry.",
   "documents": [
     {
       "doc_id": "packA-label",
@@ -175,6 +175,69 @@
       "kind": "dealer_health_report",
       "language": "en",
       "path": "packs/H/health-2023.txt"
+    },
+    {
+      "doc_id": "packI-label",
+      "pack_id": "I",
+      "kind": "battery_label",
+      "language": "en",
+      "path": "packs/I/label.txt"
+    },
+    {
+      "doc_id": "packI-registration",
+      "pack_id": "I",
+      "kind": "vehicle_registration",
+      "language": "en",
+      "path": "packs/I/registration.txt"
+    },
+    {
+      "doc_id": "packI-health-2025",
+      "pack_id": "I",
+      "kind": "dealer_health_report",
+      "language": "en",
+      "path": "packs/I/health-2025.txt"
+    },
+    {
+      "doc_id": "packJ-label",
+      "pack_id": "J",
+      "kind": "battery_label",
+      "language": "en",
+      "path": "packs/J/label.txt"
+    },
+    {
+      "doc_id": "packJ-registration",
+      "pack_id": "J",
+      "kind": "vehicle_registration",
+      "language": "en",
+      "path": "packs/J/registration.txt"
+    },
+    {
+      "doc_id": "packJ-health-2026",
+      "pack_id": "J",
+      "kind": "dealer_health_report",
+      "language": "en",
+      "path": "packs/J/health-2026.txt"
+    },
+    {
+      "doc_id": "packK-label",
+      "pack_id": "K",
+      "kind": "battery_label",
+      "language": "en",
+      "path": "packs/K/label.txt"
+    },
+    {
+      "doc_id": "packK-registration",
+      "pack_id": "K",
+      "kind": "vehicle_registration",
+      "language": "en",
+      "path": "packs/K/registration.txt"
+    },
+    {
+      "doc_id": "packK-health-2024",
+      "pack_id": "K",
+      "kind": "dealer_health_report",
+      "language": "en",
+      "path": "packs/K/health-2024.txt"
     }
   ]
 }

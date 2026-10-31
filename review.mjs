@@ -13,9 +13,10 @@ import {collectStatus} from './status.mjs';
 const cardano = createCardanoSteps();
 const finalize = createStageB(cardano);
 // Demo drafts (invented data, never signable). The second shows cells of different families staying apart.
+// The mixed set is listed first and is what the review screen opens with; the three-pack set is the team's stage demo.
 const DEMOS = [
- ['demo', 'examples/demo-draft.json', 'Demo draft (invented data, not paid)'],
- ['demo-mixed', 'examples/demo-mixed-draft.json', 'Demo: mixed cell families, LFP + two NMC models (invented data, not paid)'],
+ ['demo-mixed', 'examples/demo-mixed-draft.json', 'Demo: 11 packs, 8 cell families (invented data, not paid)'],
+ ['demo', 'examples/demo-draft.json', 'Demo: 3 NMC packs (invented data, not paid)'],
 ];
 const readJson = path => { try { return JSON.parse(readFileSync(path, 'utf8')); } catch { return null; } };
 const files = dir => existsSync(dir) ? readdirSync(dir).filter(f => /^[0-9a-f-]{36}\.json$/.test(f)) : [];

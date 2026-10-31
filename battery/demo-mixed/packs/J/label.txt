@@ -1,0 +1,11 @@
+Transcript of battery label photo (packJ-label.jpg), typed and checked by hand.
+The photo is legible; OCR was not used for this demo.
+
+Manufacturer: Baltic Natrium GmbH
+Model: CX-30 Urban Pack
+Chemistry: Na-ion
+Cell type: BN-NA-210P (prismatic, sodium-ion)
+Nominal capacity: 210.0 Ah / 30 kWh
+Modules: 8
+Production date: 2024-01-22
+Serial number: BN-CX30-240122-0018

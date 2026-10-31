@@ -1,0 +1,10 @@
+{
+  "module_id": "K-M1",
+  "cell_model": "EA-LMO94P",
+  "chemistry": "LMO-NMC",
+  "capacity_ah": 78.1,
+  "nominal_capacity_ah": 94,
+  "internal_resistance_mohm": 1.92,
+  "tested_on": "2026-10-28",
+  "signature": "E+3TolI8HtNr9zHkjSF2N69BkBZ/89jCnw0iKc4PYD1aPiUqUd/xeHu5EhZUgF0KuLSlkVY0QeizritN+VSQCg=="
+}

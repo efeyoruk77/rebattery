@@ -1,0 +1,8 @@
+Vehicle registration certificate, part I (excerpt)
+DEMO DOCUMENT - all data invented
+
+Registration number: L-DE 1111
+Holder: Tom Beispiel, Musterhof 1, 04109 Leipzig
+Vehicle identification number: DEMO0VX33K0000011
+Make and model: Voltaro VX-33 City
+Date of first registration: 2018-08-14

@@ -1,0 +1,8 @@
+Vehicle registration certificate, part I (excerpt)
+DEMO DOCUMENT - all data invented
+
+Registration number: HRO-DE 1010
+Holder: Mia Beispiel, Hafenweg 6, 18055 Rostock
+Vehicle identification number: DEMO0CX30J0000010
+Make and model: Voltaro CX-30 Urban
+Date of first registration: 2024-03-08
