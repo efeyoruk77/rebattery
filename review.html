@@ -105,6 +105,8 @@ h2{font-size:22px;letter-spacing:-.02em;margin:0}
 .held-card .name{font-weight:700;color:var(--ink)}
 .held-card .tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--bad);margin-top:2px}
 .held-card ul{margin:8px 0 0;padding-left:18px;color:var(--bad);font-size:14px}
+.ai{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:10px 0 0;font-size:14px;color:var(--ink);max-width:760px}
+.ai .who{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
 .held-card li{margin:2px 0}
 .cell-groups{display:flex;flex-direction:column;gap:6px;margin-top:10px}
 .cell-group{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:13px}
@@ -240,6 +242,9 @@ const ruleNames = {
  health_rising_without_repair: 'health rose without a repair',
 };
 const sentence = s => s.charAt(0).toUpperCase() + s.slice(1);
+// The model's plain-language explanation of the grouping (draft.explanation). Code made the decision; this only explains it.
+const aiNote = text => text ? `<p class="ai"><span class="who">AI explanation · check against the rules and events</span>${esc(text)}</p>` : '';
+const explanation = () => current.draft.explanation || {ess: {}, modules: {}, cells: []};
 const reasonItems = reason => String(reason).split(/;(?!\s*an ESS needs)\s*/).filter(p => p && p !== 'not taken apart').map(p => sentence(placeName(p
  .replace(/^accident event (\S+)/, 'accident recorded (event $1)')
  .replace(/^open warning (\w+)/, (_, rule) => `open warning: ${ruleNames[rule] || label(rule)}`)
@@ -442,6 +447,7 @@ function essDetail(id) {
   ${qr ? `<a class="qr" href="${esc(qr.url)}" target="_blank" rel="noopener" title="Passport transaction ${esc(qr.txHash)}">${qr.svg}<span>Scan or click: passport on Cardano Preprod</span></a>`
    : '<div class="qr pending"><span>The QR code appears once this passport is written on-chain (after signing)</span></div>'}
  </div>
+ ${aiNote(explanation().ess?.[b.battery_id])}
  <section class="sec"><div class="sec-head"><div><h2>Where the cells came from</h2><p>Hover a pack or module to follow its cells.</p></div></div><div class="sankey-wrap">${sankey}</div></section>
  <section class="sec"><div class="sec-head"><div><h2>All ${esc(b.cells.length)} cells</h2><p>Each square is one cell, coloured by its donor pack. Hover to see it; click a pack to highlight its cells.</p></div></div>
   <div class="mosaic" id="mosaic">${b.cells.map((c, i) => `<div class="cell" data-pack="${esc(c.donor_pack || packOf(c.module_id))}" data-tip="${esc(placeName(c.cell_id))}" style="background:${packColor(c.donor_pack || packOf(c.module_id))};animation-delay:${reduceMotion ? 0 : i * 12}ms"></div>`).join('')}</div>
@@ -460,9 +466,10 @@ function held() {
  <h1>Held back</h1>
  <p class="lead">What the code refused to use, and why. Nothing here is deleted: every decision is recorded with its reason so a buyer can check it later.</p>
  ${d.rejected.length ? `<p class="sub">Claims rejected by verification</p><div class="held-grid">${d.rejected.map(x => `<div class="held-card"><div class="name">Claim ${esc(x.event_id)}${/^[A-Z]-/.test(x.event_id || '') ? ` <span class="muted">· Pack ${esc(x.event_id[0])}</span>` : ''}</div><span class="tag">Rejected</span>${items(x.reason)}</div>`).join('')}</div>` : ''}
- ${mods.length ? `<p class="sub">Modules not taken apart</p><div class="held-grid">${mods.map(h => `<div class="held-card"><div class="name">${esc(placeName(h.id))}</div><span class="tag">Not taken apart</span>${items(h.reason)}</div>`).join('')}</div>` : ''}
+ ${mods.length ? `<p class="sub">Modules not taken apart</p><div class="held-grid">${mods.map(h => `<div class="held-card"><div class="name">${esc(placeName(h.id))}</div><span class="tag">Not taken apart</span>${items(h.reason)}${aiNote(explanation().modules?.[h.id])}</div>`).join('')}</div>` : ''}
  ${cells.length ? `<p class="sub">Cells not used</p><div class="held-grid">${groupBy(cells, h => h.reason).map(([reason, hs]) => `<div class="held-card">
    <div class="name">${esc(hs.length)} cell${hs.length === 1 ? '' : 's'}</div><span class="tag">Not used</span>${items(reason)}
+   ${[...new Set((explanation().cells || []).filter(g => g.cell_ids.some(id => hs.some(h => h.id === id))).map(g => g.text))].map(aiNote).join('')}
    <div class="cell-groups">${cellsByModule(hs.map(h => h.id)).map(([m, ns]) => `<div class="cell-group"><span class="where">${esc(placeName(m))}</span>${ns.map(n => `<span class="c">Cell ${esc(n)}</span>`).join('')}</div>`).join('')}</div>
   </div>`).join('')}</div>` : ''}
  ${!list.length && !d.rejected.length ? '<p class="muted">Nothing was held back.</p>' : ''}`;

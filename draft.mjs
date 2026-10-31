@@ -3,7 +3,7 @@
 import {readFileSync, writeFileSync} from 'node:fs';
 import {parseJobInput} from './job-input.mjs';
 import {loadJobInputs} from './battery/ingest.mjs';
-import {createExtractor} from './battery/extract.mjs';
+import {createExtractor, createExplainer} from './battery/extract.mjs';
 import {verify} from './battery/verify.mjs';
 import {checkModuleTests, checkCellTests} from './battery/tests.mjs';
 import {screenModules, group} from './battery/group.mjs';
@@ -32,6 +32,9 @@ export function connectedSteps({storeDir, testerPublicKeyPath} = defaultConfig()
    const grouped = group(modules.valid, cells.valid, events, warnings, undefined, screened);
    return {new_batteries: grouped.new_batteries, held_back: grouped.held_back, rejected_tests: [...modules.rejected, ...cells.rejected]};
   },
+  // ({new_batteries, held_back, events, warnings}, {deadline}) -> {ess, modules, cells} or null.
+  // The model explains the grouping in plain words. Optional: null when the model fails or time is short.
+  explain: async (grouping, {deadline} = {}) => createExplainer()(grouping, {deadline}),
  };
 }
 
@@ -49,12 +52,16 @@ export function createDraftBuilder(steps = {}, config) {
   const extracted = await step('extract', documents, {deadline});
   const {events, rejected, warnings} = await step('verify', documents, extracted);
   const {new_batteries, held_back, rejected_tests} = await step('group', {moduleTests, cellTests, events, warnings, packs: job.packs});
+  // Not through step(): a late or failed explanation must not stop the paid draft.
+  if (journal) writeFileSync(journal, JSON.stringify({phase: 'explain'}), {mode: 0o600});
+  const explanation = await Promise.resolve(s.explain({new_batteries, held_back, events, warnings}, {deadline})).catch(() => null);
   const draft = {
    packs: job.packs,
    documents: documents.map(({doc_id, pack_id, kind, sha256, anchor_tx}) => ({doc_id, pack_id, kind, sha256, anchor_tx: anchor_tx ?? null})),
    test_files: {module_tests: job.module_tests, cell_tests: job.cell_tests},
    events, rejected, warnings, rejected_tests,
    new_batteries, held_back,
+   explanation: explanation ?? null,
   };
   // The returned text is what gets hashed for Masumi, so build it in a fixed field order.
   return JSON.stringify(draft, null, 2);

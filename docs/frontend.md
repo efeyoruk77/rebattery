@@ -76,6 +76,7 @@ The Draft format is defined in [team-plan.md](team-plan.md#shared-data-formats).
 | `rejected_tests` | Test files that failed their signature check |
 | `new_batteries` | ESS units: `battery_id`, `cell_model`, `chemistry`, `rules`, `cells`, `donor_packs`, `health` (`soh_pct`, `usable_capacity_ah`, …), `second_life_facility` |
 | `held_back` | Modules not taken apart and cells not used: `{ id, level: "module" or "cell", reason }` |
+| `explanation` | The model's plain-language explanation of the grouping, or `null` (model failed, too close to the deadline, or the demo draft): `{ ess: { "ESS-1": text }, modules: { "B-M1": text }, cells: [{ cell_ids, text }] }`. Code keeps only IDs that are in the draft. Shown as grey "AI explanation" boxes on the ESS and Held back pages. |
 
 To get a new demo draft after the battery code or demo files change: `node examples/demo-job.mjs`.
 

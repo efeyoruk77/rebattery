@@ -4,7 +4,8 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createExtractor, parseModelJson, canonicalId } from './extract.mjs';
+import { createExtractor, createExplainer, explainInput, parseModelJson, canonicalId } from './extract.mjs';
+import { readFileSync } from 'node:fs';
 import { screenModules, group } from './group.mjs';
 import { ingest, readManifestFiles } from './ingest.mjs';
 import { verify } from './verify.mjs';
@@ -132,4 +133,39 @@ test('sends each pack separately with only its own documents', async () => {
   const seen = [];
   await extractor(async (input) => { seen.push(JSON.parse(input).documents.map((d) => d.pack_id)); return reply([]); }, { attempts: 1 }).extractAll(all);
   assert.deepEqual(seen.map((packs) => [...new Set(packs)]), [['A'], ['B'], ['C']]);
+});
+
+// ---- grouping explanation ----
+const demoDraft = JSON.parse(readFileSync(fileURLToPath(new URL('../examples/demo-draft.json', import.meta.url)), 'utf8'));
+const grouping = { new_batteries: demoDraft.new_batteries, held_back: demoDraft.held_back, events: demoDraft.events, warnings: demoDraft.warnings };
+const explainer = (ask, over = {}) => createExplainer({ ask, journalDir, retryDelayMs: 0, ...over });
+const heldModule = demoDraft.held_back.find((h) => h.level === 'module').id;
+const heldCell = demoDraft.held_back.find((h) => h.level === 'cell').id;
+
+test('the explanation input fits the agent limit and lists cell counts, not 240 cell records', () => {
+  const input = JSON.parse(explainInput(grouping));
+  assert.equal(input.new_batteries[0].cell_count, 48);
+  assert.equal('cells' in input.new_batteries[0], false);
+  assert.ok(JSON.stringify(input).length < 15_000);
+  assert.ok(input.events.every((e) => !('source' in e) && 'quote' in e));
+});
+
+test('keeps only explanations of ESS units, modules, and cells that are in the draft', async () => {
+  const reply = JSON.stringify({
+    ess: { 'ESS-1': 'ESS-1 has 48 cells.', 'ESS-99': 'invented' },
+    modules: { [heldModule]: 'Not taken apart.', 'Z-M1': 'invented' },
+    cells: [{ cell_ids: [heldCell, 'Z-M1-C01'], text: 'Left over.' }, { cell_ids: ['Z-M1-C02'], text: 'invented' }],
+  });
+  const out = await explainer(async () => '```json\n' + reply + '\n```')(grouping);
+  assert.deepEqual(out, { ess: { 'ESS-1': 'ESS-1 has 48 cells.' }, modules: { [heldModule]: 'Not taken apart.' }, cells: [{ cell_ids: [heldCell], text: 'Left over.' }] });
+});
+
+test('the explanation never fails the draft: a broken reply, a hang, or a near deadline give null', async () => {
+  let calls = 0;
+  assert.equal(await explainer(async () => { calls++; return 'no json'; })(grouping), null);
+  assert.equal(calls, 2);
+  assert.equal(await explainer(() => new Promise(() => {}), { attempts: 1, timeoutMs: 50 })(grouping), null);
+  calls = 0;
+  assert.equal(await explainer(async () => { calls++; return '{}'; })(grouping, { deadline: Date.now() + 30_000 }), null);
+  assert.equal(calls, 0, 'no call with less than a minute left');
 });

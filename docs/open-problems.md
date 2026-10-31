@@ -19,7 +19,7 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 
 | # | Problem | Owner | Next step |
 |---|---|---|---|
-| 8 | **The grouping explanation still reads `modules`.** It should read the draft's `new_batteries` (ESS units) and `held_back` (with `level`). | Member 1 | Update the GROUPING EXPLANATION section of [agent/instructions.md](../agent/instructions.md). |
+| 8 | **The grouping explanation is connected but not yet tried with the real model.** Stage A asks the model to explain the grouping and stores it as the draft's `explanation`; the review screen shows it. If the model fails, the draft goes out with `explanation: null`. | Member 1 | Run one draft with the real model (Gemini quota or Z.ai) and check the text on the review screen. |
 
 ## Demo and presentation
 

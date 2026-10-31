@@ -14,11 +14,7 @@ export const extractDefaults = {
 
 // The model is told to reply with one JSON object. Accept code fences or stray text around it.
 export function parseModelJson(text) {
-  if (typeof text !== 'string') throw Error('Model reply is not text');
-  const start = text.indexOf('{');
-  const end = text.lastIndexOf('}');
-  if (start < 0 || end <= start) throw Error('Model reply has no JSON object');
-  const out = JSON.parse(text.slice(start, end + 1));
+  const out = parseObject(text);
   if (!Array.isArray(out.events)) throw Error('Model reply has no events list');
   return out;
 }
@@ -149,4 +145,73 @@ export function createExtractor(options = {}) {
   // extract(documents, { deadline }) -> events
   const extract = async (documents, options) => (await extractAll(documents, options)).events;
   return { extract, extractAll };
+}
+
+// ---- Grouping explanation: code decided the grouping, the model explains it in plain words. ----
+
+const INPUT_LIMIT = 15_000; // client.mjs accepts at most 16000 characters
+
+// The model gets each ESS with cell counts per donor pack instead of 48 cell records, and each event with its quote.
+// If that is still too long, only the events a held-back reason names are kept.
+export function explainInput({ new_batteries = [], held_back = [], events = [], warnings = [] }) {
+  const ess = new_batteries.map(({ cells = [], ...b }) => ({ ...b, cell_count: cells.length,
+    cells_per_donor_pack: cells.reduce((n, c) => (n[c.donor_pack] = (n[c.donor_pack] ?? 0) + 1, n), {}) }));
+  const slim = (list) => list.map(({ source, basis, ...e }) => ({ ...e, quote: source?.quote ?? null }));
+  const build = (evs) => JSON.stringify({ new_batteries: ess, held_back, events: slim(evs), warnings });
+  let input = build(events);
+  if (input.length > INPUT_LIMIT) {
+    const named = held_back.map((h) => h.reason ?? '').join(' ');
+    input = build(events.filter((e) => named.includes(e.event_id)));
+  }
+  return input.length > INPUT_LIMIT ? null : input;
+}
+
+// Keeps only text about ESS units, modules, and cells that really are in the draft, so the model cannot add or rename any.
+export function parseExplanation(text, { new_batteries = [], held_back = [] }) {
+  const out = parseObject(text);
+  const essIds = new Set(new_batteries.map((b) => b.battery_id));
+  const heldModules = new Set(held_back.filter((h) => h.level === 'module').map((h) => h.id));
+  const heldCells = new Set(held_back.filter((h) => h.level === 'cell').map((h) => h.id));
+  const clean = (t) => typeof t === 'string' && t.trim() ? t.trim().slice(0, 2000) : null;
+  const pick = (obj, ids) => Object.fromEntries(Object.entries(obj && typeof obj === 'object' ? obj : {})
+    .filter(([id, t]) => ids.has(id) && clean(t)).map(([id, t]) => [id, clean(t)]));
+  const cells = (Array.isArray(out.cells) ? out.cells : []).map((g) => ({
+    cell_ids: canonicalIds(Array.isArray(g?.cell_ids) ? g.cell_ids : []).filter((id) => heldCells.has(id)), text: clean(g?.text),
+  })).filter((g) => g.cell_ids.length && g.text);
+  const result = { ess: pick(out.ess, essIds), modules: pick(out.modules, heldModules), cells };
+  if (!Object.keys(result.ess).length && !Object.keys(result.modules).length && !cells.length) throw Error('Explanation names no ESS, module, or cell of the draft');
+  return result;
+}
+
+function parseObject(text) {
+  if (typeof text !== 'string') throw Error('Model reply is not text');
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start < 0 || end <= start) throw Error('Model reply has no JSON object');
+  return JSON.parse(text.slice(start, end + 1));
+}
+
+// createExplainer({ ask, attempts, timeoutMs, retryDelayMs, journalDir, marginMs, log })
+// explain(grouping, { deadline }) -> { ess, modules, cells } or null. It never throws: the draft is still
+// delivered without an explanation, and the model is not called when less than marginMs is left before the deadline.
+export function createExplainer(options = {}) {
+  const o = { ...extractDefaults, attempts: 2, timeoutMs: 120_000, marginMs: 60_000, ask: defaultAsk, log: () => {}, ...options };
+  return async function explain(grouping, { deadline = o.deadline } = {}) {
+    if (!grouping?.new_batteries?.length && !grouping?.held_back?.length) return null;
+    const input = explainInput(grouping);
+    if (!input) { o.log('explanation skipped: input too long'); return null; }
+    mkdirSync(o.journalDir, { recursive: true, mode: 0o700 });
+    for (let attempt = 1; attempt <= o.attempts; attempt++) {
+      const left = deadline === undefined ? Infinity : deadline - Date.now() - o.marginMs;
+      if (left <= 0) { o.log('explanation skipped: too close to the deadline'); return null; }
+      try {
+        const reply = await withTimeout(o.ask(input, join(o.journalDir, 'explain-session.json')), Math.min(o.timeoutMs, left), 'Explanation call');
+        return parseExplanation(reply, grouping);
+      } catch (error) {
+        o.log(`explanation attempt ${attempt}: ${error.message}`);
+        if (attempt < o.attempts) await sleep(o.retryDelayMs);
+      }
+    }
+    return null;
+  };
 }

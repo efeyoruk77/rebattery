@@ -21,7 +21,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   // The demo draft also carries the bonus scene's tampered claim, so the review screen shows a rejection.
   const tampered = JSON.parse(readFileSync(join(demo, 'tampered-events.json'), 'utf8'));
   const extract = async docs => [...await sampleExtract(docs), ...tampered];
-  const build = createDraftBuilder({extract}, {storeDir: store, testerPublicKeyPath: demoTesterKeyPath});
+  const build = createDraftBuilder({extract, explain: async () => null}, {storeDir: store, testerPublicKeyPath: demoTesterKeyPath});
   const draft = await build(prepareDemoJob(store));
   writeFileSync(fileURLToPath(new URL('./demo-draft.json', import.meta.url)), draft + '\n');
   const d = JSON.parse(draft);

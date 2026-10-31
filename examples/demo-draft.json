@@ -1969,5 +1969,6 @@
       "level": "cell",
       "reason": "resistance 1.12 mΩ is 31.9% above the median 0.849 mΩ of AC-NMC-66P cells (band ±10%)"
     }
-  ]
+  ],
+  "explanation": null
 }
