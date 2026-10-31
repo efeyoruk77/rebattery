@@ -1,8 +1,11 @@
 // Builds the second demo set in battery/demo-mixed/: the three NMC packs of battery/demo (A, B, C) plus
-//   D: an LFP pack from another cell maker (LZ-LFP-100P), and
-//   E: an NMC pack from the same cell maker as A-C but a different cell model (AC-NMC-78P).
-// It copies A-C's signed test files, signs new module and cell tests for D and E with the demo tester key,
-// and writes sample-events.json (mock extraction) for all five packs. Documents for D and E are hand-written.
+//   D: an LFP pack from another cell maker (LZ-LFP-100P),
+//   E: an NMC pack from the same cell maker as A-C but a different cell model (AC-NMC-78P),
+//   F: an NCA pack with cylindrical cells (NZ-NCA-21700-5A),
+//   G: an LFP pack from the same maker as D but a different cell model (LZ-LFP-135P), and
+//   H: a pack with the same AC-NMC-66P cells as A-C, to show that one family does combine across packs.
+// It copies A-C's signed test files, signs new module and cell tests for D-H with the demo tester key,
+// and writes sample-events.json (mock extraction) for all packs. Documents for D-H are hand-written.
 // Run after battery/scripts/sign-demo-tests.mjs:  node battery/scripts/make-mixed-demo.mjs
 import { copyFileSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { createPrivateKey } from 'node:crypto';
@@ -25,6 +28,15 @@ const families = {
   // NMC, same maker as A-C but a bigger cell model: 78 Ah, 7 modules (SoH ~89%).
   E: { cell_model: 'AC-NMC-78P', chemistry: 'NMC', nominal: 78.0, cellRes: 0.72,
        modules: [[69.5, 1.21], [69.9, 1.19], [69.2, 1.23], [70.1, 1.18], [69.7, 1.20], [69.4, 1.22], [69.8, 1.19]] },
+  // NCA, cylindrical 21700-type cells: 5 Ah each, high resistance per cell (SoH ~88%).
+  F: { cell_model: 'NZ-NCA-21700-5A', chemistry: 'NCA', nominal: 5.0, cellRes: 18.5, cellNoise: [0.04, 0.6],
+       modules: [[4.41, 221], [4.38, 224], [4.43, 219], [4.36, 226], [4.40, 222], [4.42, 220], [4.37, 225], [4.39, 223]] },
+  // LFP, same maker as D but a bigger cell model: 135 Ah (SoH ~94%).
+  G: { cell_model: 'LZ-LFP-135P', chemistry: 'LFP', nominal: 135.0, cellRes: 0.31, cellNoise: [0.5, 0.015],
+       modules: [[127.4, 0.62], [126.9, 0.63], [127.8, 0.61], [126.5, 0.64], [127.1, 0.62], [127.6, 0.61], [126.8, 0.63], [127.3, 0.62]] },
+  // The same cell model as A-C, so its cells join the AC-NMC-66P units (SoH ~89%).
+  H: { cell_model: 'AC-NMC-66P', chemistry: 'NMC', nominal: 66.0, cellRes: 0.85,
+       modules: [[58.6, 1.43], [58.3, 1.45], [58.8, 1.42], [58.1, 1.46], [58.5, 1.44], [58.9, 1.41], [58.4, 1.44], [58.7, 1.43]] },
 };
 
 let seed = 20261031;
@@ -49,8 +61,8 @@ for (const [pack, fam] of Object.entries(families)) {
     });
     const cells = Array.from({ length: CELLS_PER_MODULE }, (_, c) => ({
       cell_id: `${module_id}-C${String(c + 1).padStart(2, '0')}`,
-      capacity_ah: r(capacity + noise(0.4), 2),
-      internal_resistance_mohm: r(fam.cellRes + noise(0.02), 3),
+      capacity_ah: r(capacity + noise(fam.cellNoise?.[0] ?? 0.4), 2),
+      internal_resistance_mohm: r(fam.cellRes + noise(fam.cellNoise?.[1] ?? 0.02), 3),
     }));
     write(`${mixed}cell-tests/${module_id}.json`, {
       module_id, cell_model: fam.cell_model, chemistry: fam.chemistry, nominal_capacity_ah: fam.nominal, tested_on: '2026-10-29', facility, cells,
@@ -76,8 +88,17 @@ const extra = [
   ev('E-e1', 'production', '2021-09-09', { manufacturer: 'Altmark Cells GmbH', chemistry: 'NMC', cell_model: 'AC-NMC-78P' }, src('packE-label', 10, 'Production date: 2021-09-09')),
   ev('E-e2', 'first_registration', '2021-11-15', {}, src('packE-registration', 8, 'Date of first registration: 2021-11-15')),
   ev('E-e3', 'soh_measurement', '2023-08-21', { soh_pct: 89, chemistry: 'NMC' }, src('packE-health-2023', 9, 'Measured state of health: 89 %')),
+  ev('F-e1', 'production', '2020-11-23', { manufacturer: 'Nordzell Energie AG', chemistry: 'NCA', cell_model: 'NZ-NCA-21700-5A' }, src('packF-label', 10, 'Production date: 2020-11-23')),
+  ev('F-e2', 'first_registration', '2021-01-20', {}, src('packF-registration', 8, 'Date of first registration: 2021-01-20')),
+  ev('F-e3', 'soh_measurement', '2024-06-05', { soh_pct: 88, chemistry: 'NCA' }, src('packF-health-2024', 9, 'Measured state of health: 88 %')),
+  ev('G-e1', 'production', '2022-02-14', { manufacturer: 'Lithosa Zellwerk GmbH', chemistry: 'LFP', cell_model: 'LZ-LFP-135P' }, src('packG-label', 10, 'Production date: 2022-02-14')),
+  ev('G-e2', 'first_registration', '2022-03-30', {}, src('packG-registration', 8, 'Date of first registration: 2022-03-30')),
+  ev('G-e3', 'soh_measurement', '2025-01-15', { soh_pct: 95, chemistry: 'LFP' }, src('packG-health-2025', 9, 'Measured state of health: 95 %')),
+  ev('H-e1', 'production', '2020-08-05', { manufacturer: 'Altmark Cells GmbH', chemistry: 'NMC', cell_model: 'AC-NMC-66P' }, src('packH-label', 10, 'Production date: 2020-08-05')),
+  ev('H-e2', 'first_registration', '2020-10-01', {}, src('packH-registration', 8, 'Date of first registration: 2020-10-01')),
+  ev('H-e3', 'soh_measurement', '2023-05-10', { soh_pct: 90, chemistry: 'NMC' }, src('packH-health-2023', 9, 'Measured state of health: 90 %')),
 ];
 const base = JSON.parse(readFileSync(`${demo}sample-events.json`, 'utf8'));
 writeFileSync(`${mixed}sample-events.json`, `${JSON.stringify([...base, ...extra], null, 2)}\n`);
 copyFileSync(`${demo}tampered-events.json`, `${mixed}tampered-events.json`);
-console.log(`demo-mixed: copied A-C test files, signed ${signed} module tests and ${signed} cell test batches for D and E, wrote ${base.length + extra.length} sample events.`);
+console.log(`demo-mixed: copied A-C test files, signed ${signed} module tests and ${signed} cell test batches for D-H, wrote ${base.length + extra.length} sample events.`);

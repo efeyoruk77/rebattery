@@ -1,0 +1,10 @@
+{
+  "module_id": "G-M4",
+  "cell_model": "LZ-LFP-135P",
+  "chemistry": "LFP",
+  "capacity_ah": 126.5,
+  "nominal_capacity_ah": 135,
+  "internal_resistance_mohm": 0.64,
+  "tested_on": "2026-10-28",
+  "signature": "IkvbnxtaHO143mzXaBaaNZKfxwlBvPNjUzlp6SbIDT2r9hYTeRjZEkpqGvBOlIwyuXW7N9SmWcc3T+MdxXxkAQ=="
+}

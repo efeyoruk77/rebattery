@@ -1,0 +1,8 @@
+Vehicle registration certificate, part I (excerpt)
+DEMO DOCUMENT - all data invented
+
+Registration number: DO-DE 7007
+Holder: Beispiel Logistik GmbH, Industriestrasse 4, 44147 Dortmund
+Vehicle identification number: DEMO0CX55G0000007
+Make and model: Voltaro CX-55 Van
+Date of first registration: 2022-03-30

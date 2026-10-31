@@ -346,5 +346,188 @@
       "quote": "Measured state of health: 89 %"
     },
     "basis": []
+  },
+  {
+    "event_id": "F-e1",
+    "pack_id": "F",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "production",
+    "date": "2020-11-23",
+    "fields": {
+      "manufacturer": "Nordzell Energie AG",
+      "chemistry": "NCA",
+      "cell_model": "NZ-NCA-21700-5A"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packF-label",
+      "sha256": "a570c47b60d4940416b50515cc5d95ae76aeb77027675f3d2c0996a2756702b9",
+      "page": 1,
+      "line": 10,
+      "quote": "Production date: 2020-11-23"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "F-e2",
+    "pack_id": "F",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "first_registration",
+    "date": "2021-01-20",
+    "fields": {},
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packF-registration",
+      "sha256": "34617510a2d9330cb27fd8162b9e44df3ad3be2e7c1b36f1fb3fb82b11b48ad4",
+      "page": 1,
+      "line": 8,
+      "quote": "Date of first registration: 2021-01-20"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "F-e3",
+    "pack_id": "F",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "soh_measurement",
+    "date": "2024-06-05",
+    "fields": {
+      "soh_pct": 88,
+      "chemistry": "NCA"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packF-health-2024",
+      "sha256": "6af4ff0200a217cfa7c0c96115bb93069e92c7315460be1b107f19044f988115",
+      "page": 1,
+      "line": 9,
+      "quote": "Measured state of health: 88 %"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "G-e1",
+    "pack_id": "G",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "production",
+    "date": "2022-02-14",
+    "fields": {
+      "manufacturer": "Lithosa Zellwerk GmbH",
+      "chemistry": "LFP",
+      "cell_model": "LZ-LFP-135P"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packG-label",
+      "sha256": "5f073aebc59b25173594eceea79bbf8fcbd8c197d2c6fb779e015eab29b2358c",
+      "page": 1,
+      "line": 10,
+      "quote": "Production date: 2022-02-14"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "G-e2",
+    "pack_id": "G",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "first_registration",
+    "date": "2022-03-30",
+    "fields": {},
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packG-registration",
+      "sha256": "1da240936c107677476a30d2707fa1d019b1af5be40b8e310c0e848d62dd1d6f",
+      "page": 1,
+      "line": 8,
+      "quote": "Date of first registration: 2022-03-30"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "G-e3",
+    "pack_id": "G",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "soh_measurement",
+    "date": "2025-01-15",
+    "fields": {
+      "soh_pct": 95,
+      "chemistry": "LFP"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packG-health-2025",
+      "sha256": "49561361eaaa8ced7b96f2c55cb79cbbc3320057178ee4ae2be2ff52bb7be86f",
+      "page": 1,
+      "line": 9,
+      "quote": "Measured state of health: 95 %"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "H-e1",
+    "pack_id": "H",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "production",
+    "date": "2020-08-05",
+    "fields": {
+      "manufacturer": "Altmark Cells GmbH",
+      "chemistry": "NMC",
+      "cell_model": "AC-NMC-66P"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packH-label",
+      "sha256": "705ea4042da011f07eb2be3c98d25009b3119df02eb725bf60b867794c68d936",
+      "page": 1,
+      "line": 10,
+      "quote": "Production date: 2020-08-05"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "H-e2",
+    "pack_id": "H",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "first_registration",
+    "date": "2020-10-01",
+    "fields": {},
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packH-registration",
+      "sha256": "cd43c2ae6e954bec05c02f2f901581a08a99c2ff545e82383bde4d331ea0463c",
+      "page": 1,
+      "line": 8,
+      "quote": "Date of first registration: 2020-10-01"
+    },
+    "basis": []
+  },
+  {
+    "event_id": "H-e3",
+    "pack_id": "H",
+    "module_ids": [],
+    "cell_ids": [],
+    "type": "soh_measurement",
+    "date": "2023-05-10",
+    "fields": {
+      "soh_pct": 90,
+      "chemistry": "NMC"
+    },
+    "confidence": "documented",
+    "source": {
+      "doc_id": "packH-health-2023",
+      "sha256": "84b320d439e220d363589dab5a9d409748c2be18fe797c4fa5f611a1e59624c3",
+      "page": 1,
+      "line": 9,
+      "quote": "Measured state of health: 90 %"
+    },
+    "basis": []
   }
 ]

@@ -1,0 +1,76 @@
+{
+  "module_id": "G-M8",
+  "cell_model": "LZ-LFP-135P",
+  "chemistry": "LFP",
+  "nominal_capacity_ah": 135,
+  "tested_on": "2026-10-29",
+  "facility": {
+    "id": "DSL-AUG-01",
+    "name": "Demo Second Life GmbH",
+    "site": "Plant 1, Augsburg, DE",
+    "note": "invented for the demo"
+  },
+  "cells": [
+    {
+      "cell_id": "G-M8-C01",
+      "capacity_ah": 127.13,
+      "internal_resistance_mohm": 0.304
+    },
+    {
+      "cell_id": "G-M8-C02",
+      "capacity_ah": 127.49,
+      "internal_resistance_mohm": 0.298
+    },
+    {
+      "cell_id": "G-M8-C03",
+      "capacity_ah": 127.64,
+      "internal_resistance_mohm": 0.306
+    },
+    {
+      "cell_id": "G-M8-C04",
+      "capacity_ah": 127.08,
+      "internal_resistance_mohm": 0.313
+    },
+    {
+      "cell_id": "G-M8-C05",
+      "capacity_ah": 127.27,
+      "internal_resistance_mohm": 0.312
+    },
+    {
+      "cell_id": "G-M8-C06",
+      "capacity_ah": 127.73,
+      "internal_resistance_mohm": 0.308
+    },
+    {
+      "cell_id": "G-M8-C07",
+      "capacity_ah": 127.78,
+      "internal_resistance_mohm": 0.297
+    },
+    {
+      "cell_id": "G-M8-C08",
+      "capacity_ah": 127.38,
+      "internal_resistance_mohm": 0.315
+    },
+    {
+      "cell_id": "G-M8-C09",
+      "capacity_ah": 126.96,
+      "internal_resistance_mohm": 0.313
+    },
+    {
+      "cell_id": "G-M8-C10",
+      "capacity_ah": 127.57,
+      "internal_resistance_mohm": 0.313
+    },
+    {
+      "cell_id": "G-M8-C11",
+      "capacity_ah": 126.85,
+      "internal_resistance_mohm": 0.322
+    },
+    {
+      "cell_id": "G-M8-C12",
+      "capacity_ah": 127.28,
+      "internal_resistance_mohm": 0.308
+    }
+  ],
+  "signature": "L2iI4Pdp/WUqlJNGq39+OPAM7zTyFSmajRGo1Rrs6NEp9RQJaW5QucWgCMIhPPl7FCHHSAqb+PECqdrEpYsdDw=="
+}

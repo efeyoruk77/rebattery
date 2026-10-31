@@ -8,12 +8,12 @@
 :root{--bg:#fbfbfa;--panel:#fff;--soft:#f3f3f1;--ink:#0b0b0c;--muted:#6f6f78;--line:#e6e6e3;--accent:#0b0b0c;--accent-ink:#fff;
  --good:#16a34a;--warn:#b45309;--warn-bg:#fff7ed;--bad:#b91c1c;--bad-bg:#fef2f2;--chip:#f1f1ef;
  --signed:#15803d;--documented:#1d4ed8;--estimated:#7e22ce;
- --pa:#6366f1;--pb:#f97316;--pc:#14b8a6;--pd:#db2777;--pe:#ca8a04;--blob1:#c7d2fe;--blob2:#fed7aa;--blob3:#99f6e4;
+ --pa:#6366f1;--pb:#f97316;--pc:#14b8a6;--pd:#db2777;--pe:#ca8a04;--pf:#0ea5e9;--pg:#65a30d;--ph:#7c3aed;--blob1:#c7d2fe;--blob2:#fed7aa;--blob3:#99f6e4;
  --shadow:0 1px 2px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.08)}
 @media (prefers-color-scheme:dark){:root{--bg:#08080a;--panel:#111114;--soft:#18181c;--ink:#f5f5f4;--muted:#a1a1aa;--line:#26262b;--accent:#f5f5f4;--accent-ink:#08080a;
  --good:#4ade80;--warn:#fbbf24;--warn-bg:#2a1f0a;--bad:#f87171;--bad-bg:#2a1010;--chip:#1c1c21;
  --signed:#4ade80;--documented:#93c5fd;--estimated:#d8b4fe;
- --pa:#818cf8;--pb:#fb923c;--pc:#2dd4bf;--pd:#f472b6;--pe:#facc15;--blob1:#312e81;--blob2:#7c2d12;--blob3:#134e4a;
+ --pa:#818cf8;--pb:#fb923c;--pc:#2dd4bf;--pd:#f472b6;--pe:#facc15;--pf:#38bdf8;--pg:#a3e635;--ph:#a78bfa;--blob1:#312e81;--blob2:#7c2d12;--blob3:#134e4a;
  --shadow:0 1px 2px rgba(0,0,0,.5),0 12px 32px rgba(0,0,0,.5)}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -296,6 +296,7 @@ kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;paddi
 .fam-head:first-child{margin-top:0}
 .fam-head h2{font-size:18px;margin-right:4px}
 .fam-line{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:-10px 0 22px;font-size:13px;color:var(--muted)}
+.matrix-wrap{overflow-x:auto;padding-bottom:4px}
 .matrix{border-collapse:separate;border-spacing:6px;font-size:13px;max-width:100%}
 .matrix th{font-weight:600;text-align:left;padding:6px 8px;color:var(--muted);font-size:12px;vertical-align:middle}
 .matrix td{min-width:64px;height:48px;text-align:center;border-radius:12px;font-weight:700;font-size:18px;cursor:default;transition:transform .2s}
@@ -361,7 +362,7 @@ const reasonItems = reason => String(reason).split(/;(?!\s*an ESS needs)\s*/).fi
  .replace(/^open warning (\w+)/, (_, rule) => `open warning: ${ruleNames[rule] || label(rule)}`)
  .replace(/^quote not found at (\S+) page (\d+) line (\d+)/, 'the quoted text is not in $1 at page $2, line $3'))));
 const packOf = id => String(id).split('-')[0];
-const packColor = p => ({A: 'var(--pa)', B: 'var(--pb)', C: 'var(--pc)', D: 'var(--pd)', E: 'var(--pe)'})[p] || 'var(--muted)';
+const packColor = p => ({A: 'var(--pa)', B: 'var(--pb)', C: 'var(--pc)', D: 'var(--pd)', E: 'var(--pe)', F: 'var(--pf)', G: 'var(--pg)', H: 'var(--ph)'})[p] || 'var(--muted)';
 // Many items share one reason; group them. ["B-M3-C05", "B-M3-C08"] -> [["B-M3", ["5", "8"]]]
 const groupBy = (list, key) => { const g = new Map(); for (const x of list) { const k = key(x); (g.get(k) || g.set(k, []).get(k)).push(x); } return [...g]; };
 // Chemistry facts shown next to each cell family: nominal and full-charge cell voltage. Sources: docs/battery-info.md.
@@ -558,9 +559,9 @@ function overview() {
     <div class="health-num"><b>${esc(avg.toFixed(1))}%</b><span>average second-life health${sohs.length ? ` · range ${esc(Math.min(...sohs))}–${esc(Math.max(...sohs))}%` : ''}</span></div>
    </div>
    ${ess.length ? `<div>
-    <div class="axis"><span>Health per ESS</span><span>axis 80–100%</span></div>
+    <div class="axis"><span>Health per ESS${ess.length > 8 ? ' (unit number)' : ''}</span><span>axis 80–100%</span></div>
     <div class="bars">${ess.map((b, i) => `<a href="#/ess/${encodeURIComponent(b.battery_id)}" data-tip="${esc(b.battery_id)}: ${esc(b.health?.soh_pct)}% · ${esc(b.cells.length)} cells"><i style="height:${bar(Number(b.health?.soh_pct) || lo).toFixed(1)}%;animation-delay:${reduceMotion ? 0 : i * 90}ms"></i></a>`).join('')}</div>
-    <div class="bar-labels">${ess.map(b => `<span>${esc(b.battery_id)}</span>`).join('')}</div>
+    <div class="bar-labels">${ess.map(b => `<span>${esc(ess.length > 8 ? String(b.battery_id).replace(/^ESS-/, '') : b.battery_id)}</span>`).join('')}</div>
    </div>` : ''}
   </div>
  </section>
@@ -638,11 +639,11 @@ function essGallery() {
  const mixedDemo = drafts.find(x => x.id === 'demo-mixed');
  const pairs = [];
  for (let i = 0; i < F.length; i++) for (let j = i + 1; j < F.length; j++) pairs.push([F[i], F[j]]);
- const matrix = F.length < 2 ? '' : `<table class="matrix" aria-label="Which cell families may share an ESS"><tr><th></th>${F.map(f => `<th>${esc(famLabel(f))}</th>`).join('')}</tr>
+ const matrix = F.length < 2 ? '' : `<div class="matrix-wrap"><table class="matrix" aria-label="Which cell families may share an ESS"><tr><th></th>${F.map(f => `<th>${esc(famLabel(f))}</th>`).join('')}</tr>
    ${F.map(a => `<tr><th>${esc(famLabel(a))}</th>${F.map(b => a === b
     ? `<td class="ok" data-tip="Same cell model and chemistry: these cells may share an ESS">✓</td>`
-    : `<td class="no" data-tip="${esc(incompatible(a, b))}">✗</td>`).join('')}</tr>`).join('')}</table>
-   <ul class="why">${pairs.map(([a, b]) => `<li><b>${esc(famLabel(a))}</b> and <b>${esc(famLabel(b))}</b>: ${esc(incompatible(a, b))}</li>`).join('')}</ul>`;
+    : `<td class="no" data-tip="${esc(incompatible(a, b))}">✗</td>`).join('')}</tr>`).join('')}</table></div>
+   ${pairs.length > 3 ? `<details class="faq" style="margin-top:14px"><summary>Why each pair is kept apart (${pairs.length} pairs)</summary>` : ''}<ul class="why">${pairs.map(([a, b]) => `<li><b>${esc(famLabel(a))}</b> and <b>${esc(famLabel(b))}</b>: ${esc(incompatible(a, b))}</li>`).join('')}</ul>${pairs.length > 3 ? '</details>' : ''}`;
  return `
  <h1>ESS passports</h1>
  <p class="lead">Each new energy storage unit gets a passport. Its QR code shows the unit's second-life health, the facility that made it, and links back to every donor pack. The coloured bar shows which packs its cells came from.</p>

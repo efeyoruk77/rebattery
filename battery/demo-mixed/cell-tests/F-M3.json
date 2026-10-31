@@ -1,0 +1,76 @@
+{
+  "module_id": "F-M3",
+  "cell_model": "NZ-NCA-21700-5A",
+  "chemistry": "NCA",
+  "nominal_capacity_ah": 5,
+  "tested_on": "2026-10-29",
+  "facility": {
+    "id": "DSL-AUG-01",
+    "name": "Demo Second Life GmbH",
+    "site": "Plant 1, Augsburg, DE",
+    "note": "invented for the demo"
+  },
+  "cells": [
+    {
+      "cell_id": "F-M3-C01",
+      "capacity_ah": 4.43,
+      "internal_resistance_mohm": 18.133
+    },
+    {
+      "cell_id": "F-M3-C02",
+      "capacity_ah": 4.46,
+      "internal_resistance_mohm": 18.072
+    },
+    {
+      "cell_id": "F-M3-C03",
+      "capacity_ah": 4.47,
+      "internal_resistance_mohm": 17.952
+    },
+    {
+      "cell_id": "F-M3-C04",
+      "capacity_ah": 4.39,
+      "internal_resistance_mohm": 18.323
+    },
+    {
+      "cell_id": "F-M3-C05",
+      "capacity_ah": 4.47,
+      "internal_resistance_mohm": 17.918
+    },
+    {
+      "cell_id": "F-M3-C06",
+      "capacity_ah": 4.4,
+      "internal_resistance_mohm": 18.54
+    },
+    {
+      "cell_id": "F-M3-C07",
+      "capacity_ah": 4.39,
+      "internal_resistance_mohm": 18.037
+    },
+    {
+      "cell_id": "F-M3-C08",
+      "capacity_ah": 4.43,
+      "internal_resistance_mohm": 18.524
+    },
+    {
+      "cell_id": "F-M3-C09",
+      "capacity_ah": 4.4,
+      "internal_resistance_mohm": 17.908
+    },
+    {
+      "cell_id": "F-M3-C10",
+      "capacity_ah": 4.44,
+      "internal_resistance_mohm": 18.003
+    },
+    {
+      "cell_id": "F-M3-C11",
+      "capacity_ah": 4.45,
+      "internal_resistance_mohm": 18.246
+    },
+    {
+      "cell_id": "F-M3-C12",
+      "capacity_ah": 4.46,
+      "internal_resistance_mohm": 18.382
+    }
+  ],
+  "signature": "fSWDqaLB3neWnMGg1Jog1CfblO9q/AoGQnD+otNWC6GPHQ3V5xz55+mRcyL8sNsV05G0UsMO2uwYnYAIv6FBDQ=="
+}

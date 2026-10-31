@@ -1,0 +1,13 @@
+Voltaro Dealer Battery Health Report
+DEMO DOCUMENT - all data invented
+
+Report date: 2023-05-10
+VIN: DEMO0VX60H0000008
+Odometer: 59,100 km
+
+Battery chemistry: nickel manganese cobalt (NMC)
+Measured state of health: 90 %
+Module voltage spread at rest: 16 mV
+Result: battery within specification
+
+Technician: T. Example, Autohaus Beispiel GmbH

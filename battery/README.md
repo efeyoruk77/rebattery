@@ -39,7 +39,7 @@ All band and threshold values are in [config.mjs](config.mjs).
 
 ## Demo data
 
-A second set, `battery/demo-mixed/`, reuses packs A–C and adds pack D (LFP, `LZ-LFP-100P`, another cell maker) and pack E (NMC, `AC-NMC-78P`: same maker as A–C, different cell model). Grouping keeps the three cell families apart. Build it with `node battery/scripts/make-mixed-demo.mjs`, then `node examples/demo-mixed-job.mjs` writes `examples/demo-mixed-draft.json`. Facts about chemistries and German EV batteries: [docs/battery-info.md](../docs/battery-info.md).
+A second set, `battery/demo-mixed/`, reuses packs A–C and adds D (LFP `LZ-LFP-100P`), E (NMC `AC-NMC-78P`, same maker as A–C, other model), F (NCA `NZ-NCA-21700-5A`, cylindrical), G (LFP `LZ-LFP-135P`, same maker as D, other model) and H (the same `AC-NMC-66P` cells as A–C). Grouping keeps the five cell families apart and merges H into the A–C units; `assertOneFamily` in [group.mjs](group.mjs) throws if a unit would ever mix families (tests: [family.test.mjs](family.test.mjs)). Build it with `node battery/scripts/make-mixed-demo.mjs`, then `node examples/demo-mixed-job.mjs` writes `examples/demo-mixed-draft.json`. Facts about chemistries and German EV batteries: [docs/battery-info.md](../docs/battery-info.md).
 
 All data is invented, including the facility (`Demo Second Life GmbH`). Documents are text files; the label "photos" are reviewed text transcripts (no OCR yet).
 [demo/sample-events.json](demo/sample-events.json) is mock extraction output until Member 1's `extract()` is ready.

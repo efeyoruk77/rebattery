@@ -1,0 +1,10 @@
+{
+  "module_id": "F-M6",
+  "cell_model": "NZ-NCA-21700-5A",
+  "chemistry": "NCA",
+  "capacity_ah": 4.42,
+  "nominal_capacity_ah": 5,
+  "internal_resistance_mohm": 220,
+  "tested_on": "2026-10-28",
+  "signature": "hFpD3BtuT017ICK/a0ALlDGGB1bjzLVqkxv5baE1D06lUCrIBLGoAGays33yP+PmWxj/3qxh4vCkTNSbAFD8DQ=="
+}

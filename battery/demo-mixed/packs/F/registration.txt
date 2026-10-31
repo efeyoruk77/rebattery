@@ -1,0 +1,8 @@
+Vehicle registration certificate, part I (excerpt)
+DEMO DOCUMENT - all data invented
+
+Registration number: K-DE 6006
+Holder: Lukas Beispiel, Musterweg 2, 50667 Koeln
+Vehicle identification number: DEMO0RX90F0000006
+Make and model: Voltaro RX-90 Sport
+Date of first registration: 2021-01-20

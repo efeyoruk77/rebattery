@@ -1,0 +1,10 @@
+{
+  "module_id": "H-M3",
+  "cell_model": "AC-NMC-66P",
+  "chemistry": "NMC",
+  "capacity_ah": 58.8,
+  "nominal_capacity_ah": 66,
+  "internal_resistance_mohm": 1.42,
+  "tested_on": "2026-10-28",
+  "signature": "/XmhK1USYwhZOybJ/TEMW/D8sTyGe3Cqz3ASpu0MzBS34u4e/70vJBAMsS8WQO9MdcGPaRRPl4gqwLKjtmjSAQ=="
+}

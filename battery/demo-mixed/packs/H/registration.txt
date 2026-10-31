@@ -1,0 +1,8 @@
+Vehicle registration certificate, part I (excerpt)
+DEMO DOCUMENT - all data invented
+
+Registration number: DD-DE 8008
+Holder: Sara Beispiel, Beispielplatz 8, 01067 Dresden
+Vehicle identification number: DEMO0VX60H0000008
+Make and model: Voltaro VX-60
+Date of first registration: 2020-10-01

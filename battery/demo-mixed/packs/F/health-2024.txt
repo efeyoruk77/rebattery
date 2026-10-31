@@ -1,0 +1,13 @@
+Voltaro Dealer Battery Health Report
+DEMO DOCUMENT - all data invented
+
+Report date: 2024-06-05
+VIN: DEMO0RX90F0000006
+Odometer: 88,900 km
+
+Battery chemistry: nickel cobalt aluminium (NCA)
+Measured state of health: 88 %
+Cell voltage spread at rest: 14 mV
+Result: battery within specification
+
+Technician: M. Example, Autohaus Beispiel GmbH

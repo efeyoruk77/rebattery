@@ -1,0 +1,11 @@
+Transcript of battery label photo (packG-label.jpg), typed and checked by hand.
+The photo is legible; OCR was not used for this demo.
+
+Manufacturer: Lithosa Zellwerk GmbH
+Model: CX-55 Van Pack
+Chemistry: LFP
+Cell type: LZ-LFP-135P (prismatic)
+Nominal capacity: 135.0 Ah / 42 kWh
+Modules: 8
+Production date: 2022-02-14
+Serial number: LZ-CX55-220214-0147

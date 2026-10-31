@@ -55,6 +55,19 @@ export function screenModules(moduleTests, events, warnings) {
 
 // ---- Step 2: cells ----
 
+// A cell family is one cell model of one chemistry. Cells of two families are never put into one ESS:
+// different chemistries have different voltage windows, and different models have different capacity,
+// resistance, format and ageing (see docs/battery-info.md). This is enforced twice: cells are grouped
+// family by family, and every finished unit is checked again before it leaves this module.
+export const cellFamily = (c) => (c.cell_model && c.chemistry ? `${c.cell_model}|${c.chemistry}` : null);
+export const sameFamily = (a, b) => cellFamily(a) !== null && cellFamily(a) === cellFamily(b);
+export function assertOneFamily(unit, label = 'ESS') {
+  const fams = new Set(unit.map(cellFamily));
+  if (fams.size !== 1 || fams.has(null)) {
+    throw new Error(`${label} would mix cell families [${[...fams].map((f) => f ?? 'unknown').join(', ')}]; cells of different chemistries or cell models are never combined`);
+  }
+}
+
 function fits(cells, rules, { ignoreResistance = false } = {}) {
   const cap = mean(cells.map((c) => c.capacity_ah));
   const res = mean(cells.map((c) => c.internal_resistance_mohm));
@@ -87,13 +100,15 @@ function essHealth(cells) {
 // Cells are sorted by capacity and filled into ESS units in that order, so each unit holds neighbouring cells.
 export function groupCells(cells, rules = defaults) {
   const families = new Map();
-  for (const c of [...cells].sort(byId('cell_id'))) {
-    const key = `${c.cell_model}|${c.chemistry}`;
-    families.set(key, [...(families.get(key) ?? []), c]);
-  }
   const new_batteries = [];
   const held_back = [];
   const hold = (c, reason) => held_back.push({ id: c.cell_id, level: 'cell', reason });
+  for (const c of [...cells].sort(byId('cell_id'))) {
+    const key = cellFamily(c);
+    // A cell whose model or chemistry is unknown belongs to no family and is never grouped.
+    if (!key) { hold(c, 'cell model or chemistry not recorded in the signed test; cannot be assigned to a cell family'); continue; }
+    families.set(key, [...(families.get(key) ?? []), c]);
+  }
 
   for (const key of [...families.keys()].sort()) {
     const family = families.get(key);
@@ -128,6 +143,7 @@ export function groupCells(cells, rules = defaults) {
       } else { flush(); current = [c]; }
       if (current.length === rules.cells_per_ess) {
         const unit = [...current].sort(byId('cell_id'));
+        assertOneFamily(unit, `ESS-${new_batteries.length + 1}`);
         new_batteries.push({
           battery_id: `ESS-${new_batteries.length + 1}`,
           cell_model: c.cell_model,
@@ -153,5 +169,11 @@ export function group(moduleTests, cells, events, warnings, rules = defaults, sc
   const heldCells = screened.held_cells ?? [];
   const named = new Set(heldCells.map((h) => h.id));
   const grouped = groupCells(cells.filter((c) => cleared.has(c.module_id) && !named.has(c.cell_id)), rules);
+  // Final check on what leaves this module: one cell family per ESS, and the family the unit claims is the one its cells have.
+  const byCellId = new Map(cells.map((c) => [c.cell_id, c]));
+  for (const b of grouped.new_batteries) {
+    const unitCells = b.cells.map((x) => byCellId.get(x.cell_id));
+    assertOneFamily([...unitCells, { cell_model: b.cell_model, chemistry: b.chemistry }], b.battery_id);
+  }
   return { new_batteries: grouped.new_batteries, held_back: [...screened.held_back, ...heldCells, ...grouped.held_back] };
 }

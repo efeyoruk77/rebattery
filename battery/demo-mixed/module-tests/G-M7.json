@@ -1,0 +1,10 @@
+{
+  "module_id": "G-M7",
+  "cell_model": "LZ-LFP-135P",
+  "chemistry": "LFP",
+  "capacity_ah": 126.8,
+  "nominal_capacity_ah": 135,
+  "internal_resistance_mohm": 0.63,
+  "tested_on": "2026-10-28",
+  "signature": "FzEFG763MlbMh2Nzac8crwrMw2UAsIUz+8xdxoGDIOYcMYTjURTphCVLSMZoO9b6yzOpOiNhGgjIrddtv8OUCQ=="
+}

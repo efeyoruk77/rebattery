@@ -1,0 +1,11 @@
+Transcript of battery label photo (packF-label.jpg), typed and checked by hand.
+The photo is legible; OCR was not used for this demo.
+
+Manufacturer: Nordzell Energie AG
+Model: RX-90 Sport Pack
+Chemistry: NCA
+Cell type: NZ-NCA-21700-5A (cylindrical)
+Nominal capacity: 5.0 Ah per cell / 90 kWh
+Modules: 8
+Production date: 2020-11-23
+Serial number: NZ-RX90-201123-0566
