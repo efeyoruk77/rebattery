@@ -37,7 +37,7 @@ npm run review
 
 Then open http://127.0.0.1:21952. Stop it with Ctrl+C. Use another port with `REVIEW_PORT=21960 npm run review` (PowerShell: `$env:REVIEW_PORT=21960; npm run review`).
 
-You need **no keys** for the review screen. It shows the demo draft from [examples/demo-draft.json](../examples/demo-draft.json): 3 donor packs, 12 events, 3 warnings, 1 rejected claim, 5 ESS units of 48 cells, and the held-back modules and cells.
+You need **no keys** for the review screen. It shows the demo draft from [examples/demo-draft.json](../examples/demo-draft.json): 3 donor packs, 11 events, 2 warnings, 1 rejected claim, 5 ESS units of 48 cells, the held-back modules and cells, and a recorded AI explanation of the grouping (the grey "AI explanation" boxes on the ESS and Held back pages; the data is `draft.explanation`).
 
 What differs between machines:
 

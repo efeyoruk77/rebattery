@@ -11,7 +11,7 @@ When you fix one, move it to **Solved** at the bottom with the commit hash, and 
 | 1 | **Sokosumi access is `PENDING`** for Coworker "EV Battery History Recovery" in the TUM Workspace (access request `01a18e65-a2f3-776c-a880-da1e2e340986`). | No task can run in the TUM Workspace until it is `GRANTED`. | Member 4 / Sandro (Masumi) | Asked Sandro directly and booked a call. Re-check with `coworkers connect` (returns the same request, creates nothing). |
 | 2 | **No paid run yet.** The payment service runs and the agent is registered (see Solved), but no paid task has gone through escrow. | The demo needs real TxHashes for escrow lock, result hash, and payout. | Member 4 | Run one paid task once Sokosumi access is granted (#1), then check the seller's net receipt. |
 | 3 | **Buyers cannot upload files remotely yet.** For the demo this is solved: `node upload.mjs [batchDir]` stores a batch in `.local/uploads` and prints the job input, which goes into the Sokosumi task description. | A buyer outside our machine still has no upload path. | Member 4 | After the demo flow works: Sokosumi's task files API (`POST /v1/tasks/{id}/files`). |
-| 5 | **First real on-chain write needs team approval**, and the metadata label is still a placeholder (`1984`). | Member 3 is waiting on both. | Whole team | Agree on the label, then approve one test write on Preprod. Member 3 is ready: a dry run of the full demo (1 anchor, 3 donor logs, 5 ESS logs, 5 passports) builds all 14 transactions for about 3.08 tADA, and the log wallet holds 5 tADA. |
+| 5 | **First real on-chain write needs team approval**, and the metadata label is still a placeholder (`1984`). | Member 3 is waiting on both. | Whole team | Decide two things, then Member 3 can write. **Proposal:** (a) keep label `1984` if it is not taken in the CIP-10 registry (https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/registry.json), otherwise pick an unlisted number; (b) approve one full demo write on Preprod. Member 3's dry run builds all 14 transactions (1 anchor, 3 donor logs, 5 ESS logs, 5 passports) for about 3.08 tADA; top the log wallet up from the [Masumi dispenser](https://dispenser.masumi.network) first, since 5 tADA leaves no room for a retry. |
 
 ## AI step (real model: Gemini `gemini-3.5-flash`)
 
@@ -19,14 +19,13 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 
 | # | Problem | Owner | Next step |
 |---|---|---|---|
-| 8 | **The grouping explanation is connected but not yet tried with the real model.** Stage A asks the model to explain the grouping and stores it as the draft's `explanation`; the review screen shows it. If the model fails, the draft goes out with `explanation: null`. | Member 1 | Run one draft with the real model (Gemini quota or Z.ai) and check the text on the review screen. |
 
 ## Demo and presentation
 
 | # | Problem | Owner | Next step |
 |---|---|---|---|
-| 10 | **No demo script, slides, rehearsal, or backup video yet.** Presentation rules (duration, whether the demo is live) are unknown. | Member 2 | Check the opening slides (`TBC26_Hackathon_Opening.pdf` in the Telegram Announcements topic) for the rules, then write the script. |
-| 12 | **Article 77 wording** on linking to several original batteries is not checked. | Member 2 | Check the exact text before putting it on a slide. |
+| 10 | **No demo script, slides, rehearsal, or backup video yet.** Presentation rules (duration, whether the demo is live) are unknown. | Member 2 | A first script is in [demo-script.md](demo-script.md) (timings for a 5-minute slot, who clicks what, the paid run starting ~45 min before, and the fallback if it is not ready). Still to do: check the presentation rules in the opening slides (`TBC26_Hackathon_Opening.pdf`, Telegram Announcements) and adjust the timings, then slides, rehearsal, backup video. |
+| 12 | **Article 77 wording** on linking to several original batteries is not checked. | Member 2 | Open the regulation in a browser: Regulation (EU) 2023/1542, https://eur-lex.europa.eu/eli/reg/2023/1542/oj. Read Article 77, paragraph 6 (passport of a repurposed or remanufactured battery and its link to the original battery or batteries), and the application date in Article 77(1). EUR-Lex blocks automated fetching, so this needs a person; quote the text exactly on the slide. |
 
 ## Smaller items
 
@@ -39,6 +38,7 @@ First real run on the demo documents: 89 s for 3 packs, 11 events, 10 verified. 
 
 ## Solved
 
+- #8: the grouping explanation was tried with the real model (Gemini `gemini-3.5-flash`, Oct 31): 34 s, one note for each of the 5 ESS units, the 3 held-back modules, and 3 cell groups covering all 12 held-back cells. Every number, rule, event ID, and quote was checked against the draft by script; nothing invented and no regrouping suggested. The checked output is recorded in `examples/demo-explanation.json` and is now in the demo draft, so the review screen shows the AI explanation boxes. Re-record with `node --env-file=.env examples/demo-job.mjs --explain`. Small wording idea: the A-M4 note quotes only the replacement (A-e4); quoting the 91% reading (A-e5) too would make the contradiction clearer.
 - #11: each ESS card on the review screen shows a QR code for its passport transaction (`https://preprod.cardanoscan.io/transaction/<passport tx>`) once the draft is signed. Unsigned drafts show a placeholder, and only Preprod transaction links get a code. Uses `qrcode` 1.5.4, pinned.
 - #4: Member 3's branch now uses the ESS format. It anchors every document and test file from `test_files`, writes one log and one passport per ESS with `health` and `second_life_facility`, and takes held-back modules and cells from the top-level `held_back` (`e1b63e9`, merged into main through PR #1). Nothing is on-chain until #5.
 - Masumi Payment Service 0.29.0 runs with its own fresh PostgreSQL database and wallets on Member 4's machine (no Docker). Selling wallet funded from the dispenser. Agent "EV Battery History Recovery" registered on Preprod: [tx 04dd6863…c8f2](https://preprod.cardanoscan.io/transaction/04dd6863747ada3997441e5b1d7fae6c18bee51d9b6b88d6736d8dcbd8d3c8f2), confirmed in block 5354711.
