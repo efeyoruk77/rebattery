@@ -1,0 +1,76 @@
+{
+  "module_id": "A-M6",
+  "cell_model": "AC-NMC-66P",
+  "chemistry": "NMC",
+  "nominal_capacity_ah": 66,
+  "tested_on": "2026-10-29",
+  "facility": {
+    "id": "DSL-AUG-01",
+    "name": "Demo Second Life GmbH",
+    "site": "Plant 1, Augsburg, DE",
+    "note": "invented for the demo"
+  },
+  "cells": [
+    {
+      "cell_id": "A-M6-C01",
+      "capacity_ah": 58.67,
+      "internal_resistance_mohm": 0.833
+    },
+    {
+      "cell_id": "A-M6-C02",
+      "capacity_ah": 59.22,
+      "internal_resistance_mohm": 0.871
+    },
+    {
+      "cell_id": "A-M6-C03",
+      "capacity_ah": 58.63,
+      "internal_resistance_mohm": 0.838
+    },
+    {
+      "cell_id": "A-M6-C04",
+      "capacity_ah": 58.79,
+      "internal_resistance_mohm": 0.857
+    },
+    {
+      "cell_id": "A-M6-C05",
+      "capacity_ah": 59.16,
+      "internal_resistance_mohm": 0.849
+    },
+    {
+      "cell_id": "A-M6-C06",
+      "capacity_ah": 58.84,
+      "internal_resistance_mohm": 0.828
+    },
+    {
+      "cell_id": "A-M6-C07",
+      "capacity_ah": 58.98,
+      "internal_resistance_mohm": 0.828
+    },
+    {
+      "cell_id": "A-M6-C08",
+      "capacity_ah": 58.82,
+      "internal_resistance_mohm": 0.848
+    },
+    {
+      "cell_id": "A-M6-C09",
+      "capacity_ah": 59.24,
+      "internal_resistance_mohm": 0.86
+    },
+    {
+      "cell_id": "A-M6-C10",
+      "capacity_ah": 59.32,
+      "internal_resistance_mohm": 0.84
+    },
+    {
+      "cell_id": "A-M6-C11",
+      "capacity_ah": 59.05,
+      "internal_resistance_mohm": 0.833
+    },
+    {
+      "cell_id": "A-M6-C12",
+      "capacity_ah": 59.26,
+      "internal_resistance_mohm": 0.863
+    }
+  ],
+  "signature": "PmY95q5dmMn9BFSg1cv25H3SBiv4Qs+Xbv/631V4Ah9/6maAwAN1oUe+aXk52CgzYxZ6tYUfE7oT/HGtWTmnCw=="
+}

@@ -1,0 +1,11 @@
+Transcript of battery label photo (packD-label.jpg), typed and checked by hand.
+The photo is legible; OCR was not used for this demo.
+
+Manufacturer: Lithosa Zellwerk GmbH
+Model: CX-40 City Pack
+Chemistry: LFP
+Cell type: LZ-LFP-100P (prismatic)
+Nominal capacity: 100.0 Ah / 31 kWh
+Modules: 8
+Production date: 2021-05-18
+Serial number: LZ-CX40-210518-0932

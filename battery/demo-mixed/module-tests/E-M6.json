@@ -1,0 +1,10 @@
+{
+  "module_id": "E-M6",
+  "cell_model": "AC-NMC-78P",
+  "chemistry": "NMC",
+  "capacity_ah": 69.4,
+  "nominal_capacity_ah": 78,
+  "internal_resistance_mohm": 1.22,
+  "tested_on": "2026-10-28",
+  "signature": "oSjm9VC/WHpP1jtvzZnhUxDoFsJROIzHS+Ztwb4z7igB1iFqgMw6N5sShbmLFMDQFEwwojr29C+rypGWI2haCw=="
+}

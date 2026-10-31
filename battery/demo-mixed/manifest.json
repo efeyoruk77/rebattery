@@ -1,0 +1,21 @@
+{
+  "note": "Second demo set: the three NMC packs of battery/demo plus an LFP pack (D) and an NMC pack with a different cell model (E). Shows that cells of different chemistries or cell models are never combined.",
+  "documents": [
+    { "doc_id": "packA-label", "pack_id": "A", "kind": "battery_label", "language": "en", "path": "../demo/packs/A/label.txt" },
+    { "doc_id": "packA-registration", "pack_id": "A", "kind": "vehicle_registration", "language": "en", "path": "../demo/packs/A/registration.txt" },
+    { "doc_id": "packA-invoice-2021-de", "pack_id": "A", "kind": "service_invoice", "language": "de", "path": "../demo/packs/A/invoice-2021-de.txt" },
+    { "doc_id": "packA-health-2022", "pack_id": "A", "kind": "dealer_health_report", "language": "en", "path": "../demo/packs/A/health-2022.txt" },
+    { "doc_id": "packB-label", "pack_id": "B", "kind": "battery_label", "language": "en", "path": "../demo/packs/B/label.txt" },
+    { "doc_id": "packB-registration", "pack_id": "B", "kind": "vehicle_registration", "language": "en", "path": "../demo/packs/B/registration.txt" },
+    { "doc_id": "packB-insurance-2023", "pack_id": "B", "kind": "insurance_record", "language": "en", "path": "../demo/packs/B/insurance-2023.txt" },
+    { "doc_id": "packC-label", "pack_id": "C", "kind": "battery_label", "language": "en", "path": "../demo/packs/C/label.txt" },
+    { "doc_id": "packC-registration", "pack_id": "C", "kind": "vehicle_registration", "language": "en", "path": "../demo/packs/C/registration.txt" },
+    { "doc_id": "packC-invoice-2022-en", "pack_id": "C", "kind": "service_invoice", "language": "en", "path": "../demo/packs/C/invoice-2022-en.txt" },
+    { "doc_id": "packD-label", "pack_id": "D", "kind": "battery_label", "language": "en", "path": "packs/D/label.txt" },
+    { "doc_id": "packD-registration", "pack_id": "D", "kind": "vehicle_registration", "language": "en", "path": "packs/D/registration.txt" },
+    { "doc_id": "packD-health-2024", "pack_id": "D", "kind": "dealer_health_report", "language": "en", "path": "packs/D/health-2024.txt" },
+    { "doc_id": "packE-label", "pack_id": "E", "kind": "battery_label", "language": "en", "path": "packs/E/label.txt" },
+    { "doc_id": "packE-registration", "pack_id": "E", "kind": "vehicle_registration", "language": "en", "path": "packs/E/registration.txt" },
+    { "doc_id": "packE-health-2023", "pack_id": "E", "kind": "dealer_health_report", "language": "en", "path": "packs/E/health-2023.txt" }
+  ]
+}

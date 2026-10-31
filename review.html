@@ -8,12 +8,12 @@
 :root{--bg:#fbfbfa;--panel:#fff;--soft:#f3f3f1;--ink:#0b0b0c;--muted:#6f6f78;--line:#e6e6e3;--accent:#0b0b0c;--accent-ink:#fff;
  --good:#16a34a;--warn:#b45309;--warn-bg:#fff7ed;--bad:#b91c1c;--bad-bg:#fef2f2;--chip:#f1f1ef;
  --signed:#15803d;--documented:#1d4ed8;--estimated:#7e22ce;
- --pa:#6366f1;--pb:#f97316;--pc:#14b8a6;--blob1:#c7d2fe;--blob2:#fed7aa;--blob3:#99f6e4;
+ --pa:#6366f1;--pb:#f97316;--pc:#14b8a6;--pd:#db2777;--pe:#ca8a04;--blob1:#c7d2fe;--blob2:#fed7aa;--blob3:#99f6e4;
  --shadow:0 1px 2px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.08)}
 @media (prefers-color-scheme:dark){:root{--bg:#08080a;--panel:#111114;--soft:#18181c;--ink:#f5f5f4;--muted:#a1a1aa;--line:#26262b;--accent:#f5f5f4;--accent-ink:#08080a;
  --good:#4ade80;--warn:#fbbf24;--warn-bg:#2a1f0a;--bad:#f87171;--bad-bg:#2a1010;--chip:#1c1c21;
  --signed:#4ade80;--documented:#93c5fd;--estimated:#d8b4fe;
- --pa:#818cf8;--pb:#fb923c;--pc:#2dd4bf;--blob1:#312e81;--blob2:#7c2d12;--blob3:#134e4a;
+ --pa:#818cf8;--pb:#fb923c;--pc:#2dd4bf;--pd:#f472b6;--pe:#facc15;--blob1:#312e81;--blob2:#7c2d12;--blob3:#134e4a;
  --shadow:0 1px 2px rgba(0,0,0,.5),0 12px 32px rgba(0,0,0,.5)}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -291,6 +291,23 @@ details.faq[open] summary::after{transform:rotate(45deg)}
 details.faq p{color:var(--muted);margin:8px 0 2px}
 kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:0 6px;font-size:12px;background:var(--panel)}
 
+/* Cell families */
+.fam-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:30px 0 12px}
+.fam-head:first-child{margin-top:0}
+.fam-head h2{font-size:18px;margin-right:4px}
+.fam-line{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:-10px 0 22px;font-size:13px;color:var(--muted)}
+.matrix{border-collapse:separate;border-spacing:6px;font-size:13px;max-width:100%}
+.matrix th{font-weight:600;text-align:left;padding:6px 8px;color:var(--muted);font-size:12px;vertical-align:middle}
+.matrix td{min-width:64px;height:48px;text-align:center;border-radius:12px;font-weight:700;font-size:18px;cursor:default;transition:transform .2s}
+.matrix td:hover{transform:scale(1.12)}
+.matrix td.ok{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.matrix td.no{background:var(--bad-bg);color:var(--bad)}
+.why{margin:14px 0 0;padding-left:18px;display:grid;gap:6px}
+.why li{font-size:14px;color:var(--muted)}
+.why b{color:var(--ink)}
+.rule-note{background:color-mix(in srgb,var(--documented) 9%,transparent);border:1px solid color-mix(in srgb,var(--documented) 28%,transparent);border-radius:14px;padding:12px 14px;font-size:14px;color:var(--ink);margin:10px 0 0}
+.rule-note .who{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--documented);margin-bottom:4px}
+
 /* Sign */
 .sign{display:flex;flex-direction:column;gap:12px;max-width:640px}
 .sign label{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
@@ -344,9 +361,42 @@ const reasonItems = reason => String(reason).split(/;(?!\s*an ESS needs)\s*/).fi
  .replace(/^open warning (\w+)/, (_, rule) => `open warning: ${ruleNames[rule] || label(rule)}`)
  .replace(/^quote not found at (\S+) page (\d+) line (\d+)/, 'the quoted text is not in $1 at page $2, line $3'))));
 const packOf = id => String(id).split('-')[0];
-const packColor = p => ({A: 'var(--pa)', B: 'var(--pb)', C: 'var(--pc)'})[p] || 'var(--muted)';
+const packColor = p => ({A: 'var(--pa)', B: 'var(--pb)', C: 'var(--pc)', D: 'var(--pd)', E: 'var(--pe)'})[p] || 'var(--muted)';
 // Many items share one reason; group them. ["B-M3-C05", "B-M3-C08"] -> [["B-M3", ["5", "8"]]]
 const groupBy = (list, key) => { const g = new Map(); for (const x of list) { const k = key(x); (g.get(k) || g.set(k, []).get(k)).push(x); } return [...g]; };
+// Chemistry facts shown next to each cell family: nominal and full-charge cell voltage. Sources: docs/battery-info.md.
+const CHEM = {
+ NMC: {name: 'nickel manganese cobalt', v: '3.6–3.7 V', vmax: '4.2 V'},
+ NCA: {name: 'nickel cobalt aluminium', v: '3.6 V', vmax: '4.2 V'},
+ LFP: {name: 'lithium iron phosphate', v: '3.2 V', vmax: '3.65 V'},
+ LMFP: {name: 'lithium manganese iron phosphate', v: '3.7–3.8 V', vmax: '4.2 V'},
+};
+const chem = c => CHEM[String(c).toUpperCase()] || {name: String(c), v: 'unknown', vmax: 'unknown'};
+// Cell families in the open draft: one per cell model + chemistry. Code never combines cells of two families.
+function families() {
+ const d = current.draft, fams = new Map();
+ const add = (cell_model, chemistry, pack, b) => {
+  const k = `${cell_model}|${chemistry}`;
+  const f = fams.get(k) || fams.set(k, {key: k, cell_model, chemistry, ess: [], packs: new Set()}).get(k);
+  if (b && !f.ess.includes(b)) f.ess.push(b);
+  if (pack) f.packs.add(pack);
+ };
+ for (const b of d.new_batteries || []) for (const p of b.donor_packs || []) add(b.cell_model, b.chemistry, p, b);
+ // A pack that formed no ESS: its production event may still name the chemistry and cell model.
+ for (const p of d.packs) if (![...fams.values()].some(f => f.packs.has(p))) {
+  const e = d.events.find(x => x.pack_id === p && x.type === 'production' && x.fields?.chemistry);
+  if (e) add(e.fields.cell_model || 'cell model not documented', e.fields.chemistry, p, null);
+ }
+ const first = f => f.ess.length ? Math.min(...f.ess.map(b => Number(String(b.battery_id).replace(/\D/g, '')) || 0)) : Infinity;
+ return [...fams.values()].sort((a, b) => first(a) - first(b) || a.key.localeCompare(b.key));
+}
+const familyOfPack = p => families().find(f => f.packs.has(p));
+const famLabel = f => `${f.cell_model} · ${f.chemistry}`;
+// Why two families never share an ESS.
+function incompatible(a, b) {
+ if (a.chemistry !== b.chemistry) return `different chemistry: ${a.chemistry} cells sit at ${chem(a.chemistry).v} and are charged to ${chem(a.chemistry).vmax}, ${b.chemistry} cells at ${chem(b.chemistry).v} and ${chem(b.chemistry).vmax}. In one series string the battery management system would over-charge one type or under-use the other.`;
+ return `same chemistry (${a.chemistry}), different cell model (${a.cell_model} vs ${b.cell_model}): different capacity, internal resistance, format and ageing curve. The weakest cell would set the whole string's capacity and the others would age unevenly.`;
+}
 const cellsByModule = ids => groupBy(ids, id => id.replace(/-C\d+$/, '')).map(([m, cs]) => [m, cs.map(id => id.replace(/^.*-C0*/, ''))]);
 
 const app = document.getElementById('app'), nav = document.getElementById('nav'), tip = document.getElementById('tip');
@@ -368,12 +418,12 @@ async function load() {
  catch { app.innerHTML = '<h1>Server not reachable</h1><p class="lead">Start it with <code>npm run review</code> and open http://127.0.0.1:21952.</p>'; draftName.textContent = 'none'; return; }
  renderDraftMenu();
  if (!drafts.length) { app.innerHTML = '<p class="muted">No drafts yet.</p>'; draftName.textContent = 'none'; return; }
- await show(drafts[drafts.length - 1].id);
+ await show((drafts.filter(d => d.paid).at(-1) || drafts[0]).id);
 }
 async function show(id) {
  current = await (await fetch('/api/draft?id=' + encodeURIComponent(id))).json();
  const d = drafts.find(x => x.id === id);
- draftName.textContent = d ? (d.paid ? d.label : 'Demo') : id;
+ draftName.textContent = d ? (d.paid ? d.label : d.id === 'demo-mixed' ? 'Demo · mixed families' : 'Demo') : id;
  renderDraftMenu();
  route();
 }
@@ -475,7 +525,7 @@ function overview() {
   const hm = heldMods.filter(h => packOf(h.id) === p).length;
   const ev = d.events.filter(e => e.pack_id === p).length;
   const total = u + hc || 1;
-  return `<a class="prow" href="#/histories"><span class="who"><span class="dot" style="background:${packColor(p)}"></span>Pack ${esc(p)}</span>
+  return `<a class="prow" href="#/histories"><span class="who"><span class="dot" style="background:${packColor(p)}"></span>Pack ${esc(p)}${familyOfPack(p) ? `<span class="chip" data-tip="cell family">${esc(famLabel(familyOfPack(p)))}</span>` : ''}</span>
    <span class="stack" data-tip="${esc(u)} cells used · ${esc(hc)} cells not used"><i style="width:${(u / total * 100).toFixed(1)}%;background:${packColor(p)}"></i><i class="held" style="width:${(hc / total * 100).toFixed(1)}%"></i></span>
    <span class="nums">${esc(u)} cells used · ${esc(hc)} not used · ${esc(hm)} module${hm === 1 ? '' : 's'} held back · ${esc(ev)} events</span></a>`;
  }).join('');
@@ -492,6 +542,7 @@ function overview() {
    <span class="eyebrow"><span class="live ${signed ? 'ok' : current.paid ? 'part' : ''}"></span>${signed ? 'Signed draft' : current.paid ? 'Paid draft · ready to sign' : 'Demo draft · invented data'}</span>
    <h1>${esc(d.packs.length)} donor packs <span class="arrow">→</span><br><span class="gradient">${esc(ess.length)} new ESS units</span></h1>
    <p class="lead">Every fact is quoted from a source document and checked by code. The AI is a clerk, not a witness; deterministic rules decide which cells go together, and a person signs the result.</p>
+   <div class="fam-line">${families().length} cell famil${families().length === 1 ? 'y' : 'ies'} in this batch, never combined:${families().map(f => `<a class="chip" href="#/ess" data-tip="${esc(chem(f.chemistry).name)} · ${esc(chem(f.chemistry).v)} nominal">${esc(famLabel(f))}</a>`).join('')}</div>
    <div class="cta"><a class="btn" href="#/ess">View ESS passports <span aria-hidden="true">→</span></a><a class="pill" href="#/histories">Donor histories</a></div>
   </div>
   <div class="glass health">
@@ -583,10 +634,23 @@ function essGallery() {
     <span class="open">Open passport <span aria-hidden="true">→</span></span>
    </div></a>`;
  };
+ const F = families(), withEss = F.filter(f => f.ess.length);
+ const mixedDemo = drafts.find(x => x.id === 'demo-mixed');
+ const pairs = [];
+ for (let i = 0; i < F.length; i++) for (let j = i + 1; j < F.length; j++) pairs.push([F[i], F[j]]);
+ const matrix = F.length < 2 ? '' : `<table class="matrix" aria-label="Which cell families may share an ESS"><tr><th></th>${F.map(f => `<th>${esc(famLabel(f))}</th>`).join('')}</tr>
+   ${F.map(a => `<tr><th>${esc(famLabel(a))}</th>${F.map(b => a === b
+    ? `<td class="ok" data-tip="Same cell model and chemistry: these cells may share an ESS">✓</td>`
+    : `<td class="no" data-tip="${esc(incompatible(a, b))}">✗</td>`).join('')}</tr>`).join('')}</table>
+   <ul class="why">${pairs.map(([a, b]) => `<li><b>${esc(famLabel(a))}</b> and <b>${esc(famLabel(b))}</b>: ${esc(incompatible(a, b))}</li>`).join('')}</ul>`;
  return `
  <h1>ESS passports</h1>
  <p class="lead">Each new energy storage unit gets a passport. Its QR code shows the unit's second-life health, the facility that made it, and links back to every donor pack. The coloured bar shows which packs its cells came from.</p>
- <div class="gallery">${ess.map(card).join('') || '<p class="muted">No ESS proposed.</p>'}</div>`;
+ ${withEss.map(f => `<div class="fam-head"><h2>${esc(f.cell_model)}</h2><span class="chip">${esc(f.chemistry)} · ${esc(chem(f.chemistry).name)}</span><span class="chip">${esc(chem(f.chemistry).v)} nominal</span><span class="chip">${esc(f.ess.length)} ESS unit${f.ess.length === 1 ? '' : 's'}</span><span class="chip">Packs ${esc([...f.packs].sort().join(', '))}</span></div>
+  <div class="gallery">${f.ess.map(card).join('')}</div>`).join('') || '<p class="muted">No ESS proposed.</p>'}
+ <section class="sec"><div class="sec-head"><div><h2>Which cells may share an ESS</h2><p>Code groups by cell family: the same cell model <em>and</em> the same chemistry. Nothing else is ever combined.</p></div></div>
+  ${matrix || `<p class="muted">All cells in this batch belong to one family (${esc(F.map(famLabel).join(', ') || 'unknown')}). Cells of another chemistry or another cell model would form their own units or stay held back.${mixedDemo ? ' ' : ''}</p>${mixedDemo ? `<button type="button" class="pill" data-open-draft="demo-mixed">Open the mixed-family demo (LFP pack + another NMC model) →</button>` : ''}`}
+ </section>`;
 }
 
 function essDetail(id) {
@@ -639,6 +703,15 @@ function essDetail(id) {
  </section>`;
 }
 
+// Left-over cells of one family next to finished units of another: say why they were not added there.
+function familyNote(hs) {
+ const fam = familyOfPack(packOf(hs[0]?.id || ''));
+ // Units of the same chemistry but another cell model are the ones a reader would expect these cells to join.
+ const others = fam ? families().filter(f => f.key !== fam.key && f.chemistry === fam.chemistry && f.ess.length) : [];
+ if (!others.length || !/left over/.test(hs[0].reason)) return '';
+ return `<p class="rule-note"><span class="who">Rule: cell families are never combined</span>These are ${esc(famLabel(fam))} cells. This batch also built ${esc(others.map(f => `${f.ess.length} ESS unit${f.ess.length === 1 ? '' : 's'} of ${famLabel(f)}`).join(' and '))}, but these cells were not added there: ${esc(incompatible(fam, others[0]))}</p>`;
+}
+
 function held() {
  const d = current.draft, list = d.held_back || [];
  const mods = list.filter(h => h.level === 'module'), cells = list.filter(h => h.level === 'cell');
@@ -650,6 +723,7 @@ function held() {
  ${mods.length ? `<p class="sub">Modules not taken apart</p><div class="held-grid">${mods.map(h => `<div class="held-card"><div class="name">${esc(placeName(h.id))}</div><span class="tag">Not taken apart</span>${items(h.reason)}${aiNote(explanation().modules?.[h.id])}</div>`).join('')}</div>` : ''}
  ${cells.length ? `<p class="sub">Cells not used</p><div class="held-grid">${groupBy(cells, h => h.reason).map(([reason, hs]) => `<div class="held-card">
    <div class="name">${esc(hs.length)} cell${hs.length === 1 ? '' : 's'}</div><span class="tag">Not used</span>${items(reason)}
+   ${familyNote(hs)}
    ${[...new Set((explanation().cells || []).filter(g => g.cell_ids.some(id => hs.some(h => h.id === id))).map(g => g.text))].map(aiNote).join('')}
    <div class="cell-groups">${cellsByModule(hs.map(h => h.id)).map(([m, ns]) => `<div class="cell-group"><span class="where">${esc(placeName(m))}</span>${ns.map(n => `<span class="c">Cell ${esc(n)}</span>`).join('')}</div>`).join('')}</div>
   </div>`).join('')}</div>` : ''}
@@ -674,6 +748,7 @@ function help() {
  const terms = [
   ['Pack, module, cell', 'An EV battery pack is made of modules, and each module of cells. IDs read like <code>A-M2-C07</code>: pack A, module 2, cell 7. This screen writes them as “Pack A · Module 2 · Cell 7”.'],
   ['ESS', 'Energy storage system: a new home or grid battery built from matching used cells.'],
+  ['Cell family', 'Cells with the same cell model <em>and</em> the same chemistry (for example <code>AC-NMC-66P · NMC</code>). Only cells of one family are ever combined in an ESS. Chemistry facts and sources: <code>docs/battery-info.md</code>.'],
   ['Second-life health (SoH)', 'Usable capacity divided by the cell\'s original capacity. Cells are in series, so the weakest cell sets the value.'],
   ['QR passport', 'Each ESS gets a passport on Cardano. The QR code on the unit opens it: health, facility, and links to every donor pack.'],
   ['Signed', confHelp.signed + '.'],
@@ -687,6 +762,7 @@ function help() {
   ['Does the AI decide which cells are used?', 'No. The AI only extracts what documents say. Deterministic code verifies the quotes and groups the cells; a person signs the result.'],
   ['Why is a module held back when only one event mentions it?', 'Grouping is conservative: an accident or an open warning on a module keeps all of its cells out until a person reviews it.'],
   ['Why is there no QR code on the demo draft?', 'QR codes appear only after a paid draft is signed and its passports are written on-chain. The demo shows a placeholder instead of a fake code.'],
+  ['Why are NMC cells from one pack not used in an ESS built from NMC cells of another pack?', 'Same chemistry is not enough. A different cell model has a different capacity, internal resistance, format and ageing curve; in one series string the weakest cell sets the capacity and the others age unevenly. Cells of a different chemistry (LFP vs NMC) differ even in their voltage window, so a battery management system cannot charge them together safely. The ESS passports page shows the matrix for the open draft.'],
   ['Can I trust the documents themselves?', 'The system proves what a document says, not that the document is true. Signed documents from service shops reduce this risk.'],
  ];
  return `
@@ -758,6 +834,7 @@ function wire() {
  if (signBtn) signBtn.onclick = sign;
 
  for (const b of app.querySelectorAll('[data-pack].pill')) b.onclick = () => { packFilter = b.dataset.pack; route(); };
+ for (const b of app.querySelectorAll('[data-open-draft]')) b.onclick = () => show(b.dataset.openDraft);
 
  // Count numbers up on the overview.
  if (!reduceMotion) for (const el of app.querySelectorAll('[data-count]')) {

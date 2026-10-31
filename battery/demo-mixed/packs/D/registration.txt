@@ -1,0 +1,8 @@
+Vehicle registration certificate, part I (excerpt)
+DEMO DOCUMENT - all data invented
+
+Registration number: S-DE 4004
+Holder: Peter Beispiel, Musterallee 12, 70173 Stuttgart
+Vehicle identification number: DEMO0CX40D0000004
+Make and model: Voltaro CX-40 City
+Date of first registration: 2021-07-02

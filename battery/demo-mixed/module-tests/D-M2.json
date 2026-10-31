@@ -1,0 +1,10 @@
+{
+  "module_id": "D-M2",
+  "cell_model": "LZ-LFP-100P",
+  "chemistry": "LFP",
+  "capacity_ah": 90.8,
+  "nominal_capacity_ah": 100,
+  "internal_resistance_mohm": 0.82,
+  "tested_on": "2026-10-28",
+  "signature": "HttY3Wl7PiItXQP8MIEbJO9ZNU6PFfD0Tf5R6aCkDGn5DpmR940Bg0+aR1c+3ec5NuWqYippoRBsXxgjbVVuAw=="
+}

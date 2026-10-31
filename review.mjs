@@ -12,13 +12,17 @@ import {collectStatus} from './status.mjs';
 // Writes stay off until CARDANO_WRITES_ENABLED=true.
 const cardano = createCardanoSteps();
 const finalize = createStageB(cardano);
-const DEMO = 'examples/demo-draft.json';
+// Demo drafts (invented data, never signable). The second shows cells of different families staying apart.
+const DEMOS = [
+ ['demo', 'examples/demo-draft.json', 'Demo draft (invented data, not paid)'],
+ ['demo-mixed', 'examples/demo-mixed-draft.json', 'Demo: mixed cell families, LFP + two NMC models (invented data, not paid)'],
+];
 const readJson = path => { try { return JSON.parse(readFileSync(path, 'utf8')); } catch { return null; } };
 const files = dir => existsSync(dir) ? readdirSync(dir).filter(f => /^[0-9a-f-]{36}\.json$/.test(f)) : [];
 
 export function listDrafts(root = '.') {
  const drafts = [];
- if (existsSync(`${root}/${DEMO}`)) drafts.push({id: 'demo', label: 'Demo draft (invented data, not paid)', draftText: readFileSync(`${root}/${DEMO}`, 'utf8'), paid: null});
+ for (const [id, path, label] of DEMOS) if (existsSync(`${root}/${path}`)) drafts.push({id, label, draftText: readFileSync(`${root}/${path}`, 'utf8'), paid: null});
  // Masumi standard API jobs (agent-api.mjs).
  for (const f of files(`${root}/.local/standard-jobs`)) {
   const j = readJson(`${root}/.local/standard-jobs/${f}`);

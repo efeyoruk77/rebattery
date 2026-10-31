@@ -1,0 +1,8 @@
+Vehicle registration certificate, part I (excerpt)
+DEMO DOCUMENT - all data invented
+
+Registration number: F-DE 5005
+Holder: Anna Beispiel, Musterring 5, 60311 Frankfurt am Main
+Vehicle identification number: DEMO0VX80E0000005
+Make and model: Voltaro VX-80 Long Range
+Date of first registration: 2021-11-15

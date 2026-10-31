@@ -1,0 +1,10 @@
+{
+  "module_id": "D-M7",
+  "cell_model": "LZ-LFP-100P",
+  "chemistry": "LFP",
+  "capacity_ah": 91.3,
+  "nominal_capacity_ah": 100,
+  "internal_resistance_mohm": 0.8,
+  "tested_on": "2026-10-28",
+  "signature": "qD9w2v0xOz21dhNWn4UrK7agIvhgEvsH7EYphI0LGESBPIOwgfcYMfmffuTyf7jCeRIVOUqEXFCDdPN1wcd8Cw=="
+}

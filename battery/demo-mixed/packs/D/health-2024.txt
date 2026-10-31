@@ -1,0 +1,13 @@
+Voltaro Dealer Battery Health Report
+DEMO DOCUMENT - all data invented
+
+Report date: 2024-03-12
+VIN: DEMO0CX40D0000004
+Odometer: 48,200 km
+
+Battery chemistry: lithium iron phosphate (LFP)
+Measured state of health: 93 %
+Cell voltage spread at rest: 9 mV
+Result: battery within specification
+
+Technician: R. Example, Autohaus Beispiel GmbH

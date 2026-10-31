@@ -37,12 +37,13 @@ npm run review
 
 Then open http://127.0.0.1:21952. Stop it with Ctrl+C. Use another port with `REVIEW_PORT=21960 npm run review` (PowerShell: `$env:REVIEW_PORT=21960; npm run review`).
 
-You need **no keys** for the review screen. It shows the demo draft from [examples/demo-draft.json](../examples/demo-draft.json): 3 donor packs, 11 events, 2 warnings, 1 rejected claim, 5 ESS units of 48 cells, the held-back modules and cells, and a recorded AI explanation of the grouping (the grey "AI explanation" boxes on the ESS and Held back pages; the data is `draft.explanation`).
+You need **no keys** for the review screen. The Draft menu (top right) has two demo drafts. The main one is [examples/demo-draft.json](../examples/demo-draft.json): 3 donor packs, 11 events, 2 warnings, 1 rejected claim, 5 ESS units of 48 cells, the held-back modules and cells, and a recorded AI explanation of the grouping (the grey "AI explanation" boxes on the ESS and Held back pages; the data is `draft.explanation`).
 
 What differs between machines:
 
 - **Status page:** it reads the machine it runs on. On your machine the services show *Stopped*, Masumi shows *not registered*, and Sokosumi shows *unknown*. That is expected. The real agent, payment service, and wallets run on Member 4's machine.
 - **Wallet balance** on the status page needs `BLOCKFROST_API_KEY_PREPROD` in your own `.env` (free key from blockfrost.io, Preprod project). Without it the balance says *unknown*.
+- **Second demo draft:** [examples/demo-mixed-draft.json](../examples/demo-mixed-draft.json) adds an LFP pack (D) and an NMC pack with another cell model (E) to the three NMC packs. It shows that cells of different chemistries or cell models are never combined: 8 ESS units in 3 cell families, a compatibility matrix on the ESS passports page, and 36 NMC cells from pack E left over because they do not match the AC-NMC-66P family. Regenerate with `node battery/scripts/make-mixed-demo.mjs` (needs the demo tester key in `.local/`) and `node examples/demo-mixed-job.mjs`. It has no recorded AI explanation.
 - **Paid drafts** appear in the draft picker only on the machine that ran the paid task (Member 4's). On other machines you only see the demo draft.
 - **QR codes** appear only for a signed draft whose passports are on-chain. On the demo draft, each ESS card shows a placeholder box instead.
 

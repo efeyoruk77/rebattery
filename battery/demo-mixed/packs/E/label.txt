@@ -1,0 +1,11 @@
+Transcript of battery label photo (packE-label.jpg), typed and checked by hand.
+The photo is legible; OCR was not used for this demo.
+
+Manufacturer: Altmark Cells GmbH
+Model: VX-80 Long Range Pack
+Chemistry: NMC
+Cell type: AC-NMC-78P (prismatic)
+Nominal capacity: 78.0 Ah / 80 kWh
+Modules: 7
+Production date: 2021-09-09
+Serial number: AC-VX80-210909-0271
