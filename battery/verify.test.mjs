@@ -90,3 +90,11 @@ test('rejects duplicate IDs, unknown types and invalid dates', () => {
   const r = run([ev(), ev(), ev({ event_id: 'A-e2', type: 'repaint' }), ev({ event_id: 'A-e3', date: '14.06.2021' })]);
   assert.deepEqual(r.rejected.map((x) => x.reason), ['duplicate event_id', 'unknown type repaint', 'invalid date 14.06.2021']);
 });
+
+// Named gap: model, serial number, and VIN sat on another line than the quote, so nothing checked them.
+test('keeps identity fields found in the source document and removes invented ones as rejected claims', () => {
+  const out = run([ev({ fields: { manufacturer: 'Zellungleichgewicht', vin: 'WVWZZZ1KZ0P000000', reason: 'x' } })]);
+  assert.equal(out.events.length, 1, 'the event stays: its quote is verified');
+  assert.deepEqual(out.events[0].fields, { manufacturer: 'Zellungleichgewicht', reason: 'x' });
+  assert.deepEqual(out.rejected, [{ event_id: 'A-e1', field: 'vin', reason: 'vin "WVWZZZ1KZ0P000000" not found in d1' }]);
+});

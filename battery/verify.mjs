@@ -62,6 +62,25 @@ function checkShape(event, docsById) {
   return null;
 }
 
+// Pack identity values are copied from the document, but usually from another line than the event's quote.
+// Each must appear word for word somewhere in the event's source document; one that does not is removed from the
+// event and listed as a rejected claim. The event itself stays: its quote was already verified.
+export const IDENTITY_FIELDS = ['manufacturer', 'pack_model', 'serial_number', 'chemistry', 'vin'];
+function checkIdentity(event, docsById, rejected) {
+  const doc = event.source && docsById.get(event.source.doc_id);
+  const present = IDENTITY_FIELDS.filter((k) => event.fields && event.fields[k] != null);
+  if (!doc || !present.length) return event;
+  const text = normalize(doc.pages.flatMap((p) => p.lines).join(' '));
+  const fields = { ...event.fields };
+  for (const k of present) {
+    const value = normalize(fields[k]);
+    if (value && text.includes(value)) continue;
+    delete fields[k];
+    rejected.push({ event_id: event.event_id, field: k, reason: `${k} "${value}" not found in ${doc.doc_id}` });
+  }
+  return Object.keys(fields).length === Object.keys(event.fields).length ? event : { ...event, fields };
+}
+
 // verify(documents, events) -> { events, rejected, warnings }
 export function verify(documents, events, options = {}) {
   const docsById = new Map(documents.map((d) => [d.doc_id, d]));
@@ -96,6 +115,6 @@ export function verify(documents, events, options = {}) {
     reject(event, missing.length ? `basis missing or rejected: ${missing.join(', ')}` : 'estimated event has no basis');
   }
 
-  const kept = events.filter((e) => accepted.get(e.event_id) === e);
+  const kept = events.filter((e) => accepted.get(e.event_id) === e).map((e) => checkIdentity(e, docsById, rejected));
   return { events: kept, rejected, warnings: findInconsistencies(kept, options) };
 }
