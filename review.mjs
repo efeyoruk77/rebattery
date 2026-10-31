@@ -19,6 +19,8 @@ const files = dir => existsSync(dir) ? readdirSync(dir).filter(f => /^[0-9a-f-]{
 export function listDrafts(root = '.') {
  const drafts = [];
  if (existsSync(`${root}/${DEMO}`)) drafts.push({id: 'demo', label: 'Demo draft (invented data, not paid)', draftText: readFileSync(`${root}/${DEMO}`, 'utf8'), paid: null});
+ // The last run of e2e.mjs: real model output on the demo files, not paid, so it cannot be signed.
+ if (existsSync(`${root}/.local/e2e-draft.json`)) drafts.push({id: 'e2e', label: 'Local end-to-end test (real model, not paid)', draftText: readFileSync(`${root}/.local/e2e-draft.json`, 'utf8'), paid: null});
  // Masumi standard API jobs (agent-api.mjs).
  for (const f of files(`${root}/.local/standard-jobs`)) {
   const j = readJson(`${root}/.local/standard-jobs/${f}`);
