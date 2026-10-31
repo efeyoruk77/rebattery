@@ -51,6 +51,6 @@ test('the demo draft shows a QR code for each recorded test-run passport, and on
  const {passportQrs}=await import('./review.mjs');
  const qrs=await passportQrs('demo');
  assert.deepEqual(Object.keys(qrs).sort(),JSON.parse(draftText).new_batteries.map(b=>b.battery_id).sort());
- assert.ok(Object.values(qrs).every(q=>q.testRun&&q.svg.startsWith('<svg')&&q.url.endsWith(q.txHash)));
+ assert.ok(Object.values(qrs).every(q=>q.testRun&&q.svg.startsWith('<svg')&&q.url.replace(/\/$/,'').endsWith(q.txHash)));
  assert.deepEqual(await passportQrs('job-unsigned'),{});
 });
