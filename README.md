@@ -270,6 +270,7 @@ Finish active Tasks and pending seller receipt checks before you switch Workspac
    Continue only when access is `GRANTED` and your account is eligible to create tasks.
 3. Stop the worker. In `.env`, set `SOKOSUMI_ORGANIZATION_ID` and `SOKOSUMI_ORGANIZATION_SLUG` to that Workspace's ID and slug.
    Set both together. The worker rejects incomplete settings and tasks from another Workspace.
+   To serve several Workspaces (for example the TUM Workspace and a company's own), list them comma-separated in the same order in both settings, after connecting the Coworker to each one. Each task runs in the Workspace it came from.
 4. Restart the worker:
 
    ```sh
