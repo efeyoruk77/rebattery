@@ -107,12 +107,21 @@ The worker also checked the payout transaction on Blockfrost and found 1 test US
 
 One full write of the demo draft: 14 transactions for 3.08 tADA. That covers the document anchor [aeaa7cd7…d646](https://preprod.cardanoscan.io/transaction/aeaa7cd7c31f4641e524d2184af8f6521b9804f17a0eb1c05021189df981d646), 3 donor logs, 5 ESS logs, and 5 passports. The ESS-1 passport [bb1c267b…f865](https://preprod.cardanoscan.io/transaction/bb1c267b3f9143091a3418a1be4d8928c139fc5a3d9fd854c2842d05cbe9f865) traces back to all 3 donors. All transaction hashes are in [docs/member3-tasks.md](docs/member3-tasks.md).
 
+Every passport passes four checks against the chain:
+
+1. The passport, its ESS log, and every donor log are found on Cardano.
+2. Every donor log sends its modules to this ESS, so the link holds in both directions.
+3. The cells, health, events, held-back items, and every file fingerprint match the draft that was signed: [examples/demo-onchain-draft.json](examples/demo-onchain-draft.json). Its SHA-256 equals the `draft_hash` on-chain.
+4. **The company signature verifies** (Ed25519 over the signed record), and every donor and ESS log carries the same signature. The signed record is [examples/demo-onchain-signed.json](examples/demo-onchain-signed.json), rebuilt only from the public on-chain logs, so anyone can repeat the check.
+
+`examples/demo-draft.json` was extended after this run (pack model, serial number, VIN), so it no longer matches these records. To trace them, use the on-chain copy: `npm run cardano -- trace <passport tx> examples/demo-onchain-draft.json`.
+
 ## Try it in the browser
 
 **Public site, nothing to install:** https://efeyoruk77.github.io/Afterlife/
 
 - [Review screen](https://efeyoruk77.github.io/Afterlife/) (read-only): the paid Sokosumi draft and the demo drafts, with timelines, warnings, held-back items, and ESS cards
-- [Battery passports](https://efeyoruk77.github.io/Afterlife/passports.html): one page per ESS from the Cardano test run, what the QR code on a unit opens. Each one follows its cells back to every donor pack, event, quote, and file fingerprint, checked against the chain when the site was built.
+- [Battery passports](https://efeyoruk77.github.io/Afterlife/passports.html): one page per ESS from the Cardano test run, what the QR code on a unit opens. Each one follows its cells back to every donor pack, event, quote, and file fingerprint, checked against the chain when the site was built, including the company signature. The list shows each unit's QR code.
 
 Rebuild it with `node --env-file-if-exists=.env passport-site.mjs`, then push `site/` to the `gh-pages` branch.
 
