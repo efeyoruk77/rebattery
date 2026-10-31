@@ -54,3 +54,14 @@ test('the demo draft shows a QR code for each recorded test-run passport, and on
  assert.ok(Object.values(qrs).every(q=>q.testRun&&q.svg.startsWith('<svg')&&q.url.replace(/\/$/,'').endsWith(q.txHash)));
  assert.deepEqual(await passportQrs('job-unsigned'),{});
 });
+
+// Bug: the demo draft was regenerated after the test run was written to Cardano, so no draft matched the
+// passports and the public site hid every history. Passports match against a fixed copy of the on-chain draft.
+test('passports can match the demo draft exactly as it was written to Cardano',async()=>{
+ const {createHash}=await import('node:crypto');
+ const {listDrafts,passportDrafts}=await import('./review.mjs');
+ const copy=passportDrafts().find(d=>d.id==='demo-onchain');
+ assert.ok(copy,'examples/demo-onchain-draft.json is offered to passports');
+ assert.equal(createHash('sha256').update(copy.draftText).digest('hex'),'db1219c7f960fc2fc64a34a44a41b403b786d7a7eb2fe584faf5204cb7c9326c','the on-chain copy must never be regenerated');
+ assert.ok(!listDrafts().some(d=>d.id==='demo-onchain'),'the copy is not listed on the review screen');
+});

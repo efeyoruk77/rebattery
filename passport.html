@@ -54,6 +54,8 @@ code{font:12px ui-monospace,SFMono-Regular,Menlo,monospace}
 .txs li{padding:6px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
 .error{background:var(--bad-bg);color:var(--bad);border-radius:12px;padding:14px}
 details summary{cursor:pointer;color:var(--muted);font-size:14px;margin-top:8px}
+.brand{justify-content:space-between;flex-wrap:wrap}.brand>span{display:flex;align-items:center;gap:10px}
+.nav{display:flex;gap:8px;font-weight:500;font-size:14px}.nav a{text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--panel)}
 </style>
 </head>
 <body>
@@ -70,6 +72,9 @@ const plural = (n, w) => `${n} ${w}${Number(n) === 1 ? '' : 's'}`;
 const heldReason = r => place(String(r).replace(/;?\s*not taken apart$/, '')).replace(/^./, c => c.toUpperCase());
 const colors = ['var(--pa)', 'var(--pb)', 'var(--pc)'];
 const fields = f => Object.entries(f || {}).filter(([k]) => k !== 'uncertainty').map(([k, v]) => `${words(k)}: ${Array.isArray(v) ? v.join(', ') : v}${/_pct$/.test(k) ? '%' : ''}`).join(' · ');
+// On the public site the data is embedded in the page; there is no "this machine".
+const STATIC = Boolean(window.PASSPORT_DATA);
+const brand = () => `<div class="brand"><span><span class="logo">⚡</span>Battery passport</span>${STATIC ? '<nav class="nav"><a href="../../passports.html">All passports</a><a href="../../">Review screen</a></nav>' : ''}</div>`;
 const markOf = ok => ok === true ? '<span class="mark ok">✓</span>' : ok === false ? '<span class="mark no">✗</span>' : '<span class="mark na">–</span>';
 
 function donor(d, i) {
@@ -86,7 +91,7 @@ function donor(d, i) {
     <div class="when">${esc(e.date ?? 'date unknown')} · ${esc(e.event_id)}${e.module_ids?.length ? ` · ${esc(e.module_ids.map(place).join(', '))}` : ''}</div>
     <b>${esc(words(e.type))}</b>${fields(e.fields) ? ` <span class="muted">· ${esc(fields(e.fields))}</span>` : ''}
     ${e.source ? `<blockquote>“${esc(e.source.quote)}”<cite>${esc(e.source.doc_id)}, page ${esc(e.source.page)}, line ${esc(e.source.line)}</cite></blockquote>` : ''}
-   </li>`).join('')}</ul>` : '<p class="muted">The history of this pack is not shown: no draft on this machine matches its on-chain records.</p>'}
+   </li>`).join('')}</ul>` : `<p class="muted">The history of this pack is not shown: no draft ${STATIC ? 'published with this page' : 'on this machine'} matches its on-chain records.</p>`}
   ${d.notTakenApart.length || d.unusedCells.length ? `<h3>Not used from this pack</h3>
    ${d.notTakenApart.map(m => `<p class="held"><b>${esc(place(m.id))}</b>: not taken apart${m.reason ? `. ${esc(heldReason(m.reason))}` : ''}</p>`).join('')}
    ${d.unusedCells.length ? `<p class="held"><b>${esc(plural(d.unusedCells.length, 'cell'))} not used</b>${d.unusedCells.some(c => c.reason) ? '' : `: ${esc(d.unusedCells.map(c => place(c.id)).join(', '))}`}</p>
@@ -103,7 +108,7 @@ function render(v) {
   ...[...new Set(v.donors.flatMap(d => d.anchorTxs))].map(t => ['File fingerprints (anchor)', t])];
  document.title = `${v.ess.battery_id} Passport`;
  return `
- <div class="brand"><span class="logo">⚡</span>Battery passport</div>
+ ${brand()}
  <h1>${esc(v.ess.battery_id)}</h1>
  <p class="lead">A second-life battery of ${esc(v.ess.count)} ${esc(v.ess.cell_model)} ${esc(v.ess.chemistry)} cells, made at <b>${esc(f.name)}</b>, ${esc(f.site)}. Built from ${esc(v.donors.length)} used EV battery packs.</p>
  ${v.payment.testRun ? '<div class="banner">Test record: written to Cardano Preprod in a test run, not from a paid job. All data is invented for the demo.</div>' : ''}
@@ -120,7 +125,7 @@ function render(v) {
  <section class="sec"><h2>Where its cells came from</h2>${v.donors.map(donor).join('')}</section>
 
  ${v.checkedAt ? `<p class="muted" style="font-size:13px">These checks ran against Cardano on ${esc(v.checkedAt.slice(0, 10))}, when this page was published. To check again yourself, open any record below in a blockchain explorer.</p>` : ''}
- <section class="sec"><h2>Records on Cardano</h2><div class="card"><ul class="txs">${txs.map(([t, tx]) => `<li><b>${esc(t)}</b><br>${txLink(tx, tx)}</li>`).join('')}</ul></div></section>`;
+ <section class="sec"><h2>Records on Cardano</h2><div class="card"><ul class="txs">${txs.map(([t, tx]) => `<li><b>${esc(t)}</b><br><span title="${esc(tx)}">${txLink(tx)}</span></li>`).join('')}</ul></div></section>`;
 }
 
 (async () => {
@@ -136,7 +141,7 @@ function render(v) {
   }
   app.innerHTML = render(v);
  } catch (e) {
-  app.innerHTML = `<div class="brand"><span class="logo">⚡</span>Battery passport</div><div class="error"><b>This passport could not be read.</b><br>${esc(e.message)}</div>
+  app.innerHTML = `${brand()}<div class="error"><b>This passport could not be read.</b><br>${esc(e.message)}</div>
    <p class="muted">Transaction: ${/^[0-9a-f]{64}$/.test(tx) ? txLink(tx, tx) : esc(tx)}</p>`;
  }
 })();

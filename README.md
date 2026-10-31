@@ -109,7 +109,14 @@ One full write of the demo draft: 14 transactions for 3.08 tADA. That covers the
 
 ## Try it in the browser
 
-With the services running (see setup below), run `npm run review`:
+**Public site, nothing to install:** https://efeyoruk77.github.io/Afterlife/
+
+- [Review screen](https://efeyoruk77.github.io/Afterlife/) (read-only): the paid Sokosumi draft and the demo drafts, with timelines, warnings, held-back items, and ESS cards
+- [Battery passports](https://efeyoruk77.github.io/Afterlife/passports.html): one page per ESS from the Cardano test run, what the QR code on a unit opens. Each one follows its cells back to every donor pack, event, quote, and file fingerprint, checked against the chain when the site was built.
+
+Rebuild it with `node --env-file-if-exists=.env passport-site.mjs`, then push `site/` to the `gh-pages` branch.
+
+**Locally,** with the services running (see setup below), run `npm run review`:
 
 - http://127.0.0.1:21952: the **review screen**, with the **New job** page (key `0`) for uploading a batch and copying the job input, plus timelines, warnings, ESS passport cards with QR codes, and **Sign and publish**
 - http://127.0.0.1:21952/status: what is running, with Masumi registration, wallet balance, Sokosumi tasks, and links to escrow, result, and payout transactions

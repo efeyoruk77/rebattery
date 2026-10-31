@@ -9,7 +9,7 @@
 import {existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync, rmSync} from 'node:fs';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
-import {listDrafts, passportQrs} from './review.mjs';
+import {listDrafts, passportDrafts, passportQrs} from './review.mjs';
 import {collectStatus} from './status.mjs';
 import {passportView, chainReader, TX} from './passport.mjs';
 
@@ -78,16 +78,17 @@ function indexPage(entries, checkedAt) {
 @media (prefers-color-scheme:dark){:root{--bg:#08080a;--panel:#111114;--ink:#f5f5f4;--muted:#a1a1aa;--line:#26262b}}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}main{max-width:720px;margin:0 auto;padding:24px 16px}
 a.card{display:flex;justify-content:space-between;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:10px 0;text-decoration:none;color:inherit}
-.muted{color:var(--muted)}h1{margin:0 0 6px}</style></head><body><main>
-<h1>⚡ Battery passports</h1><p class="muted">Second-life energy storage units built from used EV battery packs. Each passport is recorded on Cardano Preprod. Checked against the chain on ${esc(checkedAt.slice(0, 10))}.</p>
-${entries.map(e => `<a class="card" href="passport/${e.tx}/"><b>${esc(e.ess)}</b><span class="muted">${esc(e.health ?? '')}${e.testRun ? ' · test run' : ''} →</span></a>`).join('\n')}
+.muted{color:var(--muted)}h1{margin:0 0 6px}.chip{font-size:12px;border-radius:999px;padding:2px 8px;background:var(--line);margin-left:6px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}.top a{color:inherit;font-size:14px;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--panel)}</style></head><body><main>
+<div class="top"><h1>⚡ Battery passports</h1><a href="./">Review screen →</a></div><p class="muted">Second-life energy storage units built from used EV battery packs. Each passport is recorded on Cardano Preprod. Checked against the chain on ${esc(checkedAt.slice(0, 10))}. Scan a unit’s QR code, or open one below to follow its cells back to every donor pack and source document.</p>
+${entries.map(e => `<a class="card" href="passport/${e.tx}/"><b>${esc(e.ess)}</b><span class="muted">${esc(e.health ?? '')}${e.testRun ? '<span class="chip">test run</span>' : ''} →</span></a>`).join('\n')}
 </main></body></html>`;
 }
 
 export async function buildSite({out = 'site', root = '.', read = chainReader(), log = console.log} = {}) {
  const template = readFileSync(`${root}/passport.html`, 'utf8');
  if (!template.includes('</head>')) throw Error('passport.html changed: cannot find where to embed the data');
- const drafts = listDrafts(root);
+ const drafts = listDrafts(root), candidates = passportDrafts(root);
  const signedFor = id => readJson(`${root}/.local/signed/${id}.json`)?.signedRecord ?? null;
  const checkedAt = new Date().toISOString();
  const hashes = demoHashes(root);
@@ -95,9 +96,9 @@ export async function buildSite({out = 'site', root = '.', read = chainReader(),
  mkdirSync(out, {recursive: true});
  const entries = [];
  for (const p of passportTxs(root)) {
-  const view = await passportView(p.tx, read, drafts, {signedFor});
+  const view = await passportView(p.tx, read, candidates, {signedFor});
   // Only drafts built from the invented demo files may supply the history on a public page.
-  const source = view.draft && drafts.find(d => d.id === view.draft.id);
+  const source = view.draft && candidates.find(d => d.id === view.draft.id);
   if (source && !isDemoDraft(source.draftText, hashes)) {
    for (const d of view.donors) for (const k of ['events', 'warnings', 'documents', 'testFiles']) delete d[k];
    view.checks = view.checks.map(c => /match the draft/.test(c.text) ? {...c, text: `${c.text} (history kept private: not demo data)`} : c);

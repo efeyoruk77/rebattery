@@ -1,0 +1,2016 @@
+{
+  "packs": [
+    "A",
+    "B",
+    "C"
+  ],
+  "documents": [
+    {
+      "doc_id": "packA-label",
+      "pack_id": "A",
+      "kind": "battery_label",
+      "sha256": "ec96035a6e09619816f8e015372acf08112834f44b2dd5dbce08a463e8a05c9d",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packA-registration",
+      "pack_id": "A",
+      "kind": "vehicle_registration",
+      "sha256": "ab95966c8eaf4d0bdc39bd36ba14df053404570bedb6468c04a3a25b1e35d8ea",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packA-invoice-2021-de",
+      "pack_id": "A",
+      "kind": "service_invoice",
+      "sha256": "e51cda4c1bc7c5a7f8435df711d000bba89a96de6b57f1f9f11520d2e5a5502d",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packA-health-2022",
+      "pack_id": "A",
+      "kind": "dealer_health_report",
+      "sha256": "2922a1bd8a37f1b536e7181ca631040eb75ad12f424cc0fb024eaaf926615747",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packB-label",
+      "pack_id": "B",
+      "kind": "battery_label",
+      "sha256": "4d5513b34a299ef6fd9591a4e4e514bdb2c324e9c32953787aceb8897a02e482",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packB-registration",
+      "pack_id": "B",
+      "kind": "vehicle_registration",
+      "sha256": "716f7de0149ac76609e0f4516ed97a0218c92516df45fc0ab883db2f63e0a6ee",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packB-insurance-2023",
+      "pack_id": "B",
+      "kind": "insurance_record",
+      "sha256": "bbf4fbfc45c7ccdb5e69d7e5d09491dd9b9bcf5adaa92d510251c2ec8f85eec3",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packC-label",
+      "pack_id": "C",
+      "kind": "battery_label",
+      "sha256": "cb820e00e9fb55b07d2d233ed7bdafb8bd6dcc7bbc8e4d6f15648e2b8e6f960b",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packC-registration",
+      "pack_id": "C",
+      "kind": "vehicle_registration",
+      "sha256": "201713a9121d51616163297ffb0af269efc1400546fa6979d0c94873090d5b14",
+      "anchor_tx": null
+    },
+    {
+      "doc_id": "packC-invoice-2022-en",
+      "pack_id": "C",
+      "kind": "service_invoice",
+      "sha256": "9cc8e37e21d44c4fa014023ae059496c9ea2362ffea76a8a23dd513dc6e55da5",
+      "anchor_tx": null
+    }
+  ],
+  "test_files": {
+    "module_tests": [
+      {
+        "module_id": "A-M1",
+        "sha256": "d9a02dca552efc9c3dc51957b793b91adbc4fccfef2694bf278c3be48fc7ce15"
+      },
+      {
+        "module_id": "A-M2",
+        "sha256": "b7d54efed4af91aab8f130e113eb6175de8d1ae04d7ac4b51521e63afe5f74cd"
+      },
+      {
+        "module_id": "A-M3",
+        "sha256": "cec7b9af1bd23c30c939876a74a9eb39c68b6a62849cc8e1cb0b36d5543c2017"
+      },
+      {
+        "module_id": "A-M4",
+        "sha256": "076e7ce4172fc7a15fac7ab5f918ca2f7e251978b7a5dd56ebc16e4e67273de9"
+      },
+      {
+        "module_id": "A-M5",
+        "sha256": "43ef122ae17ce51f2c65735e004298ce73084821d99f86c07d7c79b8534e6020"
+      },
+      {
+        "module_id": "A-M6",
+        "sha256": "f1036e9c5d8593667ffd100ae32dcc2906697a01194a2d37787adf0000a98afe"
+      },
+      {
+        "module_id": "A-M7",
+        "sha256": "5604d4c1f3ae43ea8099c7749bdaf1cfaea2706fcdf205aae7a8dbd2953c2d4d"
+      },
+      {
+        "module_id": "A-M8",
+        "sha256": "5918f25e2ec36ca08ca04083957edc207c0a641ae810b35c327e117385d4da7f"
+      },
+      {
+        "module_id": "B-M1",
+        "sha256": "dfde21eb93b93d0295a680c60c6061e5732b2dea06c60c80dda1a4d3b4678906"
+      },
+      {
+        "module_id": "B-M2",
+        "sha256": "719a209a3497dfaf1226c953a14204e4b49f6de441b3ccd84d9825732906d3a1"
+      },
+      {
+        "module_id": "B-M3",
+        "sha256": "29a6e2bbb973fe075aa58500382a1d643616e684b7501b40305b1fa10155446e"
+      },
+      {
+        "module_id": "B-M4",
+        "sha256": "1cd769993d8ce4060d384fc0865ee2fd363dc76a2d855973d08157a837fb8e3e"
+      },
+      {
+        "module_id": "B-M5",
+        "sha256": "46597344317f4bdcc1975573d6a47e3787c4cbd587fbd1309a54a98635d907ad"
+      },
+      {
+        "module_id": "B-M6",
+        "sha256": "a9bb7aaf1038ebf6b6ca1efdd09878ac9b997594e240d6f1bb194cf1ab756242"
+      },
+      {
+        "module_id": "B-M7",
+        "sha256": "3afe9844b8b03cf55c9eae0050faf768def2cf408794f01d7422589aa2a4569b"
+      },
+      {
+        "module_id": "B-M8",
+        "sha256": "229f70ec780488dd081a3d91fccdbffffda2e20e632012fcd417ef1437185b62"
+      },
+      {
+        "module_id": "C-M1",
+        "sha256": "787b1b0fea03c8a58a21fba9759a56ee9cde8ae780a0eebf9de84fe5698fcccf"
+      },
+      {
+        "module_id": "C-M2",
+        "sha256": "7a2a1bab99ec7791df22efb64fa627a95849e436396b71bd9f18c63c438803f0"
+      },
+      {
+        "module_id": "C-M3",
+        "sha256": "f6a947ae308037f6b1f686a7a31e2e89b4c3d68542a9cfbc7e28968eded94e44"
+      },
+      {
+        "module_id": "C-M4",
+        "sha256": "9763cb04d12b0df36f9cdf1071386a77e25a8b513a3ce9e44ad48f65e9bb7e9f"
+      },
+      {
+        "module_id": "C-M5",
+        "sha256": "276e4d2fb35ec00151e54ebe6632c864cb8d3c094728ef7971a4878a98762fcd"
+      },
+      {
+        "module_id": "C-M6",
+        "sha256": "90e9457f002f72b9a99bf6e0622d5dd731b88130fc8bf8153c1d5b75dfb1621e"
+      },
+      {
+        "module_id": "C-M7",
+        "sha256": "eca3cc947b235252ac5bf7a72a2e8ff79f4aaa0dd08ff5a04d9842205d1da00c"
+      },
+      {
+        "module_id": "C-M8",
+        "sha256": "b1ab6c1ce1cbaa34cac87556164ecfa303d3ada85689bd64ce0c1091f003ad13"
+      }
+    ],
+    "cell_tests": [
+      {
+        "module_id": "A-M1",
+        "sha256": "0451055665547c5f0a983cdfc676933d0f8449c9a8a071393a334a0685f185af"
+      },
+      {
+        "module_id": "A-M2",
+        "sha256": "b59036987a1e93f40b2cb59ebab32a62aad3b7019f9f5e79fa3182497293105c"
+      },
+      {
+        "module_id": "A-M3",
+        "sha256": "46d85ab466122ed840ef97a09ac016344c2cf049f62514fabaf27a2de054a678"
+      },
+      {
+        "module_id": "A-M5",
+        "sha256": "8b2e530822bf27d2c80b583aa145901a92164623768c31861d9029d98aba4b42"
+      },
+      {
+        "module_id": "A-M6",
+        "sha256": "b86f2ea34c2cc03471372dff299ca845a5a3c949013af4067e21c5a8c7f7aacb"
+      },
+      {
+        "module_id": "A-M7",
+        "sha256": "0465e6456a48959abd06b1f02c391c5245789a715e3a4861515368b53557c0ec"
+      },
+      {
+        "module_id": "A-M8",
+        "sha256": "d239f0a83a9ad4d38e15efa8f3a4b59f510bc0fe593961bdc551e902320c3d08"
+      },
+      {
+        "module_id": "B-M3",
+        "sha256": "93f3a50db636bd564ac3f857609b45259b705255c368ca3572eae9f4cfb02e96"
+      },
+      {
+        "module_id": "B-M4",
+        "sha256": "f703f28227f8640818ef381d8d142f09261f22a684fb10b788acbc3bd0c0897b"
+      },
+      {
+        "module_id": "B-M5",
+        "sha256": "c46b1188c254acabb3f9c90cfea3466c6ec09557cc61626cff0ed66f5675bb13"
+      },
+      {
+        "module_id": "B-M6",
+        "sha256": "adf05bd41666151b4f43be76e019d26b22c11e7e2c4b0127086c501387e3755a"
+      },
+      {
+        "module_id": "B-M7",
+        "sha256": "1185870e18ebad25409238153f2fd46137a9b42afc489dde01097167e89af43d"
+      },
+      {
+        "module_id": "B-M8",
+        "sha256": "ade7f7f2a7fd4ca4e606a2dbe7d25b631f6dec7072c6a366e65eabd8c19368c5"
+      },
+      {
+        "module_id": "C-M1",
+        "sha256": "a7c25ec30ce6a88cf1390df1ed91a43d756c8fad85bf56b98cccb4b73c1b17ae"
+      },
+      {
+        "module_id": "C-M2",
+        "sha256": "2c10bc9b94ef3508200c46f661930ec5bf783225344fadc8d03e9a918c478dd6"
+      },
+      {
+        "module_id": "C-M3",
+        "sha256": "c89033874a5c7f09562e800a9ab6c1370ee6e724059e8179b636b11c7f13ac9f"
+      },
+      {
+        "module_id": "C-M4",
+        "sha256": "75ffd1743125bcfb3d33b9f0e11e78d0e7e5a0edfa663fab3a882703750745ea"
+      },
+      {
+        "module_id": "C-M5",
+        "sha256": "ff1afb4e6e77bdc3d13bc6adecfced141e3e135af184e051ee03f4d96025138a"
+      },
+      {
+        "module_id": "C-M6",
+        "sha256": "17cca27587f38d9fc4b3ccfdf94be69f1626a5a28771c7c9931cdbc6c2134c79"
+      },
+      {
+        "module_id": "C-M7",
+        "sha256": "ae5aaa5bccdae5fb97c710b55633d5c8c736a7158a47fd4a40ddf23fec325228"
+      },
+      {
+        "module_id": "C-M8",
+        "sha256": "0bb4a6dc688f6fe3f8cb574ee11eb33cc324328384e8ef54098f07d762fbd4a2"
+      }
+    ]
+  },
+  "events": [
+    {
+      "event_id": "A-e1",
+      "pack_id": "A",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "production",
+      "date": "2020-03-11",
+      "fields": {
+        "manufacturer": "Altmark Cells GmbH",
+        "chemistry": "NMC"
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packA-label",
+        "sha256": "ec96035a6e09619816f8e015372acf08112834f44b2dd5dbce08a463e8a05c9d",
+        "page": 1,
+        "line": 9,
+        "quote": "Production date: 2020-03-11"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "A-e2",
+      "pack_id": "A",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "first_registration",
+      "date": "2020-05-12",
+      "fields": {},
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packA-registration",
+        "sha256": "ab95966c8eaf4d0bdc39bd36ba14df053404570bedb6468c04a3a25b1e35d8ea",
+        "page": 1,
+        "line": 8,
+        "quote": "Date of first registration: 2020-05-12"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "A-e3",
+      "pack_id": "A",
+      "module_ids": [
+        "A-M4"
+      ],
+      "cell_ids": [],
+      "type": "fault",
+      "date": "2021-06-14",
+      "fields": {
+        "finding": "voltage difference, cell imbalance"
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packA-invoice-2021-de",
+        "sha256": "e51cda4c1bc7c5a7f8435df711d000bba89a96de6b57f1f9f11520d2e5a5502d",
+        "page": 1,
+        "line": 10,
+        "quote": "Spannungsdifferenz in Modul 4, Zellungleichgewicht"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "A-e4",
+      "pack_id": "A",
+      "module_ids": [
+        "A-M4"
+      ],
+      "cell_ids": [],
+      "type": "module_replacement",
+      "date": "2021-06-14",
+      "fields": {
+        "reason": "cell imbalance"
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packA-invoice-2021-de",
+        "sha256": "e51cda4c1bc7c5a7f8435df711d000bba89a96de6b57f1f9f11520d2e5a5502d",
+        "page": 1,
+        "line": 13,
+        "quote": "Modul 4 ersetzt (Grund: Zellungleichgewicht)"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "A-e5",
+      "pack_id": "A",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "soh_measurement",
+      "date": "2022-09-20",
+      "fields": {
+        "soh_pct": 91
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packA-health-2022",
+        "sha256": "2922a1bd8a37f1b536e7181ca631040eb75ad12f424cc0fb024eaaf926615747",
+        "page": 1,
+        "line": 8,
+        "quote": "Measured state of health: 91 %"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "B-e1",
+      "pack_id": "B",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "production",
+      "date": "2020-04-02",
+      "fields": {
+        "manufacturer": "Altmark Cells GmbH",
+        "chemistry": "NMC"
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packB-label",
+        "sha256": "4d5513b34a299ef6fd9591a4e4e514bdb2c324e9c32953787aceb8897a02e482",
+        "page": 1,
+        "line": 9,
+        "quote": "Production date: 2020-04-02"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "B-e2",
+      "pack_id": "B",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "first_registration",
+      "date": "2020-06-30",
+      "fields": {},
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packB-registration",
+        "sha256": "716f7de0149ac76609e0f4516ed97a0218c92516df45fc0ab883db2f63e0a6ee",
+        "page": 1,
+        "line": 8,
+        "quote": "Date of first registration: 2020-06-30"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "B-e3",
+      "pack_id": "B",
+      "module_ids": [
+        "B-M1",
+        "B-M2"
+      ],
+      "cell_ids": [],
+      "type": "accident",
+      "date": "2023-02-07",
+      "fields": {
+        "damage_area": "front left underbody",
+        "severity": "moderate"
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packB-insurance-2023",
+        "sha256": "bbf4fbfc45c7ccdb5e69d7e5d09491dd9b9bcf5adaa92d510251c2ec8f85eec3",
+        "page": 1,
+        "line": 11,
+        "quote": "The battery housing is deformed near modules 1 and 2."
+      },
+      "basis": []
+    },
+    {
+      "event_id": "C-e1",
+      "pack_id": "C",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "production",
+      "date": "2020-02-19",
+      "fields": {
+        "manufacturer": "Altmark Cells GmbH",
+        "chemistry": "NMC"
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packC-label",
+        "sha256": "cb820e00e9fb55b07d2d233ed7bdafb8bd6dcc7bbc8e4d6f15648e2b8e6f960b",
+        "page": 1,
+        "line": 9,
+        "quote": "Production date: 2020-02-19"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "C-e2",
+      "pack_id": "C",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "first_registration",
+      "date": "2020-04-21",
+      "fields": {},
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packC-registration",
+        "sha256": "201713a9121d51616163297ffb0af269efc1400546fa6979d0c94873090d5b14",
+        "page": 1,
+        "line": 8,
+        "quote": "Date of first registration: 2020-04-21"
+      },
+      "basis": []
+    },
+    {
+      "event_id": "C-e3",
+      "pack_id": "C",
+      "module_ids": [],
+      "cell_ids": [],
+      "type": "software_update",
+      "date": "2022-11-03",
+      "fields": {
+        "component": "battery management system",
+        "version": "4.2.1"
+      },
+      "confidence": "documented",
+      "source": {
+        "doc_id": "packC-invoice-2022-en",
+        "sha256": "9cc8e37e21d44c4fa014023ae059496c9ea2362ffea76a8a23dd513dc6e55da5",
+        "page": 1,
+        "line": 11,
+        "quote": "Battery management system software updated to version 4.2.1"
+      },
+      "basis": []
+    }
+  ],
+  "rejected": [
+    {
+      "event_id": "A-x1",
+      "reason": "quote not found at packA-invoice-2021-de page 1 line 13"
+    }
+  ],
+  "warnings": [
+    {
+      "type": "inconsistency",
+      "rule": "soh_after_replacement",
+      "events": [
+        "A-e4",
+        "A-e5"
+      ],
+      "message": "Health of 91% reported 15 months after A-M4 was replaced; one pack-level value is inconsistent with a pack that mixes old and new modules."
+    },
+    {
+      "type": "inconsistency",
+      "rule": "accident_without_inspection",
+      "events": [
+        "B-e3"
+      ],
+      "message": "Accident on 2023-02-07 affecting B-M1, B-M2 has no later health measurement."
+    }
+  ],
+  "rejected_tests": [],
+  "new_batteries": [
+    {
+      "battery_id": "ESS-1",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "rules": {
+        "capacity_band_pct": 2,
+        "resistance_band_pct": 10,
+        "cells_per_ess": 48
+      },
+      "cells": [
+        {
+          "cell_id": "A-M3-C01",
+          "module_id": "A-M3",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M3-C04",
+          "module_id": "A-M3",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M3-C05",
+          "module_id": "A-M3",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M3-C06",
+          "module_id": "A-M3",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M3-C07",
+          "module_id": "A-M3",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M3-C08",
+          "module_id": "A-M3",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M3-C09",
+          "module_id": "A-M3",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M3-C10",
+          "module_id": "A-M3",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M3-C11",
+          "module_id": "A-M3",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M3-C12",
+          "module_id": "A-M3",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C01",
+          "module_id": "A-M5",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C03",
+          "module_id": "A-M5",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C09",
+          "module_id": "A-M5",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C03",
+          "module_id": "A-M8",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C04",
+          "module_id": "A-M8",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C05",
+          "module_id": "A-M8",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C06",
+          "module_id": "A-M8",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C08",
+          "module_id": "A-M8",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C09",
+          "module_id": "A-M8",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C11",
+          "module_id": "A-M8",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "B-M5-C01",
+          "module_id": "B-M5",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M5-C04",
+          "module_id": "B-M5",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M5-C05",
+          "module_id": "B-M5",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M5-C06",
+          "module_id": "B-M5",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M5-C08",
+          "module_id": "B-M5",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M5-C10",
+          "module_id": "B-M5",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M5-C12",
+          "module_id": "B-M5",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C05",
+          "module_id": "B-M7",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "C-M1-C03",
+          "module_id": "C-M1",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M1-C08",
+          "module_id": "C-M1",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M1-C12",
+          "module_id": "C-M1",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M3-C01",
+          "module_id": "C-M3",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M3-C02",
+          "module_id": "C-M3",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M3-C03",
+          "module_id": "C-M3",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M3-C04",
+          "module_id": "C-M3",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M3-C06",
+          "module_id": "C-M3",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M3-C07",
+          "module_id": "C-M3",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M3-C08",
+          "module_id": "C-M3",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M3-C09",
+          "module_id": "C-M3",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M3-C10",
+          "module_id": "C-M3",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M3-C11",
+          "module_id": "C-M3",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M3-C12",
+          "module_id": "C-M3",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C02",
+          "module_id": "C-M5",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C07",
+          "module_id": "C-M5",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C08",
+          "module_id": "C-M5",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C12",
+          "module_id": "C-M5",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C02",
+          "module_id": "C-M8",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C11",
+          "module_id": "C-M8",
+          "donor_pack": "C"
+        }
+      ],
+      "donor_packs": [
+        "A",
+        "B",
+        "C"
+      ],
+      "health": {
+        "cell_count": 48,
+        "usable_capacity_ah": 57.11,
+        "nominal_capacity_ah": 66,
+        "soh_pct": 86.5,
+        "avg_cell_capacity_ah": 57.72,
+        "avg_cell_resistance_mohm": 0.85,
+        "cells_tested_on": [
+          "2026-10-29"
+        ],
+        "basis": "signed cell test results"
+      },
+      "second_life_facility": {
+        "id": "DSL-AUG-01",
+        "name": "Demo Second Life GmbH",
+        "site": "Plant 1, Augsburg, DE",
+        "note": "invented for the demo"
+      }
+    },
+    {
+      "battery_id": "ESS-2",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "rules": {
+        "capacity_band_pct": 2,
+        "resistance_band_pct": 10,
+        "cells_per_ess": 48
+      },
+      "cells": [
+        {
+          "cell_id": "A-M1-C08",
+          "module_id": "A-M1",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M1-C11",
+          "module_id": "A-M1",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M1-C12",
+          "module_id": "A-M1",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M3-C02",
+          "module_id": "A-M3",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M3-C03",
+          "module_id": "A-M3",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C04",
+          "module_id": "A-M5",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C06",
+          "module_id": "A-M5",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C08",
+          "module_id": "A-M5",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C10",
+          "module_id": "A-M5",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C12",
+          "module_id": "A-M5",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C02",
+          "module_id": "A-M7",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C03",
+          "module_id": "A-M7",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C09",
+          "module_id": "A-M7",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C10",
+          "module_id": "A-M7",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C11",
+          "module_id": "A-M7",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C01",
+          "module_id": "A-M8",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C02",
+          "module_id": "A-M8",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C07",
+          "module_id": "A-M8",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C10",
+          "module_id": "A-M8",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M8-C12",
+          "module_id": "A-M8",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "B-M4-C01",
+          "module_id": "B-M4",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M4-C11",
+          "module_id": "B-M4",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M4-C12",
+          "module_id": "B-M4",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M5-C02",
+          "module_id": "B-M5",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M5-C03",
+          "module_id": "B-M5",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M5-C07",
+          "module_id": "B-M5",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M5-C09",
+          "module_id": "B-M5",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M5-C11",
+          "module_id": "B-M5",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C01",
+          "module_id": "B-M7",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C07",
+          "module_id": "B-M7",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C09",
+          "module_id": "B-M7",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C10",
+          "module_id": "B-M7",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C09",
+          "module_id": "B-M8",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "C-M1-C01",
+          "module_id": "C-M1",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M1-C04",
+          "module_id": "C-M1",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M1-C05",
+          "module_id": "C-M1",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M1-C06",
+          "module_id": "C-M1",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M1-C09",
+          "module_id": "C-M1",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C01",
+          "module_id": "C-M5",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C04",
+          "module_id": "C-M5",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C05",
+          "module_id": "C-M5",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C06",
+          "module_id": "C-M5",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C09",
+          "module_id": "C-M5",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C10",
+          "module_id": "C-M5",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C03",
+          "module_id": "C-M8",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C04",
+          "module_id": "C-M8",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C06",
+          "module_id": "C-M8",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C12",
+          "module_id": "C-M8",
+          "donor_pack": "C"
+        }
+      ],
+      "donor_packs": [
+        "A",
+        "B",
+        "C"
+      ],
+      "health": {
+        "cell_count": 48,
+        "usable_capacity_ah": 58.03,
+        "nominal_capacity_ah": 66,
+        "soh_pct": 87.9,
+        "avg_cell_capacity_ah": 58.2,
+        "avg_cell_resistance_mohm": 0.852,
+        "cells_tested_on": [
+          "2026-10-29"
+        ],
+        "basis": "signed cell test results"
+      },
+      "second_life_facility": {
+        "id": "DSL-AUG-01",
+        "name": "Demo Second Life GmbH",
+        "site": "Plant 1, Augsburg, DE",
+        "note": "invented for the demo"
+      }
+    },
+    {
+      "battery_id": "ESS-3",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "rules": {
+        "capacity_band_pct": 2,
+        "resistance_band_pct": 10,
+        "cells_per_ess": 48
+      },
+      "cells": [
+        {
+          "cell_id": "A-M1-C01",
+          "module_id": "A-M1",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M1-C02",
+          "module_id": "A-M1",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M1-C03",
+          "module_id": "A-M1",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M1-C04",
+          "module_id": "A-M1",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M1-C10",
+          "module_id": "A-M1",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M2-C04",
+          "module_id": "A-M2",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C02",
+          "module_id": "A-M5",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C05",
+          "module_id": "A-M5",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C07",
+          "module_id": "A-M5",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M5-C11",
+          "module_id": "A-M5",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C01",
+          "module_id": "A-M6",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C03",
+          "module_id": "A-M6",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C08",
+          "module_id": "A-M7",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C12",
+          "module_id": "A-M7",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "B-M3-C06",
+          "module_id": "B-M3",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M3-C07",
+          "module_id": "B-M3",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M4-C04",
+          "module_id": "B-M4",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M4-C06",
+          "module_id": "B-M4",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M4-C10",
+          "module_id": "B-M4",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C02",
+          "module_id": "B-M7",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C06",
+          "module_id": "B-M7",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C08",
+          "module_id": "B-M7",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C01",
+          "module_id": "B-M8",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C03",
+          "module_id": "B-M8",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C04",
+          "module_id": "B-M8",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "C-M1-C02",
+          "module_id": "C-M1",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M1-C07",
+          "module_id": "C-M1",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M2-C03",
+          "module_id": "C-M2",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C03",
+          "module_id": "C-M4",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C05",
+          "module_id": "C-M4",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C06",
+          "module_id": "C-M4",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C07",
+          "module_id": "C-M4",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C08",
+          "module_id": "C-M4",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C03",
+          "module_id": "C-M5",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M5-C11",
+          "module_id": "C-M5",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M6-C01",
+          "module_id": "C-M6",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M6-C03",
+          "module_id": "C-M6",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M6-C04",
+          "module_id": "C-M6",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M6-C05",
+          "module_id": "C-M6",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M6-C09",
+          "module_id": "C-M6",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C02",
+          "module_id": "C-M7",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C03",
+          "module_id": "C-M7",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C04",
+          "module_id": "C-M7",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C07",
+          "module_id": "C-M7",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C01",
+          "module_id": "C-M8",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C07",
+          "module_id": "C-M8",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C08",
+          "module_id": "C-M8",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C10",
+          "module_id": "C-M8",
+          "donor_pack": "C"
+        }
+      ],
+      "donor_packs": [
+        "A",
+        "B",
+        "C"
+      ],
+      "health": {
+        "cell_count": 48,
+        "usable_capacity_ah": 58.39,
+        "nominal_capacity_ah": 66,
+        "soh_pct": 88.5,
+        "avg_cell_capacity_ah": 58.57,
+        "avg_cell_resistance_mohm": 0.845,
+        "cells_tested_on": [
+          "2026-10-29"
+        ],
+        "basis": "signed cell test results"
+      },
+      "second_life_facility": {
+        "id": "DSL-AUG-01",
+        "name": "Demo Second Life GmbH",
+        "site": "Plant 1, Augsburg, DE",
+        "note": "invented for the demo"
+      }
+    },
+    {
+      "battery_id": "ESS-4",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "rules": {
+        "capacity_band_pct": 2,
+        "resistance_band_pct": 10,
+        "cells_per_ess": 48
+      },
+      "cells": [
+        {
+          "cell_id": "A-M1-C05",
+          "module_id": "A-M1",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M1-C06",
+          "module_id": "A-M1",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M1-C07",
+          "module_id": "A-M1",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M1-C09",
+          "module_id": "A-M1",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M2-C06",
+          "module_id": "A-M2",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M2-C07",
+          "module_id": "A-M2",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M2-C09",
+          "module_id": "A-M2",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M2-C10",
+          "module_id": "A-M2",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M2-C12",
+          "module_id": "A-M2",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C04",
+          "module_id": "A-M6",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C06",
+          "module_id": "A-M6",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C07",
+          "module_id": "A-M6",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C08",
+          "module_id": "A-M6",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C04",
+          "module_id": "A-M7",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C07",
+          "module_id": "A-M7",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "B-M3-C01",
+          "module_id": "B-M3",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M3-C02",
+          "module_id": "B-M3",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M3-C04",
+          "module_id": "B-M3",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M3-C09",
+          "module_id": "B-M3",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M3-C11",
+          "module_id": "B-M3",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M4-C03",
+          "module_id": "B-M4",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C03",
+          "module_id": "B-M7",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C04",
+          "module_id": "B-M7",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C11",
+          "module_id": "B-M7",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M7-C12",
+          "module_id": "B-M7",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C02",
+          "module_id": "B-M8",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C08",
+          "module_id": "B-M8",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C10",
+          "module_id": "B-M8",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C11",
+          "module_id": "B-M8",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "C-M1-C10",
+          "module_id": "C-M1",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M1-C11",
+          "module_id": "C-M1",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M2-C04",
+          "module_id": "C-M2",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M2-C06",
+          "module_id": "C-M2",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M2-C07",
+          "module_id": "C-M2",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M2-C08",
+          "module_id": "C-M2",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M2-C09",
+          "module_id": "C-M2",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C04",
+          "module_id": "C-M4",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C09",
+          "module_id": "C-M4",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C11",
+          "module_id": "C-M4",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M6-C06",
+          "module_id": "C-M6",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M6-C10",
+          "module_id": "C-M6",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M6-C11",
+          "module_id": "C-M6",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C05",
+          "module_id": "C-M7",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C10",
+          "module_id": "C-M7",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C11",
+          "module_id": "C-M7",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C12",
+          "module_id": "C-M7",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C05",
+          "module_id": "C-M8",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M8-C09",
+          "module_id": "C-M8",
+          "donor_pack": "C"
+        }
+      ],
+      "donor_packs": [
+        "A",
+        "B",
+        "C"
+      ],
+      "health": {
+        "cell_count": 48,
+        "usable_capacity_ah": 58.7,
+        "nominal_capacity_ah": 66,
+        "soh_pct": 88.9,
+        "avg_cell_capacity_ah": 58.82,
+        "avg_cell_resistance_mohm": 0.849,
+        "cells_tested_on": [
+          "2026-10-29"
+        ],
+        "basis": "signed cell test results"
+      },
+      "second_life_facility": {
+        "id": "DSL-AUG-01",
+        "name": "Demo Second Life GmbH",
+        "site": "Plant 1, Augsburg, DE",
+        "note": "invented for the demo"
+      }
+    },
+    {
+      "battery_id": "ESS-5",
+      "cell_model": "AC-NMC-66P",
+      "chemistry": "NMC",
+      "rules": {
+        "capacity_band_pct": 2,
+        "resistance_band_pct": 10,
+        "cells_per_ess": 48
+      },
+      "cells": [
+        {
+          "cell_id": "A-M2-C01",
+          "module_id": "A-M2",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M2-C02",
+          "module_id": "A-M2",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M2-C03",
+          "module_id": "A-M2",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M2-C05",
+          "module_id": "A-M2",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M2-C08",
+          "module_id": "A-M2",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C02",
+          "module_id": "A-M6",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C05",
+          "module_id": "A-M6",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C09",
+          "module_id": "A-M6",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C10",
+          "module_id": "A-M6",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C11",
+          "module_id": "A-M6",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M6-C12",
+          "module_id": "A-M6",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C01",
+          "module_id": "A-M7",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C05",
+          "module_id": "A-M7",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "A-M7-C06",
+          "module_id": "A-M7",
+          "donor_pack": "A"
+        },
+        {
+          "cell_id": "B-M3-C03",
+          "module_id": "B-M3",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M3-C10",
+          "module_id": "B-M3",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M4-C02",
+          "module_id": "B-M4",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M4-C05",
+          "module_id": "B-M4",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M4-C07",
+          "module_id": "B-M4",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M4-C08",
+          "module_id": "B-M4",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M4-C09",
+          "module_id": "B-M4",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M6-C01",
+          "module_id": "B-M6",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M6-C02",
+          "module_id": "B-M6",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M6-C03",
+          "module_id": "B-M6",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M6-C05",
+          "module_id": "B-M6",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M6-C07",
+          "module_id": "B-M6",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M6-C09",
+          "module_id": "B-M6",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M6-C10",
+          "module_id": "B-M6",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M6-C11",
+          "module_id": "B-M6",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M6-C12",
+          "module_id": "B-M6",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C05",
+          "module_id": "B-M8",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C06",
+          "module_id": "B-M8",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C07",
+          "module_id": "B-M8",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "B-M8-C12",
+          "module_id": "B-M8",
+          "donor_pack": "B"
+        },
+        {
+          "cell_id": "C-M2-C02",
+          "module_id": "C-M2",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M2-C10",
+          "module_id": "C-M2",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C01",
+          "module_id": "C-M4",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C02",
+          "module_id": "C-M4",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C10",
+          "module_id": "C-M4",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M4-C12",
+          "module_id": "C-M4",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M6-C02",
+          "module_id": "C-M6",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M6-C07",
+          "module_id": "C-M6",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M6-C08",
+          "module_id": "C-M6",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M6-C12",
+          "module_id": "C-M6",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C01",
+          "module_id": "C-M7",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C06",
+          "module_id": "C-M7",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C08",
+          "module_id": "C-M7",
+          "donor_pack": "C"
+        },
+        {
+          "cell_id": "C-M7-C09",
+          "module_id": "C-M7",
+          "donor_pack": "C"
+        }
+      ],
+      "donor_packs": [
+        "A",
+        "B",
+        "C"
+      ],
+      "health": {
+        "cell_count": 48,
+        "usable_capacity_ah": 59.01,
+        "nominal_capacity_ah": 66,
+        "soh_pct": 89.4,
+        "avg_cell_capacity_ah": 59.18,
+        "avg_cell_resistance_mohm": 0.851,
+        "cells_tested_on": [
+          "2026-10-29"
+        ],
+        "basis": "signed cell test results"
+      },
+      "second_life_facility": {
+        "id": "DSL-AUG-01",
+        "name": "Demo Second Life GmbH",
+        "site": "Plant 1, Augsburg, DE",
+        "note": "invented for the demo"
+      }
+    }
+  ],
+  "held_back": [
+    {
+      "id": "A-M4",
+      "level": "module",
+      "reason": "open warning soh_after_replacement (A-e4, A-e5); not taken apart"
+    },
+    {
+      "id": "B-M1",
+      "level": "module",
+      "reason": "accident event B-e3; open warning accident_without_inspection (B-e3); not taken apart"
+    },
+    {
+      "id": "B-M2",
+      "level": "module",
+      "reason": "accident event B-e3; open warning accident_without_inspection (B-e3); not taken apart"
+    },
+    {
+      "id": "A-M2-C11",
+      "level": "cell",
+      "reason": "capacity 52.4 Ah matches no neighbouring cell within ±2%"
+    },
+    {
+      "id": "B-M3-C05",
+      "level": "cell",
+      "reason": "left over: only 10 matching cells remain between 59.41 and 59.7 Ah; an ESS needs 48"
+    },
+    {
+      "id": "B-M3-C08",
+      "level": "cell",
+      "reason": "left over: only 10 matching cells remain between 59.41 and 59.7 Ah; an ESS needs 48"
+    },
+    {
+      "id": "B-M3-C12",
+      "level": "cell",
+      "reason": "left over: only 10 matching cells remain between 59.41 and 59.7 Ah; an ESS needs 48"
+    },
+    {
+      "id": "B-M6-C04",
+      "level": "cell",
+      "reason": "left over: only 10 matching cells remain between 59.41 and 59.7 Ah; an ESS needs 48"
+    },
+    {
+      "id": "B-M6-C06",
+      "level": "cell",
+      "reason": "left over: only 10 matching cells remain between 59.41 and 59.7 Ah; an ESS needs 48"
+    },
+    {
+      "id": "B-M6-C08",
+      "level": "cell",
+      "reason": "left over: only 10 matching cells remain between 59.41 and 59.7 Ah; an ESS needs 48"
+    },
+    {
+      "id": "C-M2-C01",
+      "level": "cell",
+      "reason": "left over: only 10 matching cells remain between 59.41 and 59.7 Ah; an ESS needs 48"
+    },
+    {
+      "id": "C-M2-C05",
+      "level": "cell",
+      "reason": "left over: only 10 matching cells remain between 59.41 and 59.7 Ah; an ESS needs 48"
+    },
+    {
+      "id": "C-M2-C11",
+      "level": "cell",
+      "reason": "left over: only 10 matching cells remain between 59.41 and 59.7 Ah; an ESS needs 48"
+    },
+    {
+      "id": "C-M2-C12",
+      "level": "cell",
+      "reason": "left over: only 10 matching cells remain between 59.41 and 59.7 Ah; an ESS needs 48"
+    },
+    {
+      "id": "C-M3-C05",
+      "level": "cell",
+      "reason": "resistance 1.12 mΩ is 31.9% above the median 0.849 mΩ of AC-NMC-66P cells (band ±10%)"
+    }
+  ],
+  "explanation": {
+    "ess": {
+      "ESS-1": "ESS-1 is composed of 48 cells (20 from donor pack A, 8 from pack B, and 20 from pack C) assembled according to rules requiring 48 cells per ESS, a ±2% capacity band, and a ±10% resistance band. It delivers a usable capacity of 57.11 Ah (nominal capacity 66 Ah) with an average cell capacity of 57.72 Ah and an average cell resistance of 0.85 mΩ. Its state of health is 86.5%, which follows the weakest cell because the cells are connected in series.",
+      "ESS-2": "ESS-2 is composed of 48 cells (20 from donor pack A, 13 from pack B, and 15 from pack C) assembled according to rules requiring 48 cells per ESS, a ±2% capacity band, and a ±10% resistance band. It delivers a usable capacity of 58.03 Ah (nominal capacity 66 Ah) with an average cell capacity of 58.2 Ah and an average cell resistance of 0.852 mΩ. Its state of health is 87.9%, which follows the weakest cell because the cells are connected in series.",
+      "ESS-3": "ESS-3 is composed of 48 cells (14 from donor pack A, 11 from pack B, and 23 from pack C) assembled according to rules requiring 48 cells per ESS, a ±2% capacity band, and a ±10% resistance band. It delivers a usable capacity of 58.39 Ah (nominal capacity 66 Ah) with an average cell capacity of 58.57 Ah and an average cell resistance of 0.845 mΩ. Its state of health is 88.5%, which follows the weakest cell because the cells are connected in series.",
+      "ESS-4": "ESS-4 is composed of 48 cells (15 from donor pack A, 14 from pack B, and 19 from pack C) assembled according to rules requiring 48 cells per ESS, a ±2% capacity band, and a ±10% resistance band. It delivers a usable capacity of 58.7 Ah (nominal capacity 66 Ah) with an average cell capacity of 58.82 Ah and an average cell resistance of 0.849 mΩ. Its state of health is 88.9%, which follows the weakest cell because the cells are connected in series.",
+      "ESS-5": "ESS-5 is composed of 48 cells (14 from donor pack A, 20 from pack B, and 14 from pack C) assembled according to rules requiring 48 cells per ESS, a ±2% capacity band, and a ±10% resistance band. It delivers a usable capacity of 59.01 Ah (nominal capacity 66 Ah) with an average cell capacity of 59.18 Ah and an average cell resistance of 0.851 mΩ. Its state of health is 89.4%, which follows the weakest cell because the cells are connected in series."
+    },
+    "modules": {
+      "A-M4": "Module A-M4 was not taken apart due to an open soh_after_replacement warning between module replacement event A-e4 (\"Modul 4 ersetzt (Grund: Zellungleichgewicht)\") and SOH measurement event A-e5 (\"Measured state of health: 91 %\").",
+      "B-M1": "Module B-M1 was not taken apart due to accident event B-e3 (\"The battery housing is deformed near modules 1 and 2.\") and an open accident_without_inspection warning.",
+      "B-M2": "Module B-M2 was not taken apart due to accident event B-e3 (\"The battery housing is deformed near modules 1 and 2.\") and an open accident_without_inspection warning."
+    },
+    "cells": [
+      {
+        "cell_ids": [
+          "A-M2-C11"
+        ],
+        "text": "Cell A-M2-C11 was held back because its capacity of 52.4 Ah matched no neighbouring cell within ±2%."
+      },
+      {
+        "cell_ids": [
+          "C-M3-C05"
+        ],
+        "text": "Cell C-M3-C05 was held back because its resistance of 1.12 mΩ is 31.9% above the median of 0.849 mΩ for AC-NMC-66P cells, exceeding the ±10% resistance band."
+      },
+      {
+        "cell_ids": [
+          "B-M3-C05",
+          "B-M3-C08",
+          "B-M3-C12",
+          "B-M6-C04",
+          "B-M6-C06",
+          "B-M6-C08",
+          "C-M2-C01",
+          "C-M2-C05",
+          "C-M2-C11",
+          "C-M2-C12"
+        ],
+        "text": "These cells were left over because only 10 matching cells remained between 59.41 and 59.7 Ah, which is insufficient to complete an ESS requiring 48 cells."
+      }
+    ]
+  }
+}

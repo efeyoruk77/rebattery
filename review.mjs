@@ -69,13 +69,26 @@ export async function passportQrs(id, root = '.', base = passportBase()) {
  return out;
 }
 
+// The demo draft exactly as it was written to Cardano in the test run of Oct 31 (from commit eda0ec6). The demo draft
+// has changed since (pack model, serial number, VIN), so its events no longer match the passports on-chain.
+// Passports match against this copy; it is not listed on the review screen. Never regenerate it.
+const ONCHAIN_DEMO = ['demo-onchain', 'examples/demo-onchain-draft.json', 'Demo: 3 NMC packs, as written to Cardano in the test run (invented data, not paid)'];
+
+// The drafts a passport may take its history from: every listed draft, plus the on-chain demo copy.
+export function passportDrafts(root = '.') {
+ const drafts = listDrafts(root);
+ const [id, path, label] = ONCHAIN_DEMO;
+ if (existsSync(`${root}/${path}`)) drafts.push({id, label, draftText: readFileSync(`${root}/${path}`, 'utf8'), paid: null});
+ return drafts;
+}
+
 // Passport views, read from the chain at most once per transaction every five minutes.
 const signedFor = id => readJson(`.local/signed/${id}.json`)?.signedRecord ?? null;
 const passportCache = new Map();
 function cachedPassport(tx, read = chainReader()) {
  const hit = passportCache.get(tx);
  if (hit && Date.now() - hit.at < 5 * 60 * 1000) return hit.view;
- const view = passportView(tx, read, listDrafts(), {signedFor});
+ const view = passportView(tx, read, passportDrafts(), {signedFor});
  passportCache.set(tx, {at: Date.now(), view});
  view.catch(() => passportCache.delete(tx));
  return view;
