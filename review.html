@@ -206,6 +206,9 @@ h2{font-size:22px;letter-spacing:-.02em;margin:0}
 .packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:18px;min-width:0}
 .card h3{margin:0 0 14px;font-size:16px;display:flex;align-items:center;gap:8px}
+.more{margin-top:12px;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;gap:8px;align-items:center;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .2s}
+.more:hover{transform:translateY(-2px);background:var(--panel)}
+.flag-hint{background:var(--warn-bg);color:var(--warn);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:600}
 .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
 .event{position:relative;padding:0 0 14px 20px;border-left:2px solid var(--line);margin-left:5px;border-radius:0 12px 12px 0;transition:background .2s}
 .event:last-child{padding-bottom:0}
@@ -604,7 +607,16 @@ function histories() {
   ${e.source ? `<div class="quote"><q>${esc(e.source.quote)}</q> <span class="muted">— ${esc(e.source.doc_id)}, p. ${esc(e.source.page)}, line ${esc(e.source.line)}</span></div>`
    : `<div class="quote muted">Derived from ${esc((e.basis || []).join(', '))}</div>`}
  </div>`;
- const pack = p => `<div class="card"><h3><span class="dot" style="background:${packColor(p)}"></span>Pack ${esc(p)}</h3>${d.events.filter(e => e.pack_id === p).sort((a, b) => String(a.date).localeCompare(String(b.date))).map(event).join('') || '<p class="muted">No events.</p>'}</div>`;
+ // Each card opens with the first event only; the rest sit behind a "Show more" button.
+ const pack = p => {
+  const all = d.events.filter(e => e.pack_id === p).sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  const open = openPacks.has(p), shown = open ? all : all.slice(0, 1), hidden = all.length - shown.length;
+  const hiddenFlagged = all.slice(1).filter(e => flagged.has(e.event_id)).length;
+  return `<div class="card"><h3><span class="dot" style="background:${packColor(p)}"></span>Pack ${esc(p)}<span class="meta" style="margin-left:auto;font-weight:400">${esc(all.length)} event${all.length === 1 ? '' : 's'}</span></h3>
+   ${shown.map(event).join('') || '<p class="muted">No events.</p>'}
+   ${all.length > 1 ? `<button type="button" class="more" data-expand="${esc(p)}" aria-expanded="${open}">${open ? 'Show less ▴' : `Show ${esc(hidden)} more event${hidden === 1 ? '' : 's'} ▾`}${!open && hiddenFlagged ? `<span class="flag-hint">${esc(hiddenFlagged)} in a warning</span>` : ''}</button>` : ''}
+  </div>`;
+ };
  return `
  <h1>Donor histories</h1>
  <p class="lead">One timeline per old battery pack. Pulsing dots are part of a warning. Hover a confidence label to see what it means.</p>
@@ -614,6 +626,7 @@ function histories() {
 }
 const confHelp = {signed: 'Signed by the source itself', documented: 'Quoted from a document whose hash is anchored', estimated: 'Concluded from other events; never used for grouping'};
 let packFilter = 'all';
+const openPacks = new Set(); // packs whose full timeline is open on the histories page
 const sessionFilter = () => packFilter;
 
 const sohRing = (pct, size = 88) => {
@@ -840,6 +853,10 @@ function wire() {
 
  for (const b of app.querySelectorAll('[data-pack].pill')) b.onclick = () => { packFilter = b.dataset.pack; route(); };
  for (const b of app.querySelectorAll('[data-open-draft]')) b.onclick = () => show(b.dataset.openDraft);
+ for (const b of app.querySelectorAll('[data-expand]')) b.onclick = () => {
+  const p = b.dataset.expand; openPacks.has(p) ? openPacks.delete(p) : openPacks.add(p);
+  const y = window.scrollY; route({keepScroll: true, quiet: true}); window.scrollTo(0, y); wire();
+ };
 
  // Count numbers up on the overview.
  if (!reduceMotion) for (const el of app.querySelectorAll('[data-count]')) {
