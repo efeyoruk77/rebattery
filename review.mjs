@@ -7,6 +7,7 @@ import QRCode from 'qrcode';
 import {createStageB} from './stage-b.mjs';
 import {createCardanoSteps} from './cardano-steps.mjs';
 import {collectStatus} from './status.mjs';
+import {passportView,chainReader,TX} from './passport.mjs';
 
 // Member 3's Cardano steps are connected here, not in stage-b.mjs defaults, so tests never reach the real chain.
 // Writes stay off until CARDANO_WRITES_ENABLED=true.
@@ -36,15 +37,30 @@ export function listDrafts(root = '.') {
 
 // QR codes for a signed draft: ESS id -> {txHash, url, svg}. Only real passport transactions get a code;
 // a draft that was never signed, or a link that is not a Preprod transaction, gets none.
+// The code opens Cardanoscan, or this server's passport page when PASSPORT_BASE_URL (an https address a phone can reach) is set.
 const PASSPORT_URL = /^https:\/\/preprod\.cardanoscan\.io\/transaction\/[0-9a-f]{64}$/;
-export async function passportQrs(id, root = '.') {
+const passportBase = (base = process.env.PASSPORT_BASE_URL) => /^https:\/\/[^\s/?#]+(\/[^\s?#]*)?$/.test(base ?? '') ? base.replace(/\/+$/, '') : null;
+export async function passportQrs(id, root = '.', base = passportBase()) {
  const passports = readJson(`${root}/.local/signed/${id}.json`)?.passports ?? {};
  const out = {};
  for (const [ess, p] of Object.entries(passports)) {
   if (!PASSPORT_URL.test(p?.url ?? '')) continue;
-  out[ess] = {txHash: p.txHash, url: p.url, svg: await QRCode.toString(p.url, {type: 'svg', margin: 1, errorCorrectionLevel: 'M'})};
+  const url = base ? `${base}/passport/${p.txHash}` : p.url;
+  out[ess] = {txHash: p.txHash, url, explorer: p.url, svg: await QRCode.toString(url, {type: 'svg', margin: 1, errorCorrectionLevel: 'M'})};
  }
  return out;
+}
+
+// Passport views, read from the chain at most once per transaction every five minutes.
+const signedFor = id => readJson(`.local/signed/${id}.json`)?.signedRecord ?? null;
+const passportCache = new Map();
+function cachedPassport(tx, read = chainReader()) {
+ const hit = passportCache.get(tx);
+ if (hit && Date.now() - hit.at < 5 * 60 * 1000) return hit.view;
+ const view = passportView(tx, read, listDrafts(), {signedFor});
+ passportCache.set(tx, {at: Date.now(), view});
+ view.catch(() => passportCache.delete(tx));
+ return view;
 }
 
 const respond = (res, status, data, type = 'application/json') => { res.writeHead(status, {'content-type': type}); res.end(type === 'application/json' ? JSON.stringify(data) : data); };
@@ -55,6 +71,13 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   try {
    const url = new URL(req.url, 'http://127.0.0.1');
    if (req.method === 'GET' && url.pathname === '/') return respond(res, 200, readFileSync('review.html', 'utf8'), 'text/html; charset=utf-8');
+   if (req.method === 'GET' && /^\/passport\/[0-9a-f]{64}$/.test(url.pathname)) return respond(res, 200, readFileSync('passport.html', 'utf8'), 'text/html; charset=utf-8');
+   if (req.method === 'GET' && url.pathname === '/api/passport') {
+    const tx = url.searchParams.get('tx') ?? '';
+    if (!TX.test(tx)) return respond(res, 400, {error: 'tx must be a 64-character transaction hash'});
+    try { return respond(res, 200, await cachedPassport(tx)); }
+    catch (e) { return respond(res, /is not a passport entry|is not the/.test(e.message) ? 404 : 502, {error: e.message.slice(0, 300)}); }
+   }
    if (req.method === 'GET' && url.pathname === '/status') return respond(res, 200, readFileSync('status.html', 'utf8'), 'text/html; charset=utf-8');
    if (req.method === 'GET' && url.pathname === '/api/status') return respond(res, 200, await collectStatus());
    if (req.method === 'GET' && url.pathname === '/api/drafts') return respond(res, 200, listDrafts().map(({id, label, paid}) => ({id, label, paid: Boolean(paid)})));
